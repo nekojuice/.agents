@@ -9,8 +9,8 @@ description: >-
 disable-model-invocation: true
 metadata:
   author: Cursor Grok 4.5
-  version: "1.4"
-  last_updated: "2026-07-24T16:53:00"
+  version: "1.5"
+  last_updated: "2026-07-27T17:44:43"
 ---
 
 # orchestrator-factory
@@ -25,7 +25,7 @@ This skill runs **only** on explicit `/orchestrator-factory` (or equivalent expl
 2. **Default stage** — if the user says nothing actionable about stage, or you cannot tell where to start → **discuss read-only** (no writes, no dispatch, **no** `.factory/` run). Prefer loading / following `discuss-first`.
 3. **No silent dispatch** — never start apply (or any write-capable worker) until the user has confirmed the dispatch plan (or a revised subset / reassignment).
 4. **Same-series sequential work → one worker** — ordered / dependent changes in the same series stay on **one named worker**. Independent changes may use different workers.
-5. **Verify separation** — apply workers may run **`hard-verify` only**. **`code-review` is never run by an apply worker.** The orchestrator always dispatches a **separate Check worker** for `code-review`. No nested “self-check subagent” inside apply under factory mode.
+5. **Verify separation** — apply workers may run **`hard-verify` only**. **`code-review` is never run by an apply worker.** The orchestrator always dispatches a **separate Check worker** for `code-review`. No nested “self-check subagent” inside apply under factory mode. When used, **change-doc review** also stays off the apply worker (separate reviewer ≠ Check `code-review`).
 6. **Never commit** — do not run `git commit` (or equivalent) for the user. Only run `commit-message-suggestion` and hand the suggestion to the user.
 7. **Never auto-load `grill-me` / `grill-with-docs`** into the regular factory path.
 8. **Model** — Multitask / subagent workers **default to the same model as the orchestrator**. Changing model requires asking the user and getting approval.
@@ -40,6 +40,7 @@ This skill runs **only** on explicit `/orchestrator-factory` (or equivalent expl
 | Create/update the `.factory/` run (when leaving discuss) | Create a run for discuss-only sessions that end there |
 | Publish named-worker plans and wait | Let apply workers run `code-review` |
 | Dispatch separate Check workers for `code-review` | Sync/archive off `main`/`master` without blocking |
+| Hint optional change-doc review after propose; rollup response into `_status.md` when opted in | Force change-doc review; conflate it with Check `code-review` |
 | Aggregate worker returns into short status + run files | Commit on the user's behalf |
 | Stop only on stop-for-human (see § Repair) | Treat verify green as “ready to ship” |
 
@@ -50,9 +51,9 @@ Depth: orchestrator → apply / check workers. **Do not** nest verify inside app
 | Stage | Skills to load / follow | Notes |
 | --- | --- | --- |
 | **Discuss (read-only)** | `discuss-first` | Default when stage unclear; **no** `.factory/` run |
-| **Propose** | `openspec-propose` + `opsx-propose-guide` + **`test-first` (always)** | Create run when entering this (or later) stage |
-| **Human gate — changes** | (none) | User reviews change docs; you wait |
-| **Dispatch plan** | (this skill) | Named workers ↔ changes; write `_dispatch-plan.md`; **wait for confirm** |
+| **Propose** | `openspec-propose` + `opsx-propose-guide` + **`test-first` (always)** | Create run when entering this (or later) stage; then **hint** optional change-doc review |
+| **Human gate — changes** | (none by default) | User inspects change docs; optional change-doc review sits here / alongside — **never auto-required** |
+| **Dispatch plan** | (this skill) | May publish immediately after propose; change-review does **not** block writing the plan; **wait for confirm** |
 | **Apply** | `openspec-apply-change` + `opsx-apply-guide` + `test-first` + **`hard-verify` (end of apply)** | Only after dispatch confirm; apply worker must not run `code-review` |
 | **Machine verify (review)** | **`code-review` via separate Check worker(s)** | After apply batch; before human E2E; Spec = that change’s `design.md` / `proposal.md` |
 | **Human gate — E2E** | (none) | User runs E2E; you wait |
@@ -63,8 +64,10 @@ Depth: orchestrator → apply / check workers. **Do not** nest verify inside app
 
 ### Optional skills (opt-in only)
 
-Load **only** when the user names them in the command (examples: `ponytail`, `karpathy-guidelines`, `opsx-health-check`, `code-to-docs`, `thought-palette-extract`, doc-\* guides).  
+Load **only** when the user names them in the command (examples: `ponytail`, `karpathy-guidelines`, `opsx-health-check`, `code-to-docs`, `thought-palette-extract`, doc-\* guides, `change-review-request`, `change-review-response`).  
 Exception: **`test-first` is always on for propose** (and as required during apply per `opsx-apply-guide`).
+
+**Change-doc review** — opt-in only (user names the skills or chooses the post-propose hint). **Never auto-required.** Primary slot: after Propose / alongside Human gate — changes, before Apply. Load from the **active project repo**: `.agents/skills/change-review-request/` and `.agents/skills/change-review-response/` (workspace-relative), not relative to this skill’s install dir. Response reviewer ≠ apply worker ≠ post-apply Check `code-review`.
 
 Do **not** paste full texts of those skills here — read and follow them when the stage runs.
 
@@ -170,6 +173,8 @@ Under factory mode only:
 | `apply-w1-result.md` | `FACTORY_APPLY_RESULT_V1` envelope |
 | `hard-verify-w1.md` | hard-verify evidence for that apply worker |
 | `check-<change-id>-code-review.md` | `code-review` report from a Check worker |
+| `change-review-request-NN.md` | Optional change-doc review brief |
+| `change-review-response-NN.md` | Optional change-doc review verdict (paired `NN`) |
 
 Every worker prompt includes `run_dir: .factory/<…>/` and must read `_memory.md` + `_status.md` when present. Chat stays a short rollup; durable detail lives under `run_dir`.
 
@@ -189,10 +194,32 @@ When the user directs propose (after discussion has settled, or they skip discus
 1. Ensure the `.factory/` run exists (create if needed); init `_status.md` and empty `_memory.md` if new.
 2. Follow `openspec-propose` + `opsx-propose-guide` + `test-first`.
 3. When one or more changes exist, go to §3. Do not start workers.
+4. **Hint (not a gate):** also tell the user that optional change-doc review is one available next action (`change-review-request` → separate reviewer `change-review-response`). Other next actions remain (inspect changes, confirm dispatch, etc.). Never require review before dispatch by default.
+
+### Optional change-doc review (opt-in handoff)
+
+Only when the user opts in (names the skills or chooses the hint). Skipping leaves the normal path unchanged.
+
+1. Ensure `run_dir/change-review-request-NN.md` exists (follow active project `.agents/skills/change-review-request/`).
+2. Wait for a separate reviewer to write `change-review-response-NN.md` (follow `.agents/skills/change-review-response/`).
+3. Read the verdict and recommended next action; roll up into `_status.md`.
+4. Next action comes from the response (`confirm dispatch` | `amend change` | `needs_input`). If verdict is not `ready to apply`, do not treat dispatch confirm as green-light until the user amends / clarifies (or explicitly overrides).
+
+**Reviewer prompt (shape)** — when dispatching a reviewer:
+
+```text
+[orchestrator-factory / change-doc-review]
+role: change-doc reviewer (not apply, not Check code-review)
+run_dir: .factory/<YYYY-MM-DD>-<slug>/
+request: change-review-request-NN.md
+skills: load from active project `.agents/skills/change-review-response/`
+return: write change-review-response-NN.md under run_dir
+constraint: change docs only; no apply; no product-code review
+```
 
 ## 3. Dispatch plan (required stop)
 
-After changes are created (or when the user asks to apply existing changes), **immediately** publish a **named-worker assignment**, write `_dispatch-plan.md`, update `_status.md`, and **stop**.
+After changes are created (or when the user asks to apply existing changes), **immediately** publish a **named-worker assignment**, write `_dispatch-plan.md`, update `_status.md`, and **stop**. Optional change-doc review does **not** block writing the plan.
 
 ### Assignment rules
 
@@ -215,10 +242,10 @@ After changes are created (or when the user asks to apply existing changes), **i
 - Optional skills named by user: <none | …>
 - Check workers: to be dispatched after apply (code-review; Spec = design.md / proposal.md)
 - run_dir: `.factory/<YYYY-MM-DD>-<slug>/`
-- Next: confirm all / confirm subset / reassign workers
+- Next: confirm all / confirm subset / reassign workers | (optional) change-doc review
 ```
 
-Then wait for the user to confirm all, run a subset, or reassign. **Reporting the plan is not permission to start.**
+Then wait for the user to confirm all, run a subset, or reassign. **Reporting the plan is not permission to start.** Skipping change-doc review is always allowed. If the user **opted in** and the latest response is not `ready to apply`, do not treat confirm as green-light until they resolve (amend / clarify) or explicitly override.
 
 ## 4. Apply (after confirm only)
 
@@ -306,8 +333,8 @@ Then **stop for human E2E**.
 
 | Gate | When | You do |
 | --- | --- | --- |
-| Changes review | After propose | Wait; user inspects change packages |
-| Dispatch confirm | After dispatch plan | Wait; no workers until confirm / subset / reassign |
+| Changes review | After propose | Wait; user inspects change packages. **Hint** optional change-doc review — never auto-required |
+| Dispatch confirm | After dispatch plan | Wait; no workers until confirm / subset / reassign. If change-review was opted in and response ≠ `ready to apply`, hold green-light until resolved |
 | Human E2E | After Check workers finish | Wait; user runs E2E |
 | Sync/archive | Before sync+archive | Wait for explicit approval; see §7 |
 
@@ -336,6 +363,7 @@ Keep user-facing status short; persist detail under `run_dir`:
 - run_dir: <.factory/… or (none — discuss only)>
 - Branch: <name> (sync/archive allowed: yes | no)
 - Workers: <summary>
+- Change-doc review: <(none / skipped) | awaiting response | ready to apply | needs doc fix | needs user clarify>
 - Blockers / decisions needed: <≤3 bullets or none>
 ```
 

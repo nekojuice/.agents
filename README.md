@@ -83,6 +83,7 @@ flowchart TD
 | `playwright-cli` | [Microsoft](https://github.com/microsoft/playwright-cli) | 瀏覽器命令列自動化；`impl-verify` 依賴項 |
 | `karpathy-guidelines` | [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) | 實作行為準則：先想清楚、簡化、外科手術式改動 |
 | `ponytail` | [DietrichGebert](https://github.com/DietrichGebert/ponytail) | 懶惰資深工程師模式：選最簡可行解 |
+| `i-have-adhd` | [ayghri](https://github.com/ayghri/i-have-adhd) | ADHD 友善輸出：先給下一步、步驟編號、跨回合重述狀態 |
 | `opsx-health-check` | 自製 | 主規格與程式落差的健康檢查，匯出比對報告 |
 | `code-to-docs` | 自製 | 依程式與主規格產出人類可讀文件 |
 | `thought-palette-extract` | 自製 | 收斂決策為可匯入圖像化工具的結構化資料 |

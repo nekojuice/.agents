@@ -5,7 +5,7 @@ description: >-
   skill — into a concise summary plus an organized breakdown of its elements
   and conditions. Use when the user wants something explained, dissected, or
   laid out as itemized elements, requirements, and boundary conditions.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Claude Code Opus 4.8
   version: "1.0"

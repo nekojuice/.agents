@@ -1,0 +1,7 @@
+interface:
+  display_name: "PM Investigation Worker"
+  short_description: "Investigate one assignment inside its run boundary"
+  default_prompt: "Use $pm-investigation-worker to investigate the assigned PM case within the supplied run directory."
+
+policy:
+  allow_implicit_invocation: false

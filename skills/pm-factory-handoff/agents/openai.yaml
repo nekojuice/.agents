@@ -1,0 +1,7 @@
+interface:
+  display_name: "PM Factory Handoff"
+  short_description: "Create an approved self-contained factory handoff"
+  default_prompt: "Use $pm-factory-handoff to prepare the approved case for a new factory session."
+
+policy:
+  allow_implicit_invocation: false

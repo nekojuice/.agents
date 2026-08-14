@@ -1,0 +1,7 @@
+interface:
+  display_name: "PM Status Review"
+  short_description: "Reconcile project progress from current evidence"
+  default_prompt: "Use $pm-status-review to reconcile this project's current status from available evidence."
+
+policy:
+  allow_implicit_invocation: false

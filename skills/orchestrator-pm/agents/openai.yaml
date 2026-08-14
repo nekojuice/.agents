@@ -1,0 +1,7 @@
+interface:
+  display_name: "Orchestrator PM"
+  short_description: "Manage project state, triage, and gated handoffs"
+  default_prompt: "Use $orchestrator-pm to review this project's status and recommend the next action."
+
+policy:
+  allow_implicit_invocation: false

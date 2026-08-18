@@ -1,5 +1,7 @@
 # Factory Handoff Contract
 
+These files are the cold-start intake for the factory's commanding agent: a fresh session that begins knowing only the project workspace and this factory run.
+
 ## Directory
 
 Create a unique `.factory/<YYYY-MM-DD>-<slug>/`. Use lowercase English letters, digits, and hyphens. Never overwrite an unrelated run.

@@ -23,7 +23,7 @@ Investigate one bounded PM assignment and return evidence to one file inside the
 
 Refuse or return `needs-input` unless the prompt supplies:
 
-- `run_dir`: one existing `.manager/<run>/`.
+- `run_dir`: one existing `.manager/_runs/<run>/`.
 - `assignment`: one bounded question.
 - `allowed_reads`: explicit paths or a narrow discovery scope.
 - `artifact`: one unique path below `run_dir/findings/`.

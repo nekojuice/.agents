@@ -4,7 +4,7 @@
 
 Create a manager run when work needs durable notes, multiple evidence sources, workers, or a later-session continuation. Do not create a run for a short read-only answer that leaves no durable project effect.
 
-1. Choose `.manager/<YYYY-MM-DD>-<slug>/`.
+1. Choose `.manager/_runs/<YYYY-MM-DD>-<slug>/`.
 2. Confirm the path is unique.
 3. Instantiate `_run.md`, `notes.md`, and `outcome.md` from the supplied assets.
 4. Create `findings/` before dispatching workers.

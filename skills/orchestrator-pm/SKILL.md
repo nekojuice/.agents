@@ -9,9 +9,9 @@ description: >-
   factory, and preserves human checkpoints between PM and factory sessions.
 disable-model-invocation: true
 metadata:
-  author: Codex GPT-5.6-Sol
-  version: "1.0"
-  last_updated: "2026-08-14T13:29:50"
+  author: Codex GPT-5.6-Sol, Claude Code Opus 4.8
+  version: "1.1"
+  last_updated: "2026-08-18T16:01:37"
 extends: pm-status-review, pm-intake-triage, pm-factory-handoff, pm-investigation-worker
 ---
 
@@ -49,10 +49,10 @@ Read these when their topic becomes active:
 
 1. Announce PM mode and the requested objective.
 2. Inspect `.manager/` read-only.
-3. If `.manager/` does not exist:
-   - Discuss project charter and control boundaries first.
-   - Initialize only after the user explicitly asks to initialize PM state.
-   - Instantiate the templates under `assets/` without copying placeholder guidance.
+3. If `.manager/` does not exist, determine whether the workspace already holds substantial project state (existing code, specifications, change history, or reference systems):
+   - **State exists**: a faithful charter and progress ledger require understanding the project first. Announce that an initial baseline crawl is warranted, note that it may dispatch several read-only workers across code and specification or change documents and can take a while, then ask for consent (and any scope limit) before running it. On consent, run the baseline crawl through `pm-status-review` (read-only) to produce the first `_status.md` and `_milestones.md`, then discuss the charter informed by that evidence.
+   - **Nothing to crawl** (new or empty workspace): discuss the project charter and control boundaries first; skip the baseline crawl.
+   - Initialize `.manager/` — including a `_runs/` directory and a `.manager/.gitignore` whose single line is `_runs/`, so canonical state is workspace-tracked while runs stay local — and instantiate the templates under `assets/` without copying placeholder guidance. Consent to the baseline crawl authorizes this initialization; otherwise initialize only after the user explicitly asks. Charter direction still requires explicit human confirmation — the crawl informs it, it does not finalize it.
 4. If resuming a named run, read its `_run.md` and only the artifacts it points to.
 5. If no run is named, do not guess among multiple active runs. Use manager root state to answer simple questions or ask which run to resume when the choice changes the outcome.
 
@@ -62,9 +62,10 @@ Read these when their topic becomes active:
 | --- | --- |
 | Discuss project direction or an early idea | Discuss in PM mode; create a run only when durable investigation or notes are needed |
 | Ask where the project stands, what is missing, or whether a milestone is complete | Load and follow `pm-status-review` |
+| Ask to see or update milestone or feature-development progress | Maintain `_milestones.md`; reconcile it through `pm-status-review` |
 | Submit questions, bugs, issues, feedback, or multiple TODO directions | Load and follow `pm-intake-triage` |
 | Ask for substantial evidence gathering | Dispatch one or more `pm-investigation-worker` workers |
-| Explicitly approve or say to establish a factory candidate | Load and follow `pm-factory-handoff` |
+| Hand off / delegate / establish a candidate to the factory (交接/派工/委派, or equivalent wording) | Load and follow `pm-factory-handoff` |
 | Ask to implement, apply, or execute product changes | Explain the PM/factory checkpoint and prepare or identify the approved factory handoff; do not implement |
 
 ## Coordinate investigations
@@ -73,7 +74,7 @@ Use workers when the reading or comparison is substantial enough to pollute the 
 
 For each worker prompt, provide:
 
-- `run_dir`: one existing `.manager/<YYYY-MM-DD>-<slug>/` directory.
+- `run_dir`: one existing `.manager/_runs/<YYYY-MM-DD>-<slug>/` directory.
 - `assignment`: one bounded question or evidence target.
 - `allowed_reads`: explicit paths or a narrowly described discovery scope.
 - `artifact`: one unique file below `run_dir/findings/`.
@@ -83,9 +84,10 @@ After workers return, the PM session must compare and synthesize their evidence.
 
 ## Maintain durable state
 
-- Treat `_charter.md`, `_status.md`, `_backlog.md`, and `_library/**` as canonical manager state.
-- Treat `.manager/<run>/**` as working memory and evidence, not canonical project truth.
+- Treat `_charter.md`, `_status.md`, `_milestones.md`, `_backlog.md`, and `_library/**` as canonical manager state.
+- Treat `.manager/_runs/<run>/**` as working memory and evidence, not canonical project truth.
 - Update `_status.md` only during an explicit status reconciliation or when the user explicitly asks to update project status.
+- Maintain `_milestones.md` as the durable milestone and feature-progress ledger; update it only during status reconciliation, and change a status only on evidence.
 - Promote confirmed run outcomes into the backlog or library as appropriate.
 - Keep historical acceptance intact. Record newly discovered regressions as linked cases rather than silently rewriting history.
 - Prefer named outcomes and evidence-backed stages over percentage-complete estimates.
@@ -109,6 +111,7 @@ PM_STATUS_V1
 mode: discuss | status-review | triage | investigation | handoff
 run_dir: <path or none>
 project_state: <short>
+milestone_progress: <short, or none>
 active_cases: <count and short summary>
 factory_candidates: <count and short summary>
 decisions_needed: <up to three or none>

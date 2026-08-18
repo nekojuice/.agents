@@ -55,3 +55,18 @@ Treat milestones as outcome groups, not task containers. Track:
 - Human acceptance, when supplied.
 
 Do not infer percentage completion when the set of undiscovered work may still change.
+
+## Progress ledger
+
+Maintain milestones and feature progress in canonical `_milestones.md`, carrying three layers: the milestone ledger, a feature-progress matrix across delivery axes, and an in-progress layer for work items not yet complete.
+
+Ledger display statuses project the work-item stages above; they are not a second vocabulary:
+
+| Glyph | Meaning | Stage source |
+| --- | --- | --- |
+| ✅ | done | `completed-pm` or `completed-human` |
+| 🟡 | in progress | `investigating`, `approved-for-factory`, `handed-off`, `in-delivery`, or `verifying` |
+| ⬜ | not started | `inbox` or `candidate` |
+| ⚠️ | transitional | any stage, flagged as a usable stand-in pending the proper solution |
+
+Change a ledger status only on evidence, during status reconciliation. Prefer these evidence-backed states over invented completion percentages.

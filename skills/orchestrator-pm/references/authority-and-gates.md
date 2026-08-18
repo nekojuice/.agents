@@ -34,7 +34,7 @@ Require explicit user authorization before creating `.manager/` in a new workspa
 
 ### Factory establishment
 
-Require an explicit instruction such as "establish this case", "open the factory handoff", or an equivalent unambiguous approval. A recommendation is not approval.
+Require an explicit instruction to hand off / delegate / establish a candidate to the factory — e.g. "establish this case", "open the factory handoff", 交接 / 派工 / 委派 給 factory / 實作者, or any unambiguous equivalent. A recommendation is not approval. Before creating the factory run, confirm a short delegation summary (candidate, scope, proposed title) with the human, unless they explicitly asked to create without confirming.
 
 ### Product mutation during investigation
 

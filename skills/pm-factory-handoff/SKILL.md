@@ -17,13 +17,13 @@ extends: orchestrator-pm
 
 # PM Factory Handoff
 
-Create a clean implementation intake for a future factory session. PM authority is upstream of factory, but the two workspaces remain operationally isolated.
+Create a clean, self-contained cold-start intake that the factory's commanding agent reads to begin a fresh factory session. Every file written here is that cold-start handoff package, not PM working memory. PM authority is upstream of factory, but the two workspaces remain operationally isolated.
 
 ## Preconditions
 
 Require all of the following:
 
-- An explicit human instruction to establish one identified candidate.
+- An explicit human instruction to hand off / delegate / establish one identified candidate to the factory (implementer). Equivalent wording counts — 交接 / 派工 / 委派 給 工廠 / factory / 實作者, or any unambiguous equivalent.
 - A current manager run with a documented candidate outcome.
 - Enough confirmed scope to explain why the factory session should begin.
 - No unresolved contradiction that would make the handoff misleading.
@@ -48,13 +48,14 @@ A PM recommendation, candidate label, or tentative discussion is not approval.
 ## Workflow
 
 1. Verify and quote the human approval in the manager run outcome.
-2. Resolve a unique `.factory/<YYYY-MM-DD>-<slug>/` path.
-3. Distill the candidate into confirmed goal, context, scope, exclusions, constraints, evidence, open questions, and expected human checkpoints.
-4. Instantiate `_intake.md`, `_status.md`, and `_memory.md` from this skill's assets.
-5. Remove manager paths, PM-origin metadata, and PM-only terminology from every factory-facing file.
-6. Validate that the handoff is useful in a fresh session with no PM chat history.
-7. Record the factory run path in the current manager run's `outcome.md`. Do not update canonical project status unless the human separately requested a reconciliation.
-8. Tell the human that the handoff is ready for a new factory session, then stop.
+2. Present a short delegation summary — candidate, goal, scope boundary, and the proposed factory run title/slug — and get the human's confirmation before creating any factory files. Skip this confirmation only when the human explicitly directed immediate creation without confirming (e.g. "直接建立、不確認" / "create directly, no confirm").
+3. Resolve a unique `.factory/<YYYY-MM-DD>-<slug>/` path.
+4. Distill the candidate into confirmed goal, context, scope, exclusions, constraints, evidence, open questions, and expected human checkpoints.
+5. Instantiate `_intake.md`, `_status.md`, and `_memory.md` from this skill's assets — this is the cold-start package the factory's commanding agent reads to begin a fresh session.
+6. Remove manager paths, PM-origin metadata, and PM-only terminology from every factory-facing file.
+7. Validate that the handoff is useful in a fresh session with no PM chat history.
+8. Record the factory run path in the current manager run's `outcome.md`. Do not update canonical project status unless the human separately requested a reconciliation.
+9. Report the factory run path to the human and state the handoff is ready for a new factory session, then stop.
 
 ## Output
 

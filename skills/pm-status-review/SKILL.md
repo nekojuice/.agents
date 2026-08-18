@@ -9,9 +9,9 @@ description: >-
   starts factory work.
 disable-model-invocation: true
 metadata:
-  author: Codex GPT-5.6-Sol
-  version: "1.0"
-  last_updated: "2026-08-14T13:29:50"
+  author: Codex GPT-5.6-Sol, Claude Code Opus 4.8
+  version: "1.1"
+  last_updated: "2026-08-18T16:01:37"
 extends: orchestrator-pm, pm-investigation-worker
 ---
 
@@ -36,7 +36,7 @@ Reconcile the durable PM projection with current evidence. Treat this as a pull-
 
 ## Workflow
 
-1. Read `.manager/_charter.md`, `_status.md`, `_backlog.md`, and `_library/index.md`.
+1. Read `.manager/_charter.md`, `_status.md`, `_milestones.md`, `_backlog.md`, and `_library/index.md`.
 2. Read workspace instructions and discover the actual repositories, specification areas, factory runs, and verification artifacts. Do not assume a fixed project layout.
 3. Define the review scope: whole project, milestone, capability, case, or linked factory run.
 4. Compare desired outcomes with observed evidence.
@@ -44,7 +44,7 @@ Reconcile the durable PM projection with current evidence. Treat this as a pull-
 6. Classify each reviewed item as unchanged, progressed, regressed, ambiguous, `completed-pm`, or explicitly `completed-human`.
 7. Write a durable review artifact under the manager run when the review is non-trivial.
 8. Present proposed status changes, confidence, evidence pointers, and human decisions needed.
-9. Update canonical status only when the user asked for the update or confirms the proposed reconciliation.
+9. Update canonical status only when the user asked for the update or confirms the proposed reconciliation. Update `_milestones.md` in the same reconciliation, changing a status only on evidence.
 
 ## Output
 

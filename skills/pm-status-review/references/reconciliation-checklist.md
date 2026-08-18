@@ -5,6 +5,7 @@ Use only sources that exist in the current workspace. Discover conventions from 
 ## Desired state
 
 - Project charter and accepted decisions.
+- Milestone and feature-progress ledger (`_milestones.md`).
 - Current milestone outcome and known exclusions.
 - Active case outcomes and expected behavior.
 - Accepted specifications or other authoritative project documents.

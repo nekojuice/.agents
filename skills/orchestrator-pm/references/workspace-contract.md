@@ -4,21 +4,26 @@
 
 ```text
 .manager/
+|- .gitignore
 |- _charter.md
 |- _status.md
+|- _milestones.md
 |- _backlog.md
 |- _library/
 |  |- index.md
 |  |- facts/
 |  `- decisions/
-`- <YYYY-MM-DD>-<slug>/
-   |- _run.md
-   |- notes.md
-   |- findings/
-   `- outcome.md
+`- _runs/
+   `- <YYYY-MM-DD>-<slug>/
+      |- _run.md
+      |- notes.md
+      |- findings/
+      `- outcome.md
 ```
 
 Use lowercase English letters, digits, and hyphens in run slugs. Keep each full run path unique. Reuse an existing run only when the user is explicitly resuming the same topic.
+
+Canonical files (`_charter`, `_status`, `_milestones`, `_backlog`, `_library/**`) are meant to be tracked by the workspace repository. Runs are working memory: keep them under `_runs/`, which is git-ignored through `.manager/.gitignore` (a single line, `_runs/`). This requires no parent directory to ignore `.manager/` itself; a nested ignore cannot re-include an already-ignored parent.
 
 ## Canonical files
 
@@ -29,6 +34,10 @@ Store durable project purpose, target state, constraints, exclusions, PM authori
 ### `_status.md`
 
 Store the current project projection: current milestone, active cases, known gaps, decisions needed, linked factory runs, and recently accepted outcomes. Update it only through an explicit status reconciliation or direct human request.
+
+### `_milestones.md`
+
+Store the durable milestone and feature-progress ledger: the milestone ledger, a feature-progress matrix across delivery axes, and an in-progress layer for work items not yet complete. It is the persistent progress map, distinct from `_status.md`'s point-in-time snapshot. Update it only during status reconciliation, and change a status only on evidence.
 
 ### `_backlog.md`
 

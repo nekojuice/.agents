@@ -7,7 +7,7 @@ description: >-
   must be answered, investigated, grouped by root cause, deferred, rejected, or
   proposed as factory candidates without automatically establishing factory
   work.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Codex GPT-5.6-Sol
   version: "1.0"

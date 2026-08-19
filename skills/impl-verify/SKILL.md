@@ -6,7 +6,7 @@ description: >-
   review and optional light playwright-cli UI peek. Use when the user runs
   /impl-verify, asks to verify a change against requirements, or wants an
   implementation check / 實作檢查 / 驗收檢查. Not a security or optimization review.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5
   version: "1.0"

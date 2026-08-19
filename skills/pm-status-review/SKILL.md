@@ -7,7 +7,7 @@ description: >-
   remain, or to refresh .manager/_status.md after factory or human work. It may
   coordinate read-only investigation workers but never edits product code or
   starts factory work.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Codex GPT-5.6-Sol, Claude Code Opus 4.8
   version: "1.1"

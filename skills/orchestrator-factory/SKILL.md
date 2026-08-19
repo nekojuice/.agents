@@ -6,7 +6,7 @@ description: >-
   Dispatches named workers with human gates and a .factory/ run workspace; does
   not auto-start. Use only when the user runs /orchestrator-factory or explicitly
   enables 工廠模式 / orchestrator-factory.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5
   version: "1.5"

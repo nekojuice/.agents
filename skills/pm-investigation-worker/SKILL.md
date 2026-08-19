@@ -7,7 +7,7 @@ description: >-
   artifact. Investigate questions, suspected bugs, implementation coverage,
   legacy behavior, or project gaps without editing manager root state, product
   files, specifications, or .factory.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Codex GPT-5.6-Sol
   version: "1.0"

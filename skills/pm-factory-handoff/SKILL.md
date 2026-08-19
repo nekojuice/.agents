@@ -7,7 +7,7 @@ description: >-
   value, exclude .manager dependencies and scratch notes, record the handoff in
   the manager run, and stop without loading orchestrator-factory or starting
   any factory worker.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Codex GPT-5.6-Sol
   version: "1.0"

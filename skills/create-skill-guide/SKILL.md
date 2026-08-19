@@ -6,7 +6,7 @@ description: >-
   last_updated, and optional extends. Use only when the user runs
   /create-skill-guide or explicitly asks to apply skill header / frontmatter
   conventions when creating or editing a SKILL.md.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5
   version: "1.0"

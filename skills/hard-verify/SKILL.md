@@ -6,7 +6,7 @@ description: >-
   by default: report only, never auto-fix. Use when the user runs /hard-verify,
   asks for hard checks / 硬檢查 / gate check / build+test+lint, or wants
   post-implementation automated verification without requirement-boundary review.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5
   version: "1.0"

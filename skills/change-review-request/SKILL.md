@@ -6,7 +6,7 @@ description: >-
   judge whether the change package matches settled requirements before apply.
   Use when the user invokes change-review-request (or asks to author that
   review brief).
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5
   version: "1.0"

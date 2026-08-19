@@ -6,7 +6,7 @@ description: >-
   matching change-review-response-NN.md with checklist judgments and a next
   action. Use when the user invokes change-review-response (or asks to answer
   that review brief).
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5
   version: "1.0"

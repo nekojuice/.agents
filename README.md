@@ -112,6 +112,7 @@ flowchart TD
 | --- | --- | --- | --- |
 | `orchestrator-reverse-spec` | 自製 | 否 | 反寫既有專案為 OpenSpec 主規格的特規指揮者 |
 | `explain` | 自製 | 是 | 解釋目標，將目標拆為摘要與元素清單 |
+| `decision-support` | 自製 | 是 | 把糾纏的決策因式分解成獨立節點，逐節點權衡與推薦，不綁整包 |
 | `peer-agent-coordination` | 自製 | 是 | 多 agent 共用工作空間時的分身協調協定 |
 | `openspec-explore` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 探索模式：釐清想法，尚未開立 change |
 | `impl-verify` | 自製 | 是 | 需求邊界檢查；可獨立使用，非工廠主路徑 |

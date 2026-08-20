@@ -8,8 +8,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Claude Code Opus 4.8
-  version: "1.3"
-  last_updated: "2026-08-20T13:53:01"
+  version: "1.4"
+  last_updated: "2026-08-20T15:20:00"
 ---
 
 # peer-agent-coordination
@@ -147,6 +147,42 @@ back to the original. A transport retry writes nothing new to the file, so the
 
 ---
 
+## 5.1 Transport binding — host session tools
+
+§5 is transport-agnostic; this section binds it to the host's live session
+tools. The **file inbox is a dead drop**: appending to `_inbox.md` stores a
+message but wakes no one. Writing an artifact and then waiting is the most common
+failure — the recipient never learns there is anything to read. To actually
+deliver, use the live transport.
+
+| Purpose | Tool | Note |
+| --- | --- | --- |
+| Wake a peer / deliver | `mcp__host__send_message` | Starts a new turn in the target session. This is the doorbell. |
+| Discover peers, resolve a session | `mcp__host__list_sessions` | Map a roster `canonical_id` to a live session URI to send to. |
+| Read what a peer is doing | `mcp__host__get_session_context` | Gather context before, or instead of, asking. |
+| Spawn a new peer session | `mcp__host__create_session` | When a run needs an additional peer. |
+
+Rules:
+
+- **Never write-and-wait.** After you append a message that expects a reply
+  (`question`), or write an artifact a peer is blocked on, you MUST call
+  `mcp__host__send_message` to that one recipient to wake it. Writing the file
+  alone is not delivery (§5).
+- **File is the record; the tool is the bell.** Durable content stays in
+  `_inbox.md` or the named artifact; the `send_message` body is a short pointer
+  (the message `id` and the artifact path), not a copy of the payload.
+- **Resolve the recipient** by matching the roster `canonical_id` to a live
+  session via `mcp__host__list_sessions`, then send to that one session — 1:1
+  only (§3). Do not broadcast.
+- **Fallback when host tools are absent.** The file inbox becomes the only
+  channel: append the message, then arrange an out-of-band poke (a paste-ready
+  command or a human relay) and state plainly that delivery is pending. Do not
+  wait silently as if delivered.
+- A live send is still **not proof of processing** (§5): only a returned `ack`
+  or `answer` referencing your `id` confirms it.
+
+---
+
 ## 6. Operational rules
 
 **Authority and trust**
@@ -172,6 +208,9 @@ back to the original. A transport retry writes nothing new to the file, so the
 - `to` MUST resolve to exactly one peer; broadcast is not supported (**1:1 only**).
 - `ack` and `fyi` are **terminal** — MUST NOT be replied to. Only `question`
   obliges a reply.
+- After appending a message that expects a reply, or an artifact a peer is
+  blocked on, **wake the recipient via the transport binding (§5.1)** — do not
+  write-and-wait.
 - A cross-run message is written into the **destination run's inbox**, addressed
   with `to`.
 - The roster is static (identity, role); the inbox is dynamic (activity). Do not

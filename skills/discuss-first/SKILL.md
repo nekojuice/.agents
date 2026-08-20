@@ -1,10 +1,11 @@
 ---
 name: discuss-first
 description: Opening move for a task. Puts the agent into the orchestrator / lead-discussion role and locks a discuss-only default — align on requirements with the user, organize what is settled versus still-open, and change nothing until an explicit command releases the lock. Detects whether the project uses opsx to decide how a converged discussion is handed onward. Use at the very start of a new task, before any change is opened or any code is written.
+disable-model-invocation: false
 metadata:
-  author: Claude Opus 4.8
-  version: "1.0"
-  last_updated: "2026-07-20T00:00:00"
+  author: Claude Opus 4.8, Codex GPT-5
+  version: "1.1"
+  last_updated: "2026-08-20T14:36:57"
 ---
 
 # discuss-first

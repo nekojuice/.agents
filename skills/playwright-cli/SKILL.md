@@ -1,7 +1,12 @@
 ---
 name: playwright-cli
 description: Automate browser interactions, test web pages and work with Playwright tests.
+disable-model-invocation: false
 allowed-tools: Bash(playwright-cli:*) Bash(npx:*) Bash(npm:*)
+metadata:
+  author: Codex GPT-5
+  version: "1.0"
+  last_updated: "2026-08-20T14:36:57"
 ---
 
 # Browser Automation with playwright-cli

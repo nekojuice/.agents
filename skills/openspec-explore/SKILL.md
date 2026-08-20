@@ -1,11 +1,13 @@
 ---
 name: openspec-explore
 description: Enter explore mode - a thinking partner for exploring ideas, investigating problems, and clarifying requirements. Use when the user wants to think through something before or during a change.
+disable-model-invocation: false
 license: MIT
 compatibility: Requires openspec CLI.
 metadata:
-  author: openspec
-  version: "1.0"
+  author: openspec, Codex GPT-5
+  version: "1.1"
+  last_updated: "2026-08-20T14:36:57"
   generatedBy: "1.5.0"
 ---
 

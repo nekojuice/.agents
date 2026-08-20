@@ -1,7 +1,12 @@
 ---
 name: ponytail
 description: Ponytail, lazy senior dev mode. Always pick the simplest solution that works.
+disable-model-invocation: false
 alwaysApply: false
+metadata:
+  author: Codex GPT-5
+  version: "1.0"
+  last_updated: "2026-08-20T14:36:57"
 ---
 
 # Ponytail, lazy senior dev mode

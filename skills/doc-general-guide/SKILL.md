@@ -1,9 +1,11 @@
 ---
 name: doc-general-guide
 description: Writing or revising operational docs for human readers—operation manuals, SOPs / cheat-sheets, runbooks (how to operate / deploy / set up / recover). Enforces a command-and-action style: name-first headings, no clutter parentheses, verified against real files, project understood shallow-to-deep with openspec consulted. Standalone—does not require doc-sop-guide. Use when creating or revising any "how to operate / use this project" document for engineers.
+disable-model-invocation: false
 metadata:
-  author: Opus 4.8
-  version: "1.0"
+  author: Opus 4.8, Codex GPT-5
+  version: "1.1"
+  last_updated: "2026-08-20T14:36:57"
 ---
 
 # General Doc Authoring Guide

@@ -1,11 +1,13 @@
 ---
 name: openspec-archive-change
 description: Archive a completed change in the experimental workflow. Use when the user wants to finalize and archive a change after implementation is complete.
+disable-model-invocation: false
 license: MIT
 compatibility: Requires openspec CLI.
 metadata:
-  author: openspec
-  version: "1.0"
+  author: openspec, Codex GPT-5
+  version: "1.1"
+  last_updated: "2026-08-20T14:36:57"
   generatedBy: "1.5.0"
 ---
 

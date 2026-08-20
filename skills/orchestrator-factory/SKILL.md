@@ -3,21 +3,32 @@ name: orchestrator-factory
 description: >-
   Factory-mode orchestrator for the full opsx agent workflow (discuss → propose →
   apply → verify → human E2E → sync/archive → commit suggestion → change-log).
-  Dispatches named workers with human gates and a .factory/ run workspace; does
-  not auto-start. Use only when the user runs /orchestrator-factory or explicitly
-  enables 工廠模式 / orchestrator-factory.
+  Dispatches named workers with human gates and a .factory/ run workspace. Use
+  when the user requests 工廠模式 / factory mode or equivalent wording, or when
+  a fresh session is assigned an existing .factory run whose status is
+  await-factory-session. Non-project implementation work may use a tailored
+  factory route without forcing opsx.
 disable-model-invocation: false
 metadata:
-  author: Cursor Grok 4.5
-  version: "1.5"
-  last_updated: "2026-07-27T17:44:43"
+  author: Cursor Grok 4.5, Codex GPT-5
+  version: "1.6"
+  last_updated: "2026-08-20T15:05:36"
 ---
 
 # orchestrator-factory
 
 Enables **factory mode**: you are the **plant manager** (orchestrator). You schedule stages, propose named-worker assignments, enforce human gates, own the `.factory/` run workspace, aggregate reports, and stop for the user. You drive the project's factory skills; you do **not** bury yourself in implementation body work when workers are available.
 
-This skill runs **only** on explicit `/orchestrator-factory` (or equivalent explicit enable). It does **not** auto-invoke.
+## Activation
+
+Enter factory mode through either route:
+
+1. **User intent** — the user runs `/orchestrator-factory`, says 工廠模式 / factory mode, asks to hand work to the factory, or uses unambiguous equivalent wording.
+2. **Cold-start handoff** — a fresh session is assigned a specific existing `.factory/<run>/` and its `_status.md` says `Stage: await-factory-session` and `Factory started: no`.
+
+For a cold-start handoff, announce factory mode, reuse that run, and read `_status.md`, `_intake.md`, and `_memory.md` before choosing a stage. Do not require the user to repeat an enable command. Skill activation does **not** authorize dispatch, apply, E2E acceptance, sync, or archive; every existing human gate still applies.
+
+Do **not** activate merely because `.factory/` exists, because an old/completed run is present, because factory or PM is mentioned in explanation, or because the user makes an ordinary implementation request without factory intent or a named cold-start handoff.
 
 ## Hard rules
 
@@ -31,6 +42,7 @@ This skill runs **only** on explicit `/orchestrator-factory` (or equivalent expl
 8. **Model** — Multitask / subagent workers **default to the same model as the orchestrator**. Changing model requires asking the user and getting approval.
 9. **Harness** — prefer Cursor Multitask / parallel subagents. If the environment cannot isolate workers, **degrade**: produce paste-ready per-worker commands and wait; do not pretend isolation existed.
 10. **No invention** — workers must not invent requirements. Prefer change docs; if still insufficient → `needs_input` (stop-for-human) or a disclosed local `assumptions_made` entry that remains reversible. Never fabricate APIs, fields, or behaviors.
+11. **Workflow fits the work** — use the opsx path for durable project implementation. For work that is not project implementation, do not force OpenSpec artifacts or opsx stages; select a smaller factory route with explicit deliverables, worker boundaries, verification, and human gates.
 
 ## Role
 
@@ -46,7 +58,16 @@ This skill runs **only** on explicit `/orchestrator-factory` (or equivalent expl
 
 Depth: orchestrator → apply / check workers. **Do not** nest verify inside apply.
 
-## Factory stages (full workflow)
+## Workflow selection
+
+Choose the route before creating new artifacts or dispatching workers:
+
+- **Project implementation** — durable changes to product behavior, source code, project configuration, data/schema, or a feature/fix intended to become part of the project. Use the full opsx workflow below unless the user explicitly sets another approved process.
+- **Non-project implementation** — research, analysis, inventory, planning, documentation-only work, audits, or another deliverable that does not implement a durable project change. Do not require an OpenSpec change package. Build a task-specific route using only relevant skills and workers.
+
+A non-project route must still state its deliverable, allowed writes, named-worker assignments when dispatching, verification method, and required human checkpoints. Reuse the factory run controls where useful, but do not invent empty propose/apply/sync/archive stages merely to resemble opsx. If the classification is ambiguous and changes the workflow materially, discuss read-only and ask the user.
+
+## Factory stages (opsx project implementation workflow)
 
 | Stage | Skills to load / follow | Notes |
 | --- | --- | --- |
@@ -180,12 +201,14 @@ Every worker prompt includes `run_dir: .factory/<…>/` and must read `_memory.m
 
 ## 1. Enter factory mode
 
-On `/orchestrator-factory`:
+On either activation route:
 
 1. State that factory mode is on.
-2. Parse the user command for: start stage, stop stage, change names / series, optional skills, model preferences, existing `run_dir` if resuming.
-3. If stage/scope is missing or ambiguous → **discuss read-only**; say so; do not create `.factory/`, do not propose or apply until the user directs.
-4. If resuming: read `_status.md` / `_dispatch-plan.md` / latest results under the named run before acting.
+2. Determine whether this is explicit user intent, a cold-start handoff, or a resume; identify the exact `run_dir` when supplied.
+3. Read the named run's `_status.md` and relevant intake, memory, dispatch, or latest result files before acting. A cold-start handoff reads `_intake.md` and `_memory.md` first.
+4. Classify the work as project implementation or non-project implementation and select the matching route.
+5. Parse the request for start/stop stage or deliverable, scope, optional skills, model preferences, and verification needs.
+6. If stage, deliverable, scope, or workflow classification is missing or ambiguous → **discuss read-only**; say so; do not create another run, propose, apply, or dispatch until resolved.
 
 ## 2. Propose
 

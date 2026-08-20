@@ -1,9 +1,11 @@
 ---
 name: doc-user-guide
 description: Writing or revising an end-user operation manual for an application's UI (web/desktop forms, statuses, roles) — for the people who use the software (clerks, supervisors), not engineers. Extends doc-general-guide for wording and style. Enforces chapter=system / section=function structure, ToC preview confirmation before writing, one-action steps, form-field and enum tables, on-screen-only wording (no code/object names), commented screenshot placeholders with a fixed image layout, and genuine (non-trivial) troubleshooting. Use when creating or revising any application user manual.
+disable-model-invocation: false
 metadata:
-  author: Opus 4.8
-  version: "1.0"
+  author: Opus 4.8, Codex GPT-5
+  version: "1.1"
+  last_updated: "2026-08-20T14:36:57"
 ---
 
 # User Operation Manual Authoring Guide

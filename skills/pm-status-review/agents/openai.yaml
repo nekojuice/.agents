@@ -4,4 +4,4 @@ interface:
   default_prompt: "Use $pm-status-review to reconcile this project's current status from available evidence."
 
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true

@@ -1,10 +1,11 @@
 ---
 name: change-log
 description: Generates a user-facing change log in Traditional Chinese from recent work. Use after finishing an opsx change, when the user asks for a change log / release notes / update summary, or wants to summarize what changed for end users.
+disable-model-invocation: false
 metadata:
-  author: Opus 4.8
-  version: "1.0"
-  last_updated: "2026-07-07T00:00:00"
+  author: Opus 4.8, Codex GPT-5
+  version: "1.1"
+  last_updated: "2026-08-20T14:36:57"
 ---
 
 # Change Log

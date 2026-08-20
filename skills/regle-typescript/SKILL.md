@@ -1,11 +1,13 @@
 ---
 name: regle-typescript
 description: TypeScript integration for Regle — type-safe validated output (`InferSafeOutput`, `$validate`), inferring state from rules (`InferInput`), typing computed rules (`inferRules`, `RegleComputedRules`), and typing component props (`InferRegleRoot`, `RegleRoot`, `RegleFieldStatus`, `SuperCompatibleRegleRoot`). Use when typing rules schemas, passing `r$` between components, or extracting validated data types.
+disable-model-invocation: false
 license: MIT
 compatibility: Requires Vue 3.3+ and TypeScript 5.1+. Works with any agent supporting the Agent Skills spec.
 metadata:
-  author: Victor Garcia
-  version: "1.27.0"
+  author: Victor Garcia, Codex GPT-5
+  version: "1.28.0"
+  last_updated: "2026-08-20T14:36:57"
   source: https://reglejs.dev
 ---
 

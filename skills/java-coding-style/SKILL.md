@@ -1,9 +1,11 @@
 ---
 name: java-coding-style
 description: UITC Java 小組後端編碼規範。當你要為與 UITC（com.uitc.*）合作對象撰寫、審查或重構 Java 後端程式（Controller/Service/Dao/Entity/DTO、Spring Boot、JPA、安全、稽核 log）時使用，確保新專案（Java 25 + Spring Boot 4）對齊命名、分層與技術慣例。功能模組沿用 ifrs16web 代號（AM/AP/CM/MM/PM + 四位數）僅命名 Controller。
+disable-model-invocation: false
 metadata:
-  author: IFRS16 team
-  version: "2.0"
+  author: IFRS16 team, Codex GPT-5
+  version: "2.1"
+  last_updated: "2026-08-20T14:36:57"
   targetStack: "Java 25 (LTS) + Spring Boot 4.0.6"
   basedOn: "ifrs16web 重構 + demo2 登入 API 實作驗證（2026-05）"
 ---

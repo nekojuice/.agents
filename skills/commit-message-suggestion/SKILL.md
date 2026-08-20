@@ -5,10 +5,11 @@ description: >-
   short single-line form or a subject-plus-bullet body for large opsx batches.
   Use after opsx:archive, when the user asks for a commit message, or before
   committing OpenSpec implementation work.
+disable-model-invocation: false
 metadata:
-  author: Composer 2.5 Fast, Cursor Grok 4.5
-  version: "1.1"
-  last_updated: "2026-07-16T15:51:00"
+  author: Composer 2.5 Fast, Cursor Grok 4.5, Codex GPT-5
+  version: "1.2"
+  last_updated: "2026-08-20T14:36:57"
 ---
 
 # Commit Message Suggestion

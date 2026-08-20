@@ -1,9 +1,12 @@
 ---
 name: vue-testing-best-practices
-version: 1.0.0
-license: MIT
-author: github.com/vuejs-ai
 description: Use for Vue.js testing. Covers Vitest, Vue Test Utils, component testing, mocking, testing patterns, and Playwright for E2E testing.
+disable-model-invocation: false
+license: MIT
+metadata:
+  author: github.com/vuejs-ai, Codex GPT-5
+  version: "1.1.0"
+  last_updated: "2026-08-20T14:36:57"
 ---
 
 Vue.js testing best practices, patterns, and common gotchas.

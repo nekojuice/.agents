@@ -4,10 +4,11 @@ description: >-
   Test-first red→green loop in vertical slices at confirmed seams. Use when
   implementing or fixing with unit tests before production code, or when another
   skill needs test-first discipline.
+disable-model-invocation: false
 metadata:
-  author: Opus 4.8, Cursor Grok 4.5
-  version: "1.1"
-  last_updated: "2026-07-24T13:44:23"
+  author: Opus 4.8, Cursor Grok 4.5, Codex GPT-5
+  version: "1.2"
+  last_updated: "2026-08-20T14:36:57"
 ---
 
 # Test-First

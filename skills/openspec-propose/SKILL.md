@@ -1,11 +1,13 @@
 ---
 name: openspec-propose
 description: Propose a new change with all artifacts generated in one step. Use when the user wants to quickly describe what they want to build and get a complete proposal with design, specs, and tasks ready for implementation.
+disable-model-invocation: false
 license: MIT
 compatibility: Requires openspec CLI.
 metadata:
-  author: openspec
-  version: "1.0"
+  author: openspec, Codex GPT-5
+  version: "1.1"
+  last_updated: "2026-08-20T14:36:57"
   generatedBy: "1.5.0"
 ---
 

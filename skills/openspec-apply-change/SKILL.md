@@ -1,11 +1,13 @@
 ---
 name: openspec-apply-change
 description: Implement tasks from an OpenSpec change. Use when the user wants to start implementing, continue implementation, or work through tasks.
+disable-model-invocation: false
 license: MIT
 compatibility: Requires openspec CLI.
 metadata:
-  author: openspec
-  version: "1.0"
+  author: openspec, Codex GPT-5
+  version: "1.1"
+  last_updated: "2026-08-20T14:36:57"
   generatedBy: "1.5.0"
 ---
 

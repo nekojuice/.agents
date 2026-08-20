@@ -1,6 +1,11 @@
 ---
 name: codebase-design
 description: Shared vocabulary for designing deep modules. Use when the user wants to design or improve a module's interface, find deepening opportunities, decide where a seam goes, make code more testable or AI-navigable, or when another skill needs the deep-module vocabulary.
+disable-model-invocation: false
+metadata:
+  author: Codex GPT-5
+  version: "1.0"
+  last_updated: "2026-08-20T14:36:57"
 ---
 
 # Codebase Design

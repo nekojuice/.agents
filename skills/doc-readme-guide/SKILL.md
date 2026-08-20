@@ -1,9 +1,11 @@
 ---
 name: doc-readme-guide
 description: Writing or revising a README.md for private / small-team repos (private GitLab, private GitHub). README-specialized extension of doc-general-guide. Enforces a fixed block order (title, doc nav, ToC, about, tech stack, getting started, structure, logic, key params), keeps it short and readable, owns the architecture/why that operational docs push here, and omits open-source community blocks. Reader-first plain language with no invented terms and single-language consistency. Language-and-framework agnostic. Use when creating or revising any README.md.
+disable-model-invocation: false
 metadata:
-  author: Opus 4.8
-  version: "1.0"
+  author: Opus 4.8, Codex GPT-5
+  version: "1.1"
+  last_updated: "2026-08-20T14:36:57"
 ---
 
 # README Authoring Guide

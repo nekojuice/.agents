@@ -4,4 +4,4 @@ interface:
   default_prompt: "Use $pm-intake-triage to classify and consolidate these incoming reports."
 
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true

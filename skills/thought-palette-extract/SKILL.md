@@ -1,6 +1,11 @@
 ---
 name: thought-palette-extract
 description: Analyze a project (or article / plan) and distill its design into scored, categorized elements, then emit an import-ready JSON for the Thought Palette (once-espejo) tool. Use when the user wants to extract a project's core value, architectural health, or any other dimension into a quantifiable overview of libraries (storage), palettes, categories (cat), and scored elements (ele).
+disable-model-invocation: false
+metadata:
+  author: Codex GPT-5
+  version: "1.0"
+  last_updated: "2026-08-20T14:36:57"
 ---
 
 # Thought Palette Extract

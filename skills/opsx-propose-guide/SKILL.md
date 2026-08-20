@@ -1,9 +1,11 @@
 ---
 name: opsx-propose-guide
 description: Authoring discipline for the commanding agent who runs the opsx (OpenSpec) propose flow and packages change tasks for delegation. Use when you are the decision-making hub that, after aligning with the user, produces opsx change task packages to hand off to other models or sessions. Covers change scoping to one cohesive unit of work, series naming with numbering, dependency ordering, cold-start self-containment, disclosing agent-made assumptions allocated per change in a series, laying down a verification skeleton, and a pre-handoff checklist. Works alongside openspec-propose, which handles the mechanical CLI steps.
+disable-model-invocation: false
 metadata:
-  author: Cursor Grok 4.5
-  version: "1.1"
+  author: Cursor Grok 4.5, Codex GPT-5
+  version: "1.2"
+  last_updated: "2026-08-20T14:36:57"
   extends: openspec-propose
 ---
 

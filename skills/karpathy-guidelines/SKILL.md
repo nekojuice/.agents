@@ -1,6 +1,12 @@
 ---
+name: karpathy-guidelines
 description: Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.
+disable-model-invocation: false
 alwaysApply: false
+metadata:
+  author: Codex GPT-5
+  version: "1.0"
+  last_updated: "2026-08-20T14:36:57"
 ---
 
 # Karpathy behavioral guidelines

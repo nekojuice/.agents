@@ -1,9 +1,11 @@
 ---
 name: opsx-apply-guide
 description: Implementation discipline for the session applying an opsx (OpenSpec) change. Use when you are working through the tasks of a change package during the opsx apply flow. Covers keeping the checklist updated per section, test-first with unit tests as the bar, treating end-to-end verification as human-only, producing a developer verification list, reporting completion honestly, surfacing out-of-scope discoveries, and recording deviations. Works alongside openspec-apply-change (mechanical steps) and the test-first skill.
+disable-model-invocation: false
 metadata:
-  author: Cursor Grok 4.5
-  version: "1.0"
+  author: Cursor Grok 4.5, Codex GPT-5
+  version: "1.1"
+  last_updated: "2026-08-20T14:36:57"
   extends: openspec-apply-change, test-first
 ---
 

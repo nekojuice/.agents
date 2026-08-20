@@ -1,6 +1,11 @@
 ---
 name: resolving-merge-conflicts
 description: "Use when you need to resolve an in-progress git merge/rebase conflict."
+disable-model-invocation: false
+metadata:
+  author: Codex GPT-5
+  version: "1.0"
+  last_updated: "2026-08-20T14:36:57"
 ---
 
 1. **See the current state** of the merge/rebase. Check git history, and the conflicting files.

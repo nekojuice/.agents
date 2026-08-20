@@ -1,9 +1,11 @@
 ---
 name: doc-sop-guide
 description: Writing or editing SOP / runbook / operational deployment docs (setup, deploy, restart, recover). Enforces an action-and-command style—commands in code blocks, no prose rationale, verified against real files. Use when creating or revising any "how to operate / deploy / set up" document.
+disable-model-invocation: false
 metadata:
-  author: Opus 4.8
-  version: "1.0"
+  author: Opus 4.8, Codex GPT-5
+  version: "1.1"
+  last_updated: "2026-08-20T14:36:57"
 ---
 
 # SOP Authoring Guide

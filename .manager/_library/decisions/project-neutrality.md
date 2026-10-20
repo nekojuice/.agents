@@ -18,5 +18,6 @@ skill 本文（`SKILL.md`、references、assets、agents 設定）與 manager �
 ## How to apply
 
 - 範例一律用匿名虛構名稱與 `<佔位符>`。
-- 從 run 的待沖入稿沖入 skill 前，逐段檢查是否帶入專案內容。
+- commit 前以專案詞彙掃描變更的 skill 檔。
 - 追溯改善來源時，正式文件只寫抽象訴求編號，具體證據留在 run。
+- 修正既有違規時以匿名虛構名稱或一般描述取代，不在任何文件中重述違規名稱。

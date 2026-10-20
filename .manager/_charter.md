@@ -15,7 +15,7 @@
 ## Constraints
 
 - **專案中立**：skill 本文與 manager 正式文件（`_charter.md`、`_status.md`、`_milestones.md`、`_backlog.md`、`_library/**`）不得出現任何外部專案的內容，包含路徑、專案名稱、範例、few-shot 程式碼。外部專案的材料只能存在 `_runs/` 之下。
-- **先待沖入、後沖入**：skill 修改先寫成 run 內的待沖入稿，經使用者檢查後才寫入 skill 本文。
+- **先決策、後修改**：skill 異動先在 run 的 `changes/` 寫異動決策，再直接修改 skill 本文，使用者以 git diff 審查。待沖入區只放異動造成的 manager 記錄變化，經使用者檢查後才更新 manager 正式文件。
 - 建立或修改 skill 時遵守 `create-skill-guide`：雙宿主調用設定、metadata、版本與時間戳。
 - 規則改善以抽象、可重用的形式表達；具體案例只作為 run 內的追溯證據。
 
@@ -26,9 +26,8 @@
 
 ## Authority
 
-- PM authority：維護 `.manager`、拆解與分析 skill、整理訴求與待沖入稿、提出修改候選。
-- Human authority：核可方向、核可待沖入稿、決定何時沖入 skill 本文。
-- 沖入執行者：manager session。本 repo 的產品是 skill 文字而非程式，經使用者核可的待沖入稿由 manager session 直接寫入 skill 本文，不經 factory；見 `_library/decisions/manager-edits-skills.md`。
+- PM authority：維護 `.manager`、拆解與分析 skill、撰寫異動決策、直接修改 skill、產出 manager 待沖入稿；見 `_library/decisions/manager-edits-skills.md`。
+- Human authority：核可方向與異動決策、以 git diff 審查 skill 修改、核可 manager 待沖入稿。
 
 ## Success conditions
 

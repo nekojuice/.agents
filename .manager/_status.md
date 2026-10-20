@@ -1,23 +1,20 @@
 # Project Status
 
-Updated: 2026-10-19
+Updated: 2026-10-20
 
 ## Current milestone
 
-M1 skill 改善第一輪：拆解現有 skill 並對應訴求，產出待沖入稿供檢查。尚未沖入任何 skill。
+M2 已完成：第一輪 skill 改善沖入 skill 本文，經兩輪審查與修正，使用者驗收後以 tag v1.1 標記。下一步為 M3 歷次紀錄規則蒐集。
 
 ## Active cases
 
 | ID | Type | Outcome or question | Stage | Confidence | Factory run | Next checkpoint |
 | --- | --- | --- | --- | --- | --- | --- |
-| SK-F | initiative | factory 分支 skill 改善 | investigating | medium | none | 使用者檢查拆解稿 |
-| SK-P | initiative | pm 分支 skill 改善 | investigating | low | none | 使用者確認推論訴求 |
-| SK-D | initiative | 文件分支 skill 改善 | investigating | medium | none | 使用者檢查拆解稿 |
+| SK-X2 | initiative | 從歷次工作紀錄抽取通用規則 | inbox | medium | none | 使用者決定何時開蒐集輪 |
 
 ## Known gaps
 
-- 歷次工作紀錄尚未蒐集（SK-X2），第一輪只依交接文件與本 session 觀察。
-- build／deploy 類檢查項未有歸屬（SK-X1）。
+- 歷次工作紀錄尚未蒐集（SK-X2）。
 
 ## Decisions needed
 
@@ -25,4 +22,4 @@ M1 skill 改善第一輪：拆解現有 skill 並對應訴求，產出待沖入�
 
 ## Recently accepted
 
-- none
+- 2026-10-20 第一輪 skill 改善，tag v1.1：SK-F、SK-P、SK-D、SK-D2。

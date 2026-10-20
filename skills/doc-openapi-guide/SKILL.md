@@ -4,8 +4,8 @@ description: Implementing or revising OpenAPI documentation in any language or f
 disable-model-invocation: false
 metadata:
   author: Claude Code Opus 5.5
-  version: "1.1"
-  last_updated: "2026-10-20T10:07:43"
+  version: "1.2"
+  last_updated: "2026-10-20T15:44:21"
 extends: doc-general-guide
 ---
 
@@ -35,15 +35,19 @@ If the user has not stated these inputs, **ask once, in one question, showing th
 | Internal component names | Replace with the function name | Allowed when the caller interacts with that component |
 | Usage risks | State only what the caller observes | May add operational risks such as cost or rate impact |
 
-Rules that hold for **both** audiences: no secrets, credentials, resource identifiers, or real personal or organizational identifiers; examples use invented values.
+Rules that hold for **both** audiences: identifying information and secrets follow doc-general-guide §2.16, and credentials and resource identifiers are never shown either.
 
 ## 1. Inherited from doc-general-guide
 
 | Inherited rule | Meaning here |
 |---|---|
+| §0 document types | §0 routes API documentation here. Endpoint descriptions belong in the OpenAPI document only, not in README or other document types |
 | §1 verification rules: verify against real files, flag defects, treat a poor existing doc as a negative example | The code's actual behavior is the source of truth; existing annotations are re-derived, not trusted |
 | §2.7 name only objects the reader types or sees | The reader is the caller: paths, parameters, fields, status codes, enum values, error strings |
-| §2.10–2.11 minimum concept, no design rationale | No implementation notes in descriptions |
+| §2.10–2.11 minimum concept, default of no design rationale | No implementation notes in descriptions |
+| §2.13 no invented terms | Observable behavior instead of jargon, see §3 |
+| §2.14 single language | The language chosen in §0 holds for every text |
+| §2.16 placeholders and invented names for identifying information | Every example uses invented values, never real identifiers |
 | §2.5 tables for inventory-type information | The exposure analysis, draft, and review report are tables |
 | §3 headings name the real scope, no status in the heading | Applies to operation summaries, see §4 |
 | §4 parentheses discipline | Applies unchanged to every description and error message |
@@ -52,10 +56,11 @@ Rules that hold for **both** audiences: no secrets, credentials, resource identi
 
 | doc-general-guide rule | Here |
 |---|---|
-| §0 three document types | Adds a fourth type, API documentation. Endpoint descriptions belong in the OpenAPI document only, not in README or manuals |
 | §1 material order with openspec as semantic authority | The code is the authority for behavior; specs state intent. Report any mismatch |
 | §2.1–2.4, §2.8, §5 command and code-block rules | Not applicable: the text lives in code annotations and metadata |
+| §2.6 one-line scope statement | Not applicable; the document-level description in §7 introduces the API |
 | §2.9 two-line section openings | Replaced by the glance-length rule in §4 |
+| §2.12 `>` notes | Not applicable; descriptions are plain text in annotations |
 | §7 completion checklist | Replaced by §10 |
 
 ## 2. Exposure analysis — do this first
@@ -71,14 +76,16 @@ Build one table before writing anything:
 
 ## 3. Content rules
 
+The examples use an invented library-loan API.
+
 | Rule | Write | Instead of |
 |---|---|---|
-| Only what the caller needs | What it does, what to send, what comes back, what each error means | "The file is merged with `note` before scoring" |
-| No processing logic (external) | The observable result | "Numbering starts at 1", "takes the worst score", "rounded half up", "runs in parallel" |
-| No internal components or operations detail | Function names; nothing about cloud services, permissions, resource identifiers, or log locations | "See the service log", "check the role bound to the worker" |
-| No unreleased features | Describe only what is reachable | "Later polling and follow-ups use this key" when follow-up is hidden |
-| Observable behavior instead of jargon | "A repeated request number is accepted only once" | "Used for idempotency" |
-| Name the function, not the call pattern | "Get job status" | "Poll job status" |
+| Only what the caller needs: what it does, what to send, what comes back, what each error means | "Renews a loan and returns the new due date" | "Each renewal is also copied to the reporting archive" |
+| No processing logic (external) | "`dueDate` is the day the item must be returned" | "Checks the member's three borrowing limits in turn and keeps the strictest", "adds 14 days, then skips closed days one at a time", "queries every branch at once" |
+| No internal components or operations detail: no cloud services, permissions, resource identifiers, or log locations | "The catalog search is temporarily unavailable" | "The search cluster did not answer; see the indexer log", "check the access key of the sync job" |
+| No unreleased features | "Places a hold on the item for the member" | "Holds placed here also appear in the mobile app" when the mobile app is not released |
+| Observable behavior instead of jargon | "A loan that was already returned cannot be renewed" | "Renewal is guarded by the loan state machine" |
+| Name the function, not the call pattern | "List overdue loans" | "Scan overdue loans page by page" |
 
 ## 4. Wording and length
 
@@ -90,11 +97,10 @@ Build one table before writing anything:
   Needing a second sentence usually means internal logic or duplicated information slipped in.
 - **Summary** — a short title in the document language, with no parentheses and no status code.
 - **Punctuation** follows the document language's convention, such as full-width punctuation for CJK text.
-- **Enum values** stay literal, each followed by its meaning: `PENDING` waiting, `DONE` completed.
+- **Enum values** stay literal, each followed by its meaning: `ON_LOAN` checked out, `RETURNED` back on the shelf.
 - **Response descriptions** are written in the document language; replace framework default reason phrases such as `OK` or `Bad Request`.
 - **Do not repeat** what another part of the document already shows: the content type belongs to the request body, rejection conditions belong to the responses.
 - **Long-content fields** use a placeholder naming the content kind as the example, not a huge string.
-- **One language** throughout, as chosen in §0.
 
 ## 5. Error responses
 
@@ -116,7 +122,7 @@ The project owns its error design. When it already maps situations to specific s
 
 | Topic | Handling |
 |---|---|
-| Message wording | Rewrite to the rules in §3–§4 only through the review in §8 |
+| Message wording | Rewrite to the rules in §3–§4 only through the review in §8; for new docs, list every rewritten message at delivery for the user to confirm, §8 |
 | Exposure problems in a message — raw exception text, secrets, internal detail | Always flag, with a suggested fixed text; change only after the user agrees |
 | Dynamic parts of a message | Suggest limiting them to values the caller sent or limits already published to callers, such as a maximum count or allowed file types |
 | Failures the caller cannot fix | For an external audience, suggest merging them into one sentence that asks the caller to contact the system administrator, keeping details in logs |
@@ -129,11 +135,10 @@ Declare the project's error shape on every error status and give each an example
 | Rule | Detail |
 |---|---|
 | Every status code with a body has an example | Without one, viewers render type placeholders such as `"string"`, `0`, `additionalProp1` |
-| A whole-body example, not only field-level examples | Field-level examples assembled by the viewer often contradict each other, such as a pending status with a finished result, or a shared schema showing a healthy body under 503 |
-| One example per situation | A status code with several situations gets several examples, such as pending, done, failed |
+| A whole-body example, not only field-level examples | Field-level examples assembled by the viewer often contradict each other, such as an item marked available that still shows a due date, or a shared schema showing a success body under an error status |
+| One example per situation | A status code with several situations gets several examples, such as on loan, returned, lost |
 | Matches the real response | Same format, fields, null values, and error message text as the code returns. Share one source for message text and examples when the framework allows; otherwise lock them with a test, §8 |
 | Not borrowed across endpoints | A follow-up request does not reuse the first request's example |
-| Invented values | Never real identifiers |
 
 ## 7. Rendering checks
 
@@ -162,6 +167,7 @@ Declare the project's error shape on every error status and give each an example
    - no response description is a framework default reason phrase;
    - every status code with a body has a schema and an example;
    - error examples equal the messages the code returns.
+7. **New docs** — at delivery, list every error message whose wording was rewritten, before and after, for the user to confirm.
 
 ### Review report and draft layout
 
@@ -210,5 +216,5 @@ Framework references hold only techniques verified in practice. Read the matchin
 - [ ] Contract changes were listed as user decisions, not applied.
 - [ ] Every status code with a body has whole-body examples per situation, matching real responses, using invented values.
 - [ ] Every viewer was opened; document-level title, description, and tag descriptions exist; relative document URL.
-- [ ] Revisions were reviewed before code changed; field names unchanged.
+- [ ] Revisions were reviewed before code changed; for new docs, rewritten error messages were listed at delivery for confirmation; field names unchanged.
 - [ ] Tests lock the result when the project has tests.

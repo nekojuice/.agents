@@ -24,6 +24,8 @@ Status: open
 - Backlog: <change or none>
 - Library: <fact or decision path, or none>
 - Factory handoff: <path or none>
+- Non-product edits: <change-decision documents and edit targets, or none>
+- Handoffs processed: <handoff file paths and processing results, or none>
 
 ## Remaining work
 

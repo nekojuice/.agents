@@ -3,10 +3,10 @@ name: opsx-propose-guide
 description: Authoring discipline for the commanding agent who runs the opsx (OpenSpec) propose flow and packages change tasks for delegation. Use when you are the decision-making hub that, after aligning with the user, produces opsx change task packages to hand off to other models or sessions. Covers change scoping to one cohesive unit of work, series naming with numbering, dependency ordering, cold-start self-containment, disclosing agent-made assumptions allocated per change in a series, laying down a verification skeleton, and a pre-handoff checklist. Works alongside openspec-propose, which handles the mechanical CLI steps.
 disable-model-invocation: false
 metadata:
-  author: Cursor Grok 4.5, Codex GPT-5
-  version: "1.2"
-  last_updated: "2026-08-20T14:36:57"
-  extends: openspec-propose
+  author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
+  version: "1.3"
+  last_updated: "2026-10-20T15:43:47"
+extends: openspec-propose
 ---
 
 # opsx-propose-guide
@@ -59,6 +59,10 @@ Order and dependencies are expressed **in text, inside the change documents** �
 - **Within a change:** when tasks form a chained sequence, state the required order explicitly in `tasks.md` (which step must precede which, and why).
 - **Across changes:** describe cross-change dependencies in prose at a fixed spot in `proposal.md` (e.g. a `Depends on:` line naming the prerequisite change and stating it must be merged first). Cross-change dependencies are captured as text, not as tooling metadata.
 
+### Cross-repo contracts
+
+When a change touches a contract value shared across repositories (an interface shape, a constant, a message format), state in `design.md` the **single source** — which side and which definition is authoritative — and **how consistency is verified**, and add that verification to the skeleton (section 5). The change on the other side references that source instead of hard-coding its own copy.
+
 ## 4. Assumption disclosure (dual-track — both required)
 
 Boundary conditions and assumptions are decided by **you (the agent) in the moment**, and may be **overridden or changed by the user in the moment**. They are fluid, not final. Every assumption you settled on the user's behalf must be disclosed on **both** of these tracks:
@@ -75,7 +79,16 @@ A pre-propose discussion worksheet is **input for allocation**, not content to p
 - **Settled only** — write only decisions already closed. Do not put open / TBD / "needs resolution" rows into Assumptions as implementer instructions.
 - **This change only** — each package's Assumptions (and its conversation report) include only rows that **this change implements**. Do not paste the full worksheet into any one change.
 - **One owner** — map each settled row to the change that owns the work (same series numbering as section 2). Prefer a single owning change; if a later change needs the same decision, **reference** the earlier change instead of duplicating the full text.
-- **Deferred** — if a settled-or-open row belongs to a future sibling, name that change (e.g. "deferred to `alert-03`") and omit the detail from this package until that change is proposed.
+- **Deferred** — if a settled-or-open row belongs to a future sibling, name that change (e.g. "deferred to `alert-03-retention-policy`") and omit the detail from this package until that change is proposed.
+
+## Amendments
+
+An amendment revises a change after apply and before archive. When to amend an existing change versus open a new one, and which human gates apply, are defined in `orchestrator-factory` `### Amendment rounds`; do not redefine them here. When you author an amendment:
+
+- **Annotate it in the change documents** — mark the round number, reason, and date, and put the appended tasks in their own section of `tasks.md`, so the implementer can tell amended work from the original.
+- **Name the superseded behavior** — when the amendment changes existing behavior, state which behavior it replaces. This is the only boundary within which the implementer may rewrite or delete existing assertions (`opsx-apply-guide`, `## Amendment rounds`).
+- **Same disciplines apply** — the appended tasks get a verification skeleton (section 5) and dual-track assumption disclosure (section 4).
+- **Large-scale amendments** — mark the amendment as large-scale when it replaces most of a feature's behavior, or when the old tests can no longer map one-to-one onto the new behavior (in factory mode the orchestrator marks it; otherwise you do, as the commanding agent writing it), and require the implementer to list in `tasks.md` every rewritten or deleted test with the old behavior it covered.
 
 ## 5. Verification skeleton
 
@@ -84,8 +97,16 @@ Lay down, in `tasks.md`, a skeleton of how the change should be verified so the 
 - For work that warrants tests, state the **unit-test intent** (test-first): what behavior should be covered.
 - For work that only needs checking rather than testing, state **what should be checked**.
 - Mark any end-to-end / browser-driven verification as **human-only** — it is for a developer to run by hand, never something the implementing session drives itself.
+- Write human-only items at the **feature or business-flow level**, grouped by screen, and only where human judgment is needed — not individual controls, message text, or internal implementation, and not what unit tests or hard checks already cover (`need-ask-user-guide`). The canonical rule is `opsx-apply-guide` section 4. A placeholder contrast that shows the level only, not a template:
+  - Too fine: "Click `<control>`; message `<text>` appears."
+  - Right level: "On `<screen>`, complete one `<flow>` and confirm the result."
+- **Safety boundary** — no step may run a command that prints secret values; to check that a secret exists, list only the file name. No step may call a paid external service. If verification genuinely needs a real paid service, mark it human-only and note the cost and side effects.
 
 This is only a skeleton. The final, concrete verification list is produced by the implementing session (it may differ from what was foreseen here) and confirmed with the user then. Do not turn the skeleton into a rigid script.
+
+## Example identifiers in requested docs
+
+When a package asks for documentation, a README, or examples, require identifiers in those examples — accounts, hosts, organizations, products, and the like — to be anonymous fictional names or placeholders. The tool's own name and the project's own name are exempt. Tasks must not instruct the implementer to use real external names.
 
 ## 6. Pre-handoff checklist
 
@@ -97,6 +118,9 @@ Because the package will be implemented by a session with **no access to this co
 - **Assumptions** — every agent-made boundary for **this** change is in the fixed document section *and* reported to the user (section 4); no full-worksheet paste; no unsettled TBD as instructions; cross-change reuse is by reference.
 - **Self-containment** — an implementer with no prior context can act on the package without asking what was meant.
 - **Acceptance** — success criteria are concrete enough that the implementer can tell when the change is done.
-- **Verification skeleton** — `tasks.md` states unit-test intent or check items, with any E2E marked human-only (section 5).
+- **Verification skeleton** — `tasks.md` states unit-test intent or check items, with any E2E marked human-only; human-only items are at feature or flow level; no step prints secrets or calls a paid external service (section 5).
+- **Cross-repo contracts** — when values are shared across repositories, `design.md` names the single source and the verification method (section 3).
+- **Example identifiers** — examples in requested docs use only anonymous fictional names or placeholders.
+- **Amendments** — an amendment states the behavior it supersedes and is annotated per Amendments.
 
 Do not provide a fill-in-the-blank handoff template. A template invites the downstream session to "copy the homework" and lose focus on the actual task. State what the package must contain; let each package be written to fit its own work.

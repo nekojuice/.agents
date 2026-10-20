@@ -11,13 +11,14 @@
 
 ## Exclude
 
-- Any `.manager` path or PM-origin metadata.
+- Any wording that makes a `.manager` reference required reading. Transfer the required content by value; keep PM-origin metadata only where the factory can use it.
 - PM scratch notes and internal deliberation.
 - Worker transcripts or unsupported conclusions.
 - Unrelated library entries.
 - Customer-identifying or sensitive material not needed for implementation.
 - Premature technical design that the factory discussion should decide.
-- PM-only terminology or instructions to report back upstream.
+- PM-only terminology.
+- Instructions for the factory to report back to, or call back, the PM. The factory's own rules decide any return path.
 
 ## Convert by value
 

@@ -1,29 +1,44 @@
 ---
 name: doc-user-guide
-description: Writing or revising an end-user operation manual for an application's UI (web/desktop forms, statuses, roles) — for the people who use the software (clerks, supervisors), not engineers. Extends doc-general-guide for wording and style. Enforces chapter=system / section=function structure, ToC preview confirmation before writing, one-action steps, form-field and enum tables, on-screen-only wording (no code/object names), commented screenshot placeholders with a fixed image layout, and genuine (non-trivial) troubleshooting. Use when creating or revising any application user manual.
+description: Writing or revising an end-user operation manual for an application's UI (web/desktop forms, statuses, roles) — for the people who use the software (clerks, supervisors), not engineers. Extends doc-general-guide for wording and style; this guide wins on conflict. Enforces chapter=system / section=function structure, ToC preview confirmation before writing, one-action steps, form-field and enum tables, on-screen-only wording (no code/object names), commented screenshot placeholders with a fixed image layout, and genuine (non-trivial) troubleshooting. Not for engineer-facing tutorials that deploy, configure, or take over an existing system through GUI admin tools (use doc-tutorial-guide). Use when creating or revising any application user manual.
 disable-model-invocation: false
 metadata:
-  author: Opus 4.8, Codex GPT-5
-  version: "1.1"
-  last_updated: "2026-08-20T14:36:57"
+  author: Opus 4.8, Codex GPT-5, Claude Code Opus 5.5
+  version: "1.2"
+  last_updated: "2026-10-20T15:52:52"
+extends: doc-general-guide
 ---
 
 # User Operation Manual Authoring Guide
 
 An end-user operation manual tells **the people who use the software how to get a task done on screen** — clerks, supervisors, operators — not engineers. It describes what the user sees and clicks, in plain everyday language.
 
-This guide **extends doc-general-guide for wording and style**. Read that guide for the shared foundations; this one keeps its plain-language discipline and adds the structure and elements a UI manual needs.
+This guide **extends doc-general-guide for wording and style**. Read that guide for the shared foundations; this one keeps its plain-language discipline and adds the structure and elements a UI manual needs. Where the two conflict, **this guide wins**.
+
+This guide applies only to end-user manuals for the application's own screens. A document whose readers are engineers and whose subject is deploying, configuring, or taking over an existing system through admin tools or a server environment uses `doc-tutorial-guide`, even when it is mostly on-screen clicks.
 
 ## 0. Inherited from doc-general-guide
 
 | Inherited rule | Meaning here |
 |---|---|
-| Short, clear, common words | One action per sentence; no long-winded over-explanation |
-| No invented / self-defined terms | Use the everyday words a user already knows |
-| Single language, no needless code-switching | A Chinese manual does not insert English or program names |
-| Parenthesis discipline | Put rules in table columns, not in trailing parentheses |
-| Name-first headings; tables for inventory | Statuses, roles, form fields are tables |
-| Understand shallow-to-deep; read openspec; verify against real files | Verify against the **real on-screen labels** and the **real error messages in the code** |
+| §2.9–2.10 short openings, minimum concept | One action per sentence; no long-winded over-explanation |
+| §2.13 no invented / self-defined terms | Use the everyday words a user already knows |
+| §2.14 single language, no needless code-switching | A Chinese manual does not insert English or program names |
+| §4 parenthesis discipline | Put rules in table columns, not in trailing parentheses |
+| §3, §2.5 name-first headings; tables for inventory | Statuses, roles, form fields are tables |
+| §1 understand shallow-to-deep; read openspec; verify against real files | Verify against the **real on-screen labels** and the **real error messages in the code** |
+| §2.15 an example value appears once | A sample value introduced once is not rewritten in later steps |
+| §2.16 identifiers as placeholders, anonymous invented names | People, numbers, and organization names in the 填寫範例 column and on-screen examples are anonymous invented values, never real personal data |
+| §2.17–2.18 responsibility scope, consistent with settled decisions | Only operations the manual's users perform; no approach that contradicts settled decisions |
+
+### Overrides
+
+| doc-general-guide rule | Here |
+|---|---|
+| §2.1–2.4, §5 command and code-block rules | Not applicable; steps are on-screen actions (§4) |
+| §2.6 one-line scope statement | Not applicable; the chapter and section structure of §2 and the element order of §3 take its place |
+| §2.7 name only objects the operator types or sees | Stricter: on-screen text only, no program names at all (§9) |
+| §7 completion checklist | Replaced by §10 |
 
 ## 1. Understanding the system
 
@@ -47,7 +62,7 @@ Within each function section, elements appear in this fixed order:
 |---|---|---|---|
 | 1 | `### Function heading` | yes | Name-first |
 | 2 | **Conditions callout** | conditional | When the function is role-restricted or has any precondition (a screen that appears only when a case has expired, a flow taken only on a customer return, etc.), open the section with a callout using the fixed prefix: `> ⚠ 操作條件：…` (render the label in the manual's language) |
-| 3 | **Entry path** | yes | One breadcrumb line right after the callout: `進入路徑：主選單 → 案件管理 → 新增案件` |
+| 3 | **Entry path** | yes | One breadcrumb line right after the callout, in the UI path notation of §9: `進入路徑：主選單 →『案件管理』→『新增案件』` |
 | 4 | Enum / status table | conditional | Place **before** the steps |
 | 5 | Steps | yes | See §4–§6 |
 | 6 | Troubleshooting | optional | See §8 |
@@ -62,7 +77,7 @@ Choose the format by the nature of the actions:
 | No order, but regular and tabular | Table |
 | No order and not tabular, or few / scattered items | Unordered list |
 
-- **One action per step**, cleanly split, clean granularity, plain and short. Example: "按下儲存按鈕以保存進度" / "點擊下一步".
+- **One action per step**, cleanly split, clean granularity, plain and short. Example: "按「儲存」以保存進度" / "點「下一步」".
 - Nesting of numbered list / table / unordered list is allowed but **no more than 3 levels deep**.
 - Name UI elements by their **on-screen label** only (see §9).
 
@@ -74,13 +89,14 @@ Describe a form as a table with these columns (render the labels in the manual's
 | 欄位名稱 | 值類型 | 規則 | 預設值 | 填寫範例 |
 |---|---|---|---|---|
 | 申請人 | 中文 | 自動帶入，不可填寫 | 目前登入者 | 王小明 |
-| 案件編號 | 6 碼英數混合 | 必填 | （空白） | A1B2C3 |
-| 備註 | 中文 | 選填；退件狀態必填 | （空白） | 補附證明文件 |
+| 案件編號 | 6 碼英數混合 | 必填 |  | A1B2C3 |
+| 備註 | 中文 | 選填；退件狀態必填 |  | 補附證明文件 |
 ```
 
 - **值類型** examples: 中文, 大寫英文, 6 碼英數混合.
 - **規則** examples (not exhaustive): 自動帶入, 不可填寫, XX 狀態不必填, 選填.
 - A field with no default leaves **預設值** blank.
+- **填寫範例** uses anonymous invented values, never real names or identifiers (doc-general-guide §2.16).
 - For a complex rule, nest an ordered / unordered list inside the cell.
 
 ## 6. Operation results
@@ -89,7 +105,7 @@ State a result **only when it is not obvious** — a confirmation message, an er
 
 | Write it | Do not write it |
 |---|---|
-| 按下儲存，出現「儲存成功：<日期> <變更者>」；失敗則顯示欄位缺漏或錯誤處 | 點下一頁，出現表格第二頁 — obvious, no special event |
+| 按「儲存」，出現「儲存成功：<日期> <變更者>」；失敗則顯示欄位缺漏或錯誤處 | 點「下一頁」，出現表格第二頁 — obvious, no special event |
 
 ## 7. Screenshots / figures
 
@@ -136,8 +152,9 @@ A troubleshooting block at the end of a chapter / section lists errors the user 
 ## 9. Wording and language
 
 - **On-screen text only.** The body describes only what the user **sees on screen** — button labels, field names, prompt messages. **Never write component, object, variable, API, or field-code names.**
-- **Plain, common terms; never invent terminology** (inherited from doc-general-guide).
-- **Single language**, matching what the user asks for; not bilingual. The fixed structural labels (操作條件 / 進入路徑 / 欄位名稱 / 值類型 / 規則 / 預設值 / 填寫範例) render in the manual's chosen language, one consistent set.
+- **Plain, common terms; never invent terminology** (doc-general-guide §2.13).
+- **UI paths**, the same notation as doc-tutorial-guide: join path nodes with `→`. The starting point takes no quotation marks. In a Chinese manual, menu nodes after the start use 『』 and button names use 「」; a manual in another language uses its customary quotation marks in the same two roles.
+- **Single language** (doc-general-guide §2.14), matching what the user asks for; not bilingual. The fixed structural labels (操作條件 / 進入路徑 / 欄位名稱 / 值類型 / 規則 / 預設值 / 填寫範例) render in the manual's chosen language, one consistent set. 操作條件 is the condition-callout label shared with doc-tutorial-guide.
 
 ## 10. Completion checklist
 
@@ -146,7 +163,7 @@ A troubleshooting block at the end of a chapter / section lists errors the user 
 - [ ] Book-style ToC was confirmed before writing the body (or stopped at the ToC when no confirmation was possible).
 - [ ] Shared codes sit in a chapter-opening block, not a separate reference chapter.
 - [ ] Each function section follows the fixed element order: conditions callout → entry path → enum table → steps → troubleshooting.
-- [ ] Conditions callout uses the fixed prefix; entry path is a breadcrumb line.
+- [ ] Conditions callout uses the fixed prefix; entry path is a breadcrumb line in the §9 UI path notation: unquoted start, menu nodes in 『』, button names in 「」.
 - [ ] Steps use the right format (numbered / table / unordered); one action per step; nesting ≤3 levels.
 - [ ] Form screens use the 5-column field table; no-default cells left blank.
 - [ ] Results stated only when non-obvious.
@@ -154,4 +171,5 @@ A troubleshooting block at the end of a chapter / section lists errors the user 
 - [ ] Troubleshooting has no trivial QA; messages taken from real source; omitted or flagged when weak.
 - [ ] On-screen text only — no component / object / variable names.
 - [ ] Plain common terms, no invented terms; single language throughout.
+- [ ] 填寫範例 and on-screen examples use anonymous invented values.
 - [ ] On-screen labels, status / role codes, and error messages verified against the real UI and source.

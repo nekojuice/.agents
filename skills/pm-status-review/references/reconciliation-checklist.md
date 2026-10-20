@@ -17,6 +17,7 @@ Use only sources that exist in the current workspace. Discover conventions from 
 - Repository history, implementation paths, and configuration.
 - Existing test, build, review, verification, deployment, or E2E evidence.
 - Explicit human acceptance supplied in the workspace or conversation.
+- `handoff-manager-<topic>.md` at a factory run's root. It may carry corrections where the factory found manager content stale or wrong, progress, or decisions the user confirmed in the factory. Identify its source and recency from the header lines `Source run:`, `Recipient:`, and `Date:`.
 
 ## Integrity checks
 
@@ -27,6 +28,8 @@ Use only sources that exist in the current workspace. Discover conventions from 
 - Human-accepted outcomes with later regression evidence.
 - Duplicate, obsolete, or contradictory active cases.
 - Gaps discovered in legacy or reference systems that have not been accepted, rejected, or deferred.
+- `handoff-manager-*.md` files with no processing record in any manager run.
+- Stale manager content flagged by a handoff file but not yet reflected in canonical state.
 
 ## Output discipline
 

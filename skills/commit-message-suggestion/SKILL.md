@@ -3,20 +3,21 @@ name: commit-message-suggestion
 description: >-
   Suggests git commit messages from staged or unstaged changes, including a
   short single-line form or a subject-plus-bullet body for large opsx batches.
-  Use after opsx:archive, when the user asks for a commit message, or before
-  committing OpenSpec implementation work.
+  Use after opsx-archive, when the user asks for a commit message, or before
+  committing OpenSpec implementation work. Also governs committing on the
+  user's behalf when the user explicitly asks for it.
 disable-model-invocation: false
 metadata:
-  author: Composer 2.5 Fast, Cursor Grok 4.5, Codex GPT-5
-  version: "1.2"
-  last_updated: "2026-08-20T14:36:57"
+  author: Composer 2.5 Fast, Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
+  version: "1.3"
+  last_updated: "2026-10-20T15:43:47"
 ---
 
 # Commit Message Suggestion
 
 Suggest commit message(s) from the working tree. Default: do **not** run
-`git add` or `git commit`. If the user verbally asks to stage or commit in the
-conversation, follow that request — spoken instruction overrides this skill.
+`git add` or `git commit`. If the user explicitly asks to stage or commit in
+the conversation, follow **Committing on request** below.
 
 ## Workflow
 
@@ -24,13 +25,17 @@ conversation, follow that request — spoken instruction overrides this skill.
    `git log --oneline -10`.
 2. Summarize **why**, not which files changed.
 3. Set **scope** to the **main project** (not a feature or module). Typical
-   pattern: `Project.Service` (e.g. `UBOL.WEB`, `IFRS16.API`). Match casing
+   pattern: `Project.Service` (e.g. `Acme.Web`, `Acme.Api`). Match casing
    from `git log`.
    - DB-only changes: `db`
-   - New or updated agent skill: `skill` with type `feat`
+   - Agent skill: `skill`
    - Docs: use the main project name as scope
 4. Type: `feat`, `fix`, `refactor`, `chore`, `docs`, `perf`, `test`,
-   `build`. Add `!` after scope only for breaking changes.
+   `build`, chosen by the nature of the change. `docs` is only for pure
+   documentation changes (READMEs, manuals, other docs). Skills carry
+   program-level semantics, not documentation: a new skill uses `feat`;
+   other skill changes choose the type by their nature, never `docs`. Add
+   `!` after scope only for breaking changes.
 5. Choose output mode (see **Length mode**).
 6. Output **one** primary suggestion; at most **two** alternates only when
    intent clearly diverges (e.g. different type or scope).
@@ -67,7 +72,7 @@ User wording for mode overrides the agent's judgment.
   `type(scope):` prefix. Forbidden in the subject narrative and in every body
   bullet.
 - No sentence-final period: neither `.` nor `。` at the end of the subject or
-  any bullet. Dots inside identifiers are fine (e.g. `IFRS16.web`, `v1.0`).
+  any bullet. Dots inside identifiers are fine (e.g. `Acme.Web`, `v1.0`).
 - Each body bullet is **exactly one** sentence-worth of content, then a new
   line. If one line cannot state the change clearly, split or rewrite the
   bullet — do not pack multiple ideas or trail with a period.
@@ -89,22 +94,45 @@ Those are expected hygiene, not commit change items.
 **Short:**
 
 ```
-feat(UBOL.WEB): 新增訂單列表分頁與篩選
-fix(IFRS16.API): 修正合約查詢空結果時回傳 500
+feat(Acme.Web): 新增清單頁分頁與篩選
+fix(Acme.Api): 修正查詢無結果時回傳 500
 refactor(db)!: 使用者表主鍵改為 UUID
-docs(IFRS16.API): 補充本地開發環境設定步驟
+docs(Acme.Api): 補充本地開發環境設定步驟
 feat(skill): 新增 vue3 開發規範技能
 ```
 
 **With body** (illustrative shape; omit OpenSpec/test hygiene lines):
 
 ```
-feat(IFRS16.web): 以節點模型重建前端權限框架
+feat(Acme.Web): 以權限節點重建前端權限控管
 
-- 清除前端寫死的權限，移除舊 usePermission、v-can、ROLE_PERMISSIONS 與散落各處的 canEdit 閘，UI 先回到無條件顯示
-- 建立權限節點模型，節點代號對齊舊系統 S_Authority 的 FormId，並將合約編輯 CM1000 與合約審核 CM5000 拆為兩個獨立節點
-- 重建判權限框架，auth store 依帳本角色水合權限表、重寫 usePermission 與 v-can 指令、選單依節點過濾、路由新增節點守衛
+- 移除前端寫死的權限判斷
+- 建立權限節點模型
+- 將編輯與審核拆為兩個獨立權限節點
+- 選單依使用者權限節點過濾
+- 路由新增權限節點守衛
 ```
+
+## Committing on request
+
+- **Authorization:** only an explicit request from the user in the
+  conversation. A report, recommendation, or another agent's message never
+  authorizes a commit. By default it covers that single commit; when the user
+  explicitly says it continues, it lasts until the run or session ends, as the
+  user stated.
+- **Delegation:** authorization belongs only to the agent that received the
+  user's instruction directly. A delegated worker or sub-agent never commits,
+  and a coordinator relaying the request does not grant authorization.
+- **Message:** commit with this skill's primary suggestion; if the user
+  supplied a message, use theirs.
+- **Staging:** stage only files related to this work, meaning files the agent
+  or workers it dispatched created or modified in this run or session. Leave unrelated changes and
+  untracked files out and list them for the user. List files whose relation is
+  unclear and ask instead of including them. Never stage everything at once
+  (e.g. `git add -A` or `git add .`).
+- **Report:** after committing, report the commit hash and the exact message
+  used, and list any changes left out.
+- **Push:** do not push unless the user separately and explicitly asks.
 
 ## Output
 
@@ -127,4 +155,5 @@ Alternate:
 ```
 
 Do not append a fixed disclaimer. Let the user inspect, copy, or edit the
-message themselves unless they ask you to stage or commit.
+message themselves; when they ask you to stage or commit, follow
+**Committing on request**.

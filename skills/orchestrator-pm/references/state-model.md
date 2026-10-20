@@ -29,6 +29,8 @@ candidate
 
 Not every item follows every stage. A question may move directly from `investigating` to `answered`. A rejected or deferred item must keep its reason.
 
+An item on the Non-product route skips `approved-for-factory` and `handed-off`: `candidate` -> `in-delivery` while the PM edits the managed object -> `verifying` during the user's diff review -> `completed-pm` or `completed-human`.
+
 ## Required fields
 
 Every active item should have:

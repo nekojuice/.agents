@@ -14,8 +14,9 @@ description: >-
   specs.
 disable-model-invocation: true
 metadata:
-  version: "1.0"
-  last_updated: "2026-08-07"
+  author: Claude Code Opus 5.5
+  version: "1.1"
+  last_updated: "2026-10-20T15:44:36"
 ---
 
 # orchestrator-reverse-spec
@@ -34,7 +35,7 @@ Reverse-writing captures **as-built behavior** (implementation is the default tr
 2. **Reviewer is never the author.** The health-check review stage must run on **fresh workers that did not write the specs**. When a review result contradicts another, the orchestrator adjudicates with direct evidence.
 3. **No worker sub-delegation.** Every dispatched worker does its own work. Workers must not spawn their own sub-agents. State this in every worker prompt.
 4. **Sync/archive branch guard.** Only sync delta specs into main specs and archive a change when on `main` or `master`. On any other branch, block and warn — running these on a feature branch can damage main-spec files.
-5. **Never commit.** Do not run `git commit` (or equivalent) for the user. You may only *suggest* a commit message when asked.
+5. **No commit by default.** Unless the user explicitly asks, do not run `git commit` (or equivalent); suggest a commit message per `commit-message-suggestion` when asked. When the user explicitly asks, you may commit on the user's behalf following `commit-message-suggestion`. **Workers never commit.**
 6. **Workers default to the orchestrator's model.** Changing a worker's model requires asking the user first.
 
 ## Opt-in fast-verify switches (locked by default)
@@ -57,7 +58,7 @@ Never enable a switch on your own initiative. If a switch is off, take the corre
 | Create/own the `.factory/` run and its control files | Write end-user or ops documents |
 | Publish named-worker plans and wait for confirmation | Let the spec author also run the review |
 | Dispatch fresh workers per stage; collect short reports | Paste worker full output into chat |
-| Adjudicate contradictory review findings with evidence | Commit, or sync/archive off main/master |
+| Adjudicate contradictory review findings with evidence | Commit without an explicit request, or sync/archive off main/master |
 | Keep your own context lean; durable detail lives in files | Enable a fast-verify switch without the user saying so |
 
 Delegate reading, writing, and reviewing. Keep only conclusions and decisions in your own context; everything durable goes into the run workspace.
@@ -94,10 +95,13 @@ Dispatch a single fixer worker to correct confirmed conflicts, backfill placehol
 
 ## `.factory/` run workspace
 
-Create a run only when leaving discuss into real work.
+Create a run only when leaving discuss into real work. When creating the first run, if `.factory/.gitignore` does not exist, create it with the single line `_runs/`.
 
 ```
-.factory/<YYYY-MM-DD>-<slug>/
+.factory/
+├── .gitignore            # single line: _runs/
+└── _runs/
+    └── <YYYY-MM-DD>-<slug>/
 ```
 
 - `slug`: lowercase `[a-z0-9-]+`, no spaces or non-ASCII. Only the orchestrator creates the run dir; workers never create sibling runs.
@@ -135,11 +139,11 @@ Create a run only when leaving discuss into real work.
 
 ```text
 [orchestrator-reverse-spec / <stage>] worker=<id>, role=<role>
-run_dir: <.factory/<date>-<slug>/>
+run_dir: <.factory/_runs/<YYYY-MM-DD>-<slug>/>
 cold-start: read <control files to read> (do not rely on chat history)
 task: <one clear job>
 constraints: read-only except the named output artifact | no product-code edits |
-  no sub-agents | implementation-default truth | no fabrication (mark needs_input)
+  no sub-agents | no commit | implementation-default truth | no fabrication (mark needs_input)
 skills: <optional: load a named project skill, e.g. opsx-health-check>
 return: write <artifact> under run_dir; reply with a short summary only
 ```
@@ -187,7 +191,7 @@ Keep chat status short; persist detail in the run files:
 ```markdown
 ## Reverse-spec status
 - Stage: <discuss | explore | author | sync | archive | review | fix | done>
-- run_dir: <.factory/... or (none — discuss only)>
+- run_dir: <.factory/_runs/... or (none — discuss only)>
 - Branch: <name> (sync/archive allowed: yes | no)
 - Switches: <off, or the ones the user enabled>
 - Workers: <short>

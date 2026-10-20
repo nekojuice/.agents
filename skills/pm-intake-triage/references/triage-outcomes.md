@@ -16,6 +16,8 @@ Preserve every source item and point to the primary group or case. Do not erase 
 
 Describe one coherent outcome, source items, rationale, boundary, dependencies, evidence, confidence, and unresolved questions. A candidate is not approved work.
 
+Mark each candidate's route as `factory` or `non-product`. On the orchestrator-pm `## Non-product route`, the same disposition means a change candidate whose execution path is that route instead of a factory handoff; it is still not approved work.
+
 ## Deferred
 
 Record the reason and an objective revisit condition.

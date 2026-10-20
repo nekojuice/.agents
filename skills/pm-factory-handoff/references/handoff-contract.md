@@ -4,7 +4,9 @@ These files are the cold-start intake for the factory's commanding agent: a fres
 
 ## Directory
 
-Create a unique `.factory/<YYYY-MM-DD>-<slug>/`. Use lowercase English letters, digits, and hyphens. Never overwrite an unrelated run.
+Create a unique `.factory/_runs/<YYYY-MM-DD>-<slug>/`, initializing `.factory/.gitignore` with the single line `_runs/` when it does not exist. Use lowercase English letters, digits, and hyphens. Never overwrite an unrelated run.
+
+This cold-start package is the new factory run's own control files. It does not use the cross-party `handoff-<recipient>-<topic>.md` naming, which applies to handoff files left at a sender run's root.
 
 ## Required files
 
@@ -20,10 +22,11 @@ Provide:
 - Evidence and relevant project paths.
 - Open questions the factory discussion must resolve.
 - Expected verification and human checkpoints.
+- Optional source: the manager run and candidate id, labeled as an optional clue that the factory never needs to read.
 
 ### `_status.md`
 
-Set the handoff state to `await-factory-session`. State that factory has not started and the human must start a separate factory session. Do not identify the upstream producer.
+Set the handoff state to `await-factory-session`. State that factory has not started and the human must start a separate factory session.
 
 ### `_memory.md`
 
@@ -41,4 +44,4 @@ A fresh session that knows only the project workspace and this factory run must 
 
 If it must read `.manager` or the PM chat, the handoff is incomplete.
 
-Factory-facing files must not mention `.manager`, a manager run path, or PM-origin metadata. Traceability to the manager case belongs only in the manager-side outcome.
+Formal traceability to the manager case is recorded in the manager-side outcome. Any manager reference inside factory-facing files is only a clue.

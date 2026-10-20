@@ -18,6 +18,8 @@
       |- _run.md
       |- notes.md
       |- findings/
+      |- changes/                          (optional; Non-product route)
+      |- handoff-<recipient>-<topic>.md    (optional; cross-party handoff)
       `- outcome.md
 ```
 
@@ -59,20 +61,33 @@ Store scratch notes. Never treat notes as canonical truth.
 
 ### `findings/`
 
-Store worker artifacts. Give each worker one unique file. Workers may create missing files below this directory but may not write elsewhere.
+Store worker artifacts by default. Give each worker one or more unique paths; the PM may assign other unique paths inside the run when dispatching. Workers write only the assigned paths and may create their missing parent directories inside the run.
+
+### `changes/`
+
+Store change-decision documents for the Non-product route, named `<NN>-<target>.md`, one per edit target. Use this directory only on that route.
 
 ### `outcome.md`
 
 Store the run conclusion, answered questions, proposed cases, human decisions, promoted facts or decisions, and any created factory handoff.
 
+## Cross-party handoff files
+
+- Place a cross-party handoff file at the sender's run root, named `handoff-<recipient>-<topic>.md` with lowercase letters, digits, and hyphens.
+- Start the file with three header lines: `Source run:`, `Recipient:`, and `Date:`.
+- The recipient records its processing in its own run and never writes back to the sender's run.
+- Process a factory's `handoff-manager-<topic>.md` under these rules; apply the same rules when the PM sends one.
+- The cold-start `.factory` package created by `pm-factory-handoff` is not a cross-party handoff file and keeps its own control files.
+
 ## Ownership
 
 | Area | Active PM | Investigation worker | Factory session |
 | --- | --- | --- | --- |
-| `.manager/_*.md` | Read/write | Read only when assigned | No knowledge required |
-| `.manager/_library/**` | Read/write | Read only when assigned | No knowledge required |
-| Current manager run | Read/write | Write only assigned artifact | No knowledge required |
+| `.manager/_*.md` | Read/write | Read only when assigned | Read only, optional |
+| `.manager/_library/**` | Read/write | Read only when assigned | Read only, optional |
+| Manager runs (`_runs/**`) | Read/write | Write only assigned artifact paths in its run | Read only, optional; clues only |
 | Product repositories | Read only | Read only within assignment | Owned by factory workflow |
-| `.factory/**` | Create approved handoff only | No access | Owned after human starts factory |
+| Non-product managed object | Write under the Non-product route | Read only within assignment | Not involved |
+| `.factory/**` | Read only for status review and handoff files; create approved handoff only, plus `.factory/.gitignore` when absent | No access | Owned after human starts factory |
 
-Do not create a callback, event, or reverse dependency from factory to manager.
+Do not create a callback, event, or reverse dependency from factory to manager. The only return channel is a `handoff-manager-<topic>.md` at a factory run root, which the PM pulls when the human instructs.

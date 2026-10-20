@@ -8,16 +8,18 @@ description: >-
   post-implementation automated verification without requirement-boundary review.
 disable-model-invocation: false
 metadata:
-  author: Cursor Grok 4.5
-  version: "1.0"
-  last_updated: "2026-07-23T09:44:00"
+  author: Cursor Grok 4.5, Claude Code Opus 5.5
+  version: "1.1"
+  last_updated: "2026-10-20T13:32:03"
 ---
 
 # hard-verify
 
 Post-implementation **hard-gate** check: discover and run the project's compile/build, unit tests, lint, and (when applicable) standalone type-check. Reports pass/fail/skip with evidence. Does **not** judge requirement boundaries (that is a separate concern).
 
-This skill runs **only** when the user explicitly invokes it (e.g. `/hard-verify`). It does **not** auto-run after apply or any other flow. It may be run **at any time** — do not assume or document a fixed order relative to other checks.
+This skill runs **only** when the user explicitly invokes it (e.g. `/hard-verify`). It does **not** run on its own initiative. It may be run **at any time** — do not assume or document a fixed order relative to other checks.
+
+When a workflow skill or a dispatch instruction explicitly lists this skill as a required step, that counts as an explicit invocation, and that workflow's override clauses take precedence. Standalone defaults are unchanged.
 
 ## Goal
 
@@ -93,9 +95,9 @@ Use only after scripts/CI yield nothing useful; always disclose.
 
 Prefer running from the **module directory** that owns the change.
 
-### Frontend note (this workspace's Vue app pattern)
+### Frontend note
 
-When checking a module like `IFRS16.web`, typical discovered gates include: build (often via `build-testing` / `build-production`, which may already chain `type-check`), `test:unit`, and lint (`lint` or `lint:oxlint` + `lint:eslint`). Discover from `package.json`; do not hard-code if scripts differ.
+When checking a frontend module such as `web-app`, typical discovered gates include: build (often via environment-specific build scripts, which may already chain `type-check`), `test:unit`, and lint (`lint`, or separate per-linter scripts). If the build already runs type-check, do not run it again. Discover unit-test and lint scripts from the actual `package.json`; do not hard-code if scripts differ.
 
 ## 5. Execution rules
 

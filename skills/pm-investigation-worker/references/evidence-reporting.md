@@ -17,4 +17,4 @@ Use these status meanings:
 - `not-reproduced`: no permitted evidence reproduced the reported behavior; this does not mean invalid.
 - `needs-input`: missing scope, authority, environment, or a required operation blocked by isolation.
 
-Factory candidates are suggestions to the PM, never approvals or implementation plans.
+Candidates, on either the factory or the non-product route, are suggestions to the PM, never approvals or implementation plans.

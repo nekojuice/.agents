@@ -36,6 +36,10 @@
 
 - <Observable result>
 
+## Source (optional)
+
+- <Manager run and candidate id; optional clue only, never required reading>
+
 ## Human checkpoints
 
 - Review factory discussion and proposed changes before dispatch.

@@ -9,9 +9,9 @@ description: >-
   any factory worker.
 disable-model-invocation: false
 metadata:
-  author: Codex GPT-5.6-Sol
-  version: "1.0"
-  last_updated: "2026-08-14T13:29:50"
+  author: Codex GPT-5.6-Sol, Claude Code Opus 5.5
+  version: "1.1"
+  last_updated: "2026-10-20T14:08:54"
 extends: orchestrator-pm
 ---
 
@@ -34,8 +34,7 @@ A PM recommendation, candidate label, or tentative discussion is not approval.
 
 - Do not load or invoke `orchestrator-factory`.
 - Do not start workers, propose implementation, edit product files, or cross any factory gate.
-- Do not require the future factory session to read `.manager`.
-- Do not mention `.manager`, manager run paths, or PM-origin metadata inside factory-facing files.
+- Do not require the future factory session to read `.manager`. Factory-facing files may mention `.manager` as optional read-only background, but every required fact must be written into the handoff by value. Never instruct the factory to write into `.manager`.
 - Do not copy scratch notes, worker transcripts, unconfirmed assumptions, or the PM library wholesale.
 - Do not overwrite an existing factory run. Reuse it only when the human explicitly resumes the same handoff.
 - After creating the handoff, record it in the current manager run and stop.
@@ -49,10 +48,10 @@ A PM recommendation, candidate label, or tentative discussion is not approval.
 
 1. Verify and quote the human approval in the manager run outcome.
 2. Present a short delegation summary — candidate, goal, scope boundary, and the proposed factory run title/slug — and get the human's confirmation before creating any factory files. Skip this confirmation only when the human explicitly directed immediate creation without confirming (e.g. "直接建立、不確認" / "create directly, no confirm").
-3. Resolve a unique `.factory/<YYYY-MM-DD>-<slug>/` path.
+3. Resolve a unique `.factory/_runs/<YYYY-MM-DD>-<slug>/` path. If `.factory/.gitignore` does not exist, create it with the single line `_runs/`.
 4. Distill the candidate into confirmed goal, context, scope, exclusions, constraints, evidence, open questions, and expected human checkpoints.
 5. Instantiate `_intake.md`, `_status.md`, and `_memory.md` from this skill's assets — this is the cold-start package the factory's commanding agent reads to begin a fresh session.
-6. Remove manager paths, PM-origin metadata, and PM-only terminology from every factory-facing file.
+6. Confirm that no required content exists only in `.manager` (restate it by value), remove PM-only terminology the factory could not understand without reading `.manager`, and label every remaining manager reference as optional.
 7. Validate that the handoff is useful in a fresh session with no PM chat history.
 8. Record the factory run path in the current manager run's `outcome.md`. Do not update canonical project status unless the human separately requested a reconciliation.
 9. Report the factory run path to the human and state the handoff is ready for a new factory session, then stop.

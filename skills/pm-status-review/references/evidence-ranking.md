@@ -22,6 +22,10 @@ One source suggests a conclusion. Use medium or low confidence depending on its 
 
 An unverified report, old note, scratch file, or stale status claim. Treat it as an investigation input, not proof.
 
+### Factory handoff files
+
+Content of a factory `handoff-manager-*.md` is single-source inference or a report. A dated, quoted user decision in such a file may serve as evidence and as a candidate for human authority; confirm it with the user before setting `completed-human`.
+
 ## Confidence
 
 - `high`: direct current evidence or explicit human authority; no material contradiction.

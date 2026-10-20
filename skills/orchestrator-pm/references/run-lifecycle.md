@@ -8,7 +8,8 @@ Create a manager run when work needs durable notes, multiple evidence sources, w
 2. Confirm the path is unique.
 3. Instantiate `_run.md`, `notes.md`, and `outcome.md` from the supplied assets.
 4. Create `findings/` before dispatching workers.
-5. Record the starting objective and source inputs in `_run.md`.
+5. On the Non-product route, create `changes/` before editing the managed object.
+6. Record the starting objective and source inputs in `_run.md`.
 
 ## Work
 
@@ -31,6 +32,6 @@ Do not rely on the previous chat transcript or on a persistent agent identity.
 ## Conclude
 
 1. Write `outcome.md` with answers, case decisions, unresolved items, and human approvals.
-2. Promote only confirmed facts, decisions, backlog entries, or status changes.
+2. Promote only confirmed facts, decisions, backlog entries, or status changes. On the Non-product route, draft the manager-impact updates from each change-decision document in the run and update canonical files only after the user checks the draft; status and milestone impact goes through `pm-status-review`. Record every cross-party handoff file processed in this run in `outcome.md`.
 3. Mark `_run.md` as concluded and point to `outcome.md`.
 4. Keep the run as audit history; do not treat its scratch notes as current truth.

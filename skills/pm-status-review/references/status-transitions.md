@@ -9,8 +9,12 @@
 - `approved-for-factory -> handed-off`: a self-contained factory run exists.
 - `handed-off -> in-delivery`: current factory artifacts show delivery activity.
 - `in-delivery -> verifying`: implementation is present and verification is the remaining gate.
+- `candidate -> in-delivery` (orchestrator-pm Non-product route): the PM began editing the managed object under a change decision the user approved.
+- `in-delivery -> verifying` (Non-product route): the edit is done and the user's git diff review, or equivalent before/after diff, is pending.
 - `verifying -> completed-pm`: PM evidence supports completion.
 - `completed-pm -> investigating | verifying`: later evidence invalidates or weakens the PM assessment.
+
+The Non-product route skips `approved-for-factory` and `handed-off`.
 
 ## Human transition
 

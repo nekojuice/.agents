@@ -39,7 +39,7 @@
 
 ## 專案邏輯
 
-共有三種指揮者，皆僅在使用者明確啟用時進入，預設不自動開跑。
+共有三種指揮者。PM 模式與反向規格只在使用者明確啟用時進入；工廠模式另可在新 session 接手已建立的交接 run 時進入，進入後所有人閘照樣生效。
 
 ### 工廠模式
 
@@ -86,12 +86,12 @@ flowchart TD
 | 4 | `opsx-propose-guide` | 自製 | 是 | 提案擴充規範：切分、命名、依賴與冷啟動自足 |
 | 5 | `test-first` | 自製 | 是 | 測試優先；提案階段必載，實作階段繼續沿用 |
 | 6 | `openspec-apply-change` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 依 change 任務逐項實作 |
-| 7 | `opsx-apply-guide` | 自製 | 是 | 實作擴充規範：清單進度、測試優先、偏離紀錄 |
+| 7 | `opsx-apply-guide` | 自製 | 是 | 實作擴充規範：清單進度、測試優先、測試調整紀律與修訂輪、偏離紀錄 |
 | 8 | `hard-verify` | 自製 | 是 | 指揮編譯、建置、靜態檢查與單元測試等硬閘 |
 | 9 | `code-review` | [Matt Pocock](https://github.com/mattpocock/skills) | 是 | 規範與規格雙軸審查；由獨立檢查工作者執行 |
 | 10 | `openspec-sync-specs` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 將變更規格同步進主規格 |
 | 11 | `openspec-archive-change` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 完成後歸檔 change |
-| 12 | `commit-message-suggestion` | 自製 | 是 | 產生 commit 訊息建議，不代為提交 |
+| 12 | `commit-message-suggestion` | 自製 | 是 | 產生 commit 訊息建議；使用者明確要求時可代為提交 |
 | 13 | `change-log` | 自製 | 是 | 產出改動清單，向使用者與開發者說明變更 |
 | 選配 | `change-review-request` | 自製 | 是 | 撰寫任務包審查邀請，供審查者判斷 change 是否正確 |
 | 選配 | `change-review-response` | 自製 | 是 | 回覆任務包審查，寫出裁決與下一步 |
@@ -102,7 +102,7 @@ flowchart TD
 | --- | --- | --- | --- |
 | `orchestrator-pm` | 自製 | 否 | PM 模式總指揮：專案方向、進度與交接，不做實作 |
 | `pm-intake-triage` | 自製 | 是 | 進件分類與整併：回答、調查、分組或提為工廠候選 |
-| `pm-investigation-worker` | 自製 | 是 | 唯讀調查工作者，依派工產出單一發現檔 |
+| `pm-investigation-worker` | 自製 | 是 | 唯讀調查工作者，依派工產出指定的發現檔，也可拆解文件或規則 |
 | `pm-status-review` | 自製 | 是 | 證據式狀態盤點，更新專案進度 |
 | `pm-factory-handoff` | 自製 | 是 | 人閘核可後產出 `.factory` 交接 |
 
@@ -113,7 +113,8 @@ flowchart TD
 | `orchestrator-reverse-spec` | 自製 | 否 | 反寫既有專案為 OpenSpec 主規格的特規指揮者 |
 | `explain` | 自製 | 是 | 解釋目標，將目標拆為摘要與元素清單 |
 | `decision-support` | 自製 | 是 | 把糾纏的決策因式分解成獨立節點，逐節點權衡與推薦，不綁整包 |
-| `peer-agent-coordination` | 自製 | 是 | 多 agent 共用工作空間時的分身協調協定 |
+| `peer-agent-coordination` | 自製 | 是 | 多 agent 共用工作空間時的協調協定；不主動啟用，使用者提及或協作討論需要時才用，沒有即時通道時改由使用者人工轉送 |
+| `need-ask-user-guide` | 自製 | 是 | 委派工作中判斷是否詢問使用者，並規範檢查點的待決與提醒呈現 |
 | `openspec-explore` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 探索模式：釐清想法，尚未開立 change |
 | `impl-verify` | 自製 | 是 | 需求邊界檢查；可獨立使用，非工廠主路徑 |
 | `playwright-cli` | [Microsoft](https://github.com/microsoft/playwright-cli) | 是 | 瀏覽器命令列自動化；`impl-verify` 依賴項 |
@@ -124,10 +125,13 @@ flowchart TD
 | `code-to-docs` | 自製 | 否 | 依程式與主規格產出人類可讀文件 |
 | `thought-palette-extract` | 自製 | 是 | 收斂決策為可匯入圖像化工具的結構化資料 |
 | `create-skill-guide` | 自製 | 是 | 撰寫或更新技能檔頭 metadata 的規範 |
-| `doc-general-guide` | 自製 | 是 | 文件寫作基礎規範層 |
-| `doc-readme-guide` | 自製 | 是 | 私有／小團隊 README；依賴 `doc-general-guide` |
-| `doc-sop-guide` | 自製 | 是 | 開發者操作與部署說明；依賴 `doc-general-guide` |
-| `doc-user-guide` | 自製 | 是 | 使用者畫面操作手冊；依賴 `doc-general-guide` |
+| `doc-general-guide` | 自製 | 是 | 文件寫作父層規範與類型路由，直接負責工程參考手冊與盤點清單 |
+| `doc-readme-guide` | 自製 | 是 | 私有／小團隊 README；繼承 `doc-general-guide` |
+| `doc-sop-guide` | 自製 | 是 | 熟悉環境者的 SOP、runbook；繼承 `doc-general-guide` |
+| `doc-user-guide` | 自製 | 是 | 使用者畫面操作手冊；繼承 `doc-general-guide` |
+| `doc-tutorial-guide` | 自製 | 是 | 第一次操作者照做的部署、設定、接手教學；繼承 `doc-general-guide` |
+| `doc-openapi-guide` | 自製 | 是 | OpenAPI 文件與文件類程式碼實作指引；繼承 `doc-general-guide` |
+| `dab-sidecar-guide` | 自製 | 是 | 查詢或實作資料庫相關功能時，參考 DAB sidecar 補充資訊 |
 | `grill-me` | [Matt Pocock](https://github.com/mattpocock/skills) | 否 | 以連續拷問對齊計畫與設計 |
 | `grill-with-docs` | [Matt Pocock](https://github.com/mattpocock/skills) | 否 | 拷問並同步產出決策紀錄與詞彙表 |
 | `grilling` | [Matt Pocock](https://github.com/mattpocock/skills) | 是 | grill 系列底層可複用迴圈 |

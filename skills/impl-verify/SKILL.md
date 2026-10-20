@@ -8,17 +8,17 @@ description: >-
   implementation check / 實作檢查 / 驗收檢查. Not a security or optimization review.
 disable-model-invocation: false
 metadata:
-  author: Cursor Grok 4.5
-  version: "1.0"
-  last_updated: "2026-07-20T00:00:00"
-  extends: opsx-apply-guide, playwright-cli
+  author: Cursor Grok 4.5, Claude Code Opus 5.5
+  version: "1.1"
+  last_updated: "2026-10-20T15:52:52"
+extends: opsx-apply-guide, playwright-cli
 ---
 
 # impl-verify
 
 Post-implementation **requirement-boundary** check. Sits between **apply** (派工執行) and **archive** (收尾歸檔).
 
-`metadata.extends` documents relationship only. This skill runs **only** when the user explicitly invokes it (e.g. `/impl-verify`). It does **not** auto-run at the end of apply.
+`extends` documents relationship only. This skill runs **only** when the user explicitly invokes it (e.g. `/impl-verify`). It does **not** auto-run at the end of apply.
 
 This is **outside** the opsx apply flow. During apply, `opsx-apply-guide` still forbids agent-driven E2E. Here, limited playwright-cli is allowed only for a light UI peek (see §4).
 

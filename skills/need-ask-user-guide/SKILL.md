@@ -3,13 +3,15 @@ name: need-ask-user-guide
 description: >-
   Guides whether to ask the user or resolve uncertainty independently during
   delegated work. Use when deciding whether a clarification, approval, or
-  implementation choice needs user input. Preserves explicit checkpoints and
-  user-requested collaborative discussion; does not govern ordinary conversation.
+  implementation choice needs user input. Also use when presenting pending
+  decisions in checkpoint reports of delegated work. Preserves explicit
+  checkpoints and user-requested collaborative discussion; does not govern
+  ordinary conversation.
 disable-model-invocation: false
 metadata:
-  author: Codex GPT-6
-  version: "1.0"
-  last_updated: "2026-09-15T09:47:59"
+  author: Codex GPT-6, Claude Code Opus 5.5
+  version: "1.1"
+  last_updated: "2026-10-20T13:40:41"
 ---
 
 # need-ask-user-guide
@@ -17,6 +19,10 @@ metadata:
 Treat the user's attention as a limited resource. Resolve uncertainty within the
 authorized task using evidence and judgment. Ask when the answer materially
 affects the outcome and requires the user's knowledge, intent, or authority.
+
+This applies throughout delegated work, including each round or checkpoint
+report to the user and a coordinator's report after collecting worker results.
+Ordinary conversation is still out of scope.
 
 ## Authority before action
 
@@ -26,7 +32,9 @@ permission. A technically reversible action can still create external costs,
 disclose data, or affect other people.
 
 - Carry forward explicit decisions and applicable authorization from the
-  conversation. Ask again only when changed circumstances exceed their scope.
+  conversation and from task-designated persistent records, such as management
+  documents, project documentation, run notes, and decision records. Ask again
+  only when changed circumstances exceed their scope.
 - Follow the user's requested level of collaboration. When the task is to
   discuss, compare, or diagnose, deliver that work within its stated boundary.
 - Within authorized implementation, choose routine means and verify the result.
@@ -39,8 +47,10 @@ disclose data, or affect other people.
 ## Resolve what can be resolved
 
 Before asking about a fact, inspect the most relevant available sources. Start
-with supplied context and task-designated sources, then relevant specifications,
-decisions, configuration, nearby implementations, tests, and observed behavior.
+with supplied context and task-designated sources, including persistent records
+such as management documents, project documentation, run notes, and decision
+records. Then check relevant specifications, decisions, configuration, nearby
+implementations, tests, and observed behavior.
 Use history or external sources when needed and accessible.
 
 Choose authority by the task: current behavior answers what exists; approved
@@ -89,6 +99,8 @@ Use a natural task checkpoint to gather related questions. Zero questions is a
 valid outcome. The goal is fewer unnecessary exchanges, not a fixed question quota.
 
 - Resolve factual questions and duplicates before presenting the remaining set.
+  Duplicates include items raised in earlier rounds or already written to a
+  persistent record, not only repeats within the current batch.
 - Ask early when waiting would cause substantial rework or cross a required gate.
 - Defer nonblocking questions to a useful checkpoint rather than interrupting
   each time an uncertainty appears.
@@ -120,6 +132,30 @@ Avoid technical menus when the user can answer a plain question about the desire
 outcome. Distinguish an alignment question from a permission request: asking which
 behavior is wanted does not itself authorize deployment or another external action.
 
+## Present pending decisions at checkpoints
+
+Split each checkpoint report into two zones, plus one rule for recorded blockers:
+
+- **Decisions needed:** list only items that meet both conditions: dependent
+  work cannot proceed without the decision, and the decision has no existing
+  answer or record. Present each item with the four elements above. This zone
+  may be empty; when it is, say "No decisions needed." Do not fill it with
+  reminders or pad it to reach a count.
+- **Reminders:** reminders, known limitations, nonblocking issues, out-of-scope
+  findings, and pending questions already recorded. For a recorded question,
+  cite where it is recorded instead of raising it again as a new decision. No
+  reply is required for this zone, except for recorded items that still block,
+  covered below.
+- **Recorded but still blocking:** a decision already recorded that still blocks
+  the flow is not demoted to a no-reply reminder. Present it as still blocking,
+  with a pointer to its record, in the report's blockers field when the workflow
+  defines one (e.g. `Blockers`); otherwise list it first under Reminders, marked
+  still blocking. Do not raise it again as a new decision.
+
+A list asking the user to perform manual verification or review is also an
+interruption. List only items that need human judgment; exclude items already
+covered by automated tests or hard checks, and simple logic checks.
+
 ## Examples
 
 - **Package manager:** Read the lockfile, scripts, and documented workflow; use
@@ -133,13 +169,21 @@ behavior is wanted does not itself authorize deployment or another external acti
   authorization. Resolve the target and applicable permission before deleting.
 - **Required review:** Prepare the reviewable result and stop at the specified
   checkpoint. Successful checks do not replace the user's acceptance.
+- **Checkpoint report:** One open question is already listed in the run's
+  pending list. If it does not block the next step, place it under Reminders and
+  cite that entry; if it still blocks, present it as still blocking with a
+  pointer to that entry. Only a newly surfaced question that blocks the next step
+  goes under Decisions needed.
 
 ## Before sending a question
 
-Check that the answer is not already available, reasonable investigation cannot
-settle it, and it affects the result or required authority. Consider whether a
-supported, inexpensive assumption would suffice. Merge questions sharing the same
-dependency while preserving independent decisions.
+Check that the answer is not already available, including in task-designated
+persistent records; when a record answers it, use that answer. Check that
+reasonable investigation cannot settle it, and that it affects the result or
+required authority. Consider whether a supported, inexpensive assumption would
+suffice. Merge questions sharing the same dependency while preserving
+independent decisions. Confirm that every item under Decisions needed actually
+blocks progress; move any that do not to Reminders.
 
 Success means completing the authorized work with fewer avoidable interruptions,
 visible consequential assumptions, and all required approvals intact. Fewer

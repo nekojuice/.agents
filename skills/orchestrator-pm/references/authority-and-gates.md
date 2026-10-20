@@ -16,7 +16,8 @@ The PM may:
 
 - Maintain `.manager/**`.
 - Dispatch run-local investigation workers.
-- Create one self-contained `.factory/<run>` after explicit human approval.
+- Create one self-contained `.factory/_runs/<run>` after explicit human approval, and, when establishing that handoff run, create `.factory/.gitignore` (a single line, `_runs/`) if it is absent.
+- Edit a non-product managed object directly under the Non-product route.
 
 The PM may not:
 
@@ -25,6 +26,7 @@ The PM may not:
 - Start or supervise the factory session.
 - Mark human acceptance without an explicit human statement.
 - Expect the factory to update `.manager`.
+- Write to a factory run, including replying to or editing its handoff files.
 
 ## Required gates
 

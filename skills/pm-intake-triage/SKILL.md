@@ -9,9 +9,9 @@ description: >-
   work.
 disable-model-invocation: false
 metadata:
-  author: Codex GPT-5.6-Sol
-  version: "1.0"
-  last_updated: "2026-08-14T13:29:50"
+  author: Codex GPT-5.6-Sol, Claude Code Opus 5.5
+  version: "1.1"
+  last_updated: "2026-10-20T11:49:52"
 extends: orchestrator-pm, pm-investigation-worker, pm-factory-handoff
 ---
 
@@ -23,7 +23,7 @@ Turn mixed incoming reports into answers, bounded investigations, and coherent p
 
 - Do not equate one report with one factory candidate.
 - Do not establish or start factory work.
-- Do not modify product files or canonical status during investigation.
+- Do not modify product files, managed objects, or canonical status during triage or investigation. A managed object on the orchestrator-pm `## Non-product route` changes only through that route, after the human instructs it.
 - Preserve the original report, source, and any stated severity.
 - Distinguish observed facts from reporter assumptions and PM inference.
 - Ask the human when expected behavior is undefined and the answer changes classification.
@@ -42,9 +42,9 @@ Turn mixed incoming reports into answers, bounded investigations, and coherent p
 4. Group items only when evidence supports a common cause, dependency, or desired outcome. Preserve links to every original source item.
 5. Dispatch `pm-investigation-worker` for bounded code, document, or legacy comparison work.
 6. Classify each item as answered, investigating, duplicate-or-related, suspected-bug, confirmed-bug, design-concern, initiative, risk, deferred, or rejected.
-7. Form factory candidates around coherent outcomes or root causes, not around report count.
+7. Form factory candidates around coherent outcomes or root causes, not around report count. When the managed object is on the orchestrator-pm `## Non-product route`, form the candidate the same way, but its execution path is that route (run-local change decision document, direct edit, git diff review), not the factory.
 8. Present candidate rationale, scope boundary, evidence, confidence, dependencies, and unknowns.
-9. Wait for explicit human establishment before invoking `pm-factory-handoff`.
+9. Wait for explicit human establishment before invoking `pm-factory-handoff`. Do not invoke `pm-factory-handoff` for a `non-product` candidate; hand it to the orchestrator-pm `## Non-product route`, which still waits for the human instruction that route requires.
 
 ## Output
 
@@ -58,7 +58,7 @@ investigating:
 duplicate_or_related:
   - <group, source ids, evidence for grouping>
 factory_candidates:
-  - <candidate id, outcome, sources, rationale, confidence, unknowns>
+  - <candidate id, route (factory | non-product), outcome, sources, rationale, confidence, unknowns>
 deferred:
   - <source id, reason, revisit condition>
 rejected:

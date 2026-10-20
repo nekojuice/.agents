@@ -20,7 +20,7 @@
 
 - PM authority: maintain `.manager`, investigate, assess progress, and prepare approved factory handoffs.
 - Human authority: approve project direction, factory establishment, and human acceptance.
-- Factory authority: plan and implement within its own session and workspace after human activation.
+- Factory authority: plan and implement within its own session and workspace after human activation; may consult `.manager` read-only; never writes it.
 
 ## Success conditions
 

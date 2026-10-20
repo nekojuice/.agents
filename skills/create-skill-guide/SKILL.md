@@ -8,9 +8,9 @@ description: >-
   or when the user explicitly runs /create-skill-guide.
 disable-model-invocation: false
 metadata:
-  author: Cursor Grok 4.5, Codex GPT-5
-  version: "1.1"
-  last_updated: "2026-08-20T15:05:36"
+  author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
+  version: "1.2"
+  last_updated: "2026-10-20T15:44:36"
 ---
 
 # create-skill-guide
@@ -33,6 +33,7 @@ metadata:
   author: <Product-or-IDE-or-App> <model>
   version: "1.0"
   last_updated: "YYYY-MM-DDTHH:mm:ss"
+extends: <related-skill-name>   # optional, top level
 ---
 ```
 
@@ -45,7 +46,7 @@ policy:
 
 Preserve existing `interface` and `dependencies` blocks in `agents/openai.yaml`. Add only the fields the skill actually needs; the invocation policy itself must always be present and explicit.
 
-`extends` appears **only when needed** (see below). Do not invent other metadata keys unless the user asks.
+`extends` appears **only when needed** (see below) and sits at the **top level** of the frontmatter, not inside `metadata`. Do not invent other metadata keys unless the user asks.
 
 ## Field rules
 
@@ -92,7 +93,7 @@ Always present when this guide applies to a create or content change.
 | `author` | If empty or missing → set to **product / IDE / app name + model** (e.g. `Cursor Grok 4.5`, `Claude Code Opus 4.8`). Same model under different hosts must differ. If authors already exist → **append** yourself with `, ` (comma + space); do not remove prior names. |
 | `version` | String semver-like. On content change, bump the **minor** segment by 1 (`1.0`→`1.1`, `1.9`→`1.10`). Do **not** bump the major segment unless the user explicitly orders a major bump. |
 | `last_updated` | On every create or content change, set to the **current OS local time to the second**: `YYYY-MM-DDTHH:mm:ss`. Obtain via a real OS command (e.g. PowerShell `Get-Date -Format 'yyyy-MM-ddTHH:mm:ss'`, or `date` on Unix). Do not use date-only values or fake midnight (`T00:00:00`). |
-| `extends` | Optional. Include **only when** this skill documents a real link to related skill name(s). Comma-separate multiple names. Omit when there is no such link. |
+| `extends` | Optional; a top-level frontmatter key, not inside `metadata`. Include **only when** this skill documents a real link to related skill name(s). Comma-separate multiple names. Omit when there is no such link. |
 
 ## Create vs update checklist (header only)
 

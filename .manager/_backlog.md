@@ -22,3 +22,4 @@
 | SK-D | 文件分支：新增 doc-tutorial-guide、子 skill 繼承架構、類型路由、通用規則補強 | 已完成，使用者驗收 | tag v1.1；決策 doc-skill-family |
 | SK-D2 | 新增 doc-openapi-guide 並列入父層類型路由 | 已完成，使用者驗收 | tag v1.1 |
 | SK-X1 | 建置發布結果一致性的檢查項 | 不做 | 建置與發布高敏感、各專案差異大、agent 看不到部署目標 |
+| SK-X5 | java-coding-style 屬專案專用且含外部專案名稱 | 已處理 | 自使用者級移除，改由專案工作區託管 |

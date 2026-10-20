@@ -155,7 +155,6 @@ flowchart TD
 | `create-skill-guide` | 自製 | 是 | 建立或更新 skill 時的檔頭、調用設定與版本規範 |
 | `thought-palette-extract` | 自製 | 是 | 收斂決策為可匯入圖像化工具的結構化資料 |
 | `dab-sidecar-guide` | 自製 | 是 | 查詢或實作資料庫相關功能時，參考 DAB sidecar 補充資訊 |
-| `java-coding-style` | 自製 | 是 | Java 後端編碼規範 |
 | `karpathy-guidelines` | [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) | 是 | 實作行為準則：先想清楚、簡化、外科手術式改動 |
 | `ponytail` | [DietrichGebert](https://github.com/DietrichGebert/ponytail) | 是 | 懶惰資深工程師模式：選最簡可行解 |
 | `i-have-adhd` | [ayghri](https://github.com/ayghri/i-have-adhd) | 否 | ADHD 友善輸出：先給下一步、步驟編號、跨回合重述狀態 |

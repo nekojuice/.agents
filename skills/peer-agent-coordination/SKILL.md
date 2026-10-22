@@ -10,8 +10,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Claude Code Opus 4.8, Claude Code Opus 5.5
-  version: "1.5"
-  last_updated: "2026-10-20T16:00:57"
+  version: "1.7"
+  last_updated: "2026-10-22T18:17:43"
 ---
 
 # peer-agent-coordination
@@ -203,6 +203,26 @@ qualify.
 | Read peer context | Gather context before, or instead of, asking. | `mcp__host__get_session_context` |
 | Create a peer | When a run needs an additional peer. | `mcp__host__create_session` |
 
+**Local station binding (example).** A local mailbox station such as `party`
+also qualifies. `<party>` below stands for the station's entry command, today
+`node <station-repo>/src/cli.ts`; use the exact command the station prints. The
+booth is the run directory itself (`--run <run>`, station state in
+`<run>/_party/`); there is no default location.
+
+| Capability | `party` binding |
+| --- | --- |
+| Wake / deliver | `<party> send --run <run> --from <id> --to <id> ...` stores the message and appends it to `<run>/_inbox.md` in the §3 format; the recipient's own `<party> listen --run <run> --agent <id>` is the waiting end that returns when it arrives |
+| Discover peers | `<party> who --run <run>` (members, platform, session, inferred listening state) |
+
+Here the station never wakes a session itself. The host only turns "the waiting
+command ended" into a new turn, and not every host does that (Codex Desktop
+currently does not start a turn when a background command ends). When `send`
+reports that a recipient is not listening, fall back as described in §5.3.
+
+With the station, `<party> send` writes the record: the full message goes to
+`_inbox.md` (with `relay: pending` when the user must carry a notice) and the
+station delivers it. Do **not** append the same message to `_inbox.md` yourself.
+
 Rules:
 
 - **Never write-and-wait.** After you append a message that expects a reply
@@ -250,6 +270,46 @@ the recipient's run, it appends the full message to its **own** run's
 **Replies** travel the same way: the recipient writes its `ack` / `answer` to the
 original sender's run `_inbox.md` — or, under the write-permission rule, to its
 own run's `_inbox.md` — and gives the user a relay notice.
+
+---
+
+## 5.3 Staying reachable
+
+Applies while this protocol is enabled (§0) and the discussion runs over a
+local station such as `party` (§5.1). The goal is that a peer can always be
+woken until the discussion ends or the user says it no longer needs to listen.
+
+- **Before every turn ends, run three checks in order** (never start a second
+  listener):
+  1. **Your own background tasks.** If this session already started a
+     background `listen` / `wait` and has not yet been notified that it
+     finished, do nothing more and end the turn. If you are not sure, go to 2.
+  2. **Foreground check.** Run `<party> listen --run <run> --agent <id> --check`.
+     Exit 0: nothing to do, end the turn. Exit 5: start `<party> listen --run
+     <run> --agent <id>` the way your host can be woken (next point). Exit 4:
+     do not listen again.
+  3. **Station guard.** A `listen` that finds a listener already running ends
+     with exit code 6 and says so. On exit 6, end the turn and start no other
+     listen.
+- **Run `listen` the way your host can be woken.** On a host that starts a new
+  turn when a background command finishes (Claude Code), run it in the
+  background. On a host that does not (Codex Desktop), run it in the foreground
+  while the user is present, or run `listen` (or `read`) at the start of your
+  next turn to catch up. A `listen` that finds missed messages delivers them and
+  ends with exit 0 without waiting; handle them, then repeat the checks.
+- **Not listening → manual relay.** When `send` reports `ask_user` for a
+  recipient, give the user the relay notice the station prints; it has the §5.2
+  shape (recipient, inbox path, message `id`) and the message is already marked
+  `relay: pending` in `_inbox.md`. Track it as in §5.2. For
+  `native_or_ask_user`, you may use your host's own wake capability instead, or
+  relay the same notice. For `stopped`, do not ask anyone to wake that peer.
+- **Long waits.** When a reply may take long, listen with a longer
+  `--timeout-sec` (up to 86400). If the listen times out (exit 3) and you are
+  still waiting, run the printed re-listen command again.
+- **Stop when told or done.** When the user says you no longer need to listen,
+  run `<party> stop --run <run> --agent <id>`. When the discussion is over, run
+  `<party> close --run <run>`; every listener then ends. A `listen` that ends
+  with exit code 4 means: do not listen again.
 
 ---
 

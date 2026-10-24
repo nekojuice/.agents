@@ -10,8 +10,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Claude Code Opus 4.8, Claude Code Opus 5.5
-  version: "1.7"
-  last_updated: "2026-10-22T18:17:43"
+  version: "1.8"
+  last_updated: "2026-10-24T15:30:00"
 ---
 
 # peer-agent-coordination
@@ -207,10 +207,18 @@ qualify.
 also qualifies. `<party>` below stands for the station's entry command, today
 `node <station-repo>/src/cli.ts`; use the exact command the station prints. The
 booth is the run directory itself (`--run <run>`, station state in
-`<run>/_party/`); there is no default location.
+`<run>/_party/`); there is no default location. `<party> init --run <run>`
+creates only `_inbox.md` (besides `_party/`); `_agents.md` and
+`_communication-notes.md` are still created by the owner as in Initialization,
+and an `_inbox.md` that already exists does not change who becomes the owner.
+Joining is `<party> join --run <run> --agent <handle> --platform <platform>
+--session <canonical_id>`; it replaces the `join` message (Initialization
+step 5), which the station does not accept. The owner adds new members to the
+roster from `<party> who`.
 
 | Capability | `party` binding |
 | --- | --- |
+| Join | `<party> join --run <run> --agent <handle> --platform <claude\|codex\|other> --session <canonical_id>` (required before `listen`) |
 | Wake / deliver | `<party> send --run <run> --from <id> --to <id> ...` stores the message and appends it to `<run>/_inbox.md` in the §3 format; the recipient's own `<party> listen --run <run> --agent <id>` is the waiting end that returns when it arrives |
 | Discover peers | `<party> who --run <run>` (members, platform, session, inferred listening state) |
 
@@ -220,8 +228,8 @@ currently does not start a turn when a background command ends). When `send`
 reports that a recipient is not listening, fall back as described in §5.3.
 
 With the station, `<party> send` writes the record: the full message goes to
-`_inbox.md` (with `relay: pending` when the user must carry a notice) and the
-station delivers it. Do **not** append the same message to `_inbox.md` yourself.
+`_inbox.md` (with `relay: pending` when the user must carry a notice and the
+message expects a reply) and the station delivers it. Do **not** append the same message to `_inbox.md` yourself.
 
 Rules:
 
@@ -285,31 +293,36 @@ woken until the discussion ends or the user says it no longer needs to listen.
      background `listen` / `wait` and has not yet been notified that it
      finished, do nothing more and end the turn. If you are not sure, go to 2.
   2. **Foreground check.** Run `<party> listen --run <run> --agent <id> --check`.
-     Exit 0: nothing to do, end the turn. Exit 5: start `<party> listen --run
-     <run> --agent <id>` the way your host can be woken (next point). Exit 4:
-     do not listen again.
+     Exit 0: nothing to do, end the turn; this includes being stopped or the
+     booth being closed. Exit 5: start `<party> listen --run <run> --agent <id>`
+     the way your host can be woken (next point).
   3. **Station guard.** A `listen` that finds a listener already running ends
      with exit code 6 and says so. On exit 6, end the turn and start no other
      listen.
-- **Run `listen` the way your host can be woken.** On a host that starts a new
-  turn when a background command finishes (Claude Code), run it in the
-  background. On a host that does not (Codex Desktop), run it in the foreground
-  while the user is present, or run `listen` (or `read`) at the start of your
-  next turn to catch up. A `listen` that finds missed messages delivers them and
-  ends with exit 0 without waiting; handle them, then repeat the checks.
+- **Run `listen` only where the host can be woken.** On a host that starts a
+  new turn when a background command finishes (Claude Code), run it in the
+  background. On a host that does not (Codex Desktop), skip the checks above
+  and do not run `listen` or `wait` at all: a background one wakes no one and
+  takes messages away unread, and waiting in the foreground spends tokens.
+  Instead run `<party> read --run <run> --agent <id>` at the start of each turn
+  and whenever the user pastes a relay notice. Because you are not listening,
+  a peer's `send` asks the user to relay to you (next point). A `listen` that
+  finds missed messages delivers them and ends with exit 0 without waiting;
+  handle them, then repeat the checks.
 - **Not listening → manual relay.** When `send` reports `ask_user` for a
-  recipient, give the user the relay notice the station prints; it has the §5.2
-  shape (recipient, inbox path, message `id`) and the message is already marked
-  `relay: pending` in `_inbox.md`. Track it as in §5.2. For
-  `native_or_ask_user`, you may use your host's own wake capability instead, or
-  relay the same notice. For `stopped`, do not ask anyone to wake that peer.
+  recipient, give the user, as printed, the lines the station prints for that
+  recipient (its platform and session, and the §5.2 relay notice); when the
+  message expects a reply it is already marked `relay: pending` in `_inbox.md`.
+  Track it as in §5.2. For `native_or_ask_user`, you may use your host's own
+  wake capability instead, or relay the same lines. For `stopped`, do not ask anyone to wake that peer.
 - **Long waits.** When a reply may take long, listen with a longer
   `--timeout-sec` (up to 86400). If the listen times out (exit 3) and you are
   still waiting, run the printed re-listen command again.
 - **Stop when told or done.** When the user says you no longer need to listen,
   run `<party> stop --run <run> --agent <id>`. When the discussion is over, run
-  `<party> close --run <run>`; every listener then ends. A `listen` that ends
-  with exit code 4 means: do not listen again.
+  `<party> close --run <run>`; every listener then ends. A `listen` or `wait`
+  (not `--check`) that ends with exit code 4 means you are stopped or the booth
+  is closed: do not listen again. `--check` never returns 4.
 
 ---
 

@@ -9,11 +9,11 @@
     },
     {
       "path": "src/cli.ts",
-      "sha256": "8728d29bef47b15fe83f5611e83e42aa1b47c28d0ab5171a007caca7e6f72256"
+      "sha256": "766e0bf6e42cffe698007426ada2073ddc175eb5faec745920c03ed51e443d60"
     },
     {
       "path": "src/room.ts",
-      "sha256": "1f9f1f21aee7edb6ab4dbb41bad8d82cb9cf0f30011f22277f4be25040801c52"
+      "sha256": "de09097bb94c4eeca47ed60a36baed0af55b989b2d57bdba828412be18c1a505"
     },
     {
       "path": "src/format.ts",

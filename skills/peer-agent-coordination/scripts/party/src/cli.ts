@@ -23,8 +23,8 @@ const USAGE = `usage (every command needs --run <run-dir>, or PARTY_RUN; there i
   party who    --run <run> [--agent <id>]
   party send   --run <run> --from <id> --to <id|all> --intent <question|answer|finding|handoff|fyi|ack> --text <text> [--re <msg-id>]
   party read   --run <run> --agent <id>
-  party wait   --run <run> --agent <id> [--timeout-sec 600]
-  party listen --run <run> --agent <id> [--timeout-sec 600]
+  party wait   --run <run> --agent <id> [--timeout-sec 86400]
+  party listen --run <run> --agent <id> [--timeout-sec 86400]
   party listen --run <run> --agent <id> --check
   party stop   --run <run> --agent <id>
   party close  --run <run>
@@ -33,7 +33,7 @@ the booth's state lives in <run>/_party/; init needs an existing run directory
 exit codes: 0 ok / message received / listen: messages waiting, run the printed read command / --check nothing to do,
   1 unexpected error, 2 usage error or refused,
   3 wait/listen timeout, 4 should not listen (member stopped or room closed), 5 --check: action needed (run the printed command),
-  6 listen found a running listener: do not start another listen, just end the turn
+  6 listen found a running listener: do not start another listen, keep going with the current work
 `;
 
 class UsageError extends Error {}
@@ -183,7 +183,7 @@ export async function run(argv: string[], io: CliIo): Promise<number> {
         const res = await room.listen(agent, { timeoutSec, pid: io.deps?.pid ?? process.pid });
         if (res.outcome === 'already_listening') {
           io.stdout(`[party] already listening (exit 6): ${agent} has an active listener in room ${roomName}\n`
-            + '[party] 已有收聽中的 listen；不要再啟動背景 listen，本次不需處理，直接結束回合\n');
+            + '[party] 已有收聽中的 listen；不要再啟動背景 listen，繼續目前的工作\n');
           return 6;
         }
         if (res.outcome === 'notified') {

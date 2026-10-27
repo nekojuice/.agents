@@ -11,8 +11,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Claude Code Opus 4.8, Claude Code Opus 5.5
-  version: "2.3"
-  last_updated: "2026-10-27T14:54:00"
+  version: "2.4"
+  last_updated: "2026-10-27T17:06:01"
 ---
 
 # peer-agent-coordination
@@ -94,15 +94,20 @@ it shows it was processed.
 1. **Join.** Read the roster and the record tail, then add yourself through your
    channel (the station has a join command; otherwise ask the host to add you).
    If the run files do not exist, create them and become the host.
-2. **Work.** When woken or when the user starts a turn, read what is new,
-   handle it, and reply through a channel (section 7).
+2. **Work.** When woken or when the user starts a turn, first read what is new
+   (for a local station, `read`). Right after reading, make sure a background
+   listener is running again as in point 3, and only then handle what you read
+   and reply through a channel (section 7). This keeps you reachable while you
+   work, so a peer who writes meanwhile still reaches you. Do not restart the
+   listener before reading: messages still waiting would end it at once.
 3. **Before going idle, make sure a background listener is running.** Every
-   time, whatever you just did. The listener is the waiting end of the channel
-   peers use to reach you (for a local station, its background `listen`; see
-   the channel's reference). If one is already running, do not start a second
-   one. Never wait in the foreground: it wastes tokens and blocks the
-   conversation. One platform is an exception; see
-   `references/channel-local-station.md`.
+   time, whatever you just did. This is the last safeguard: the listener from
+   point 2 may have ended while you worked, on a new message or a timeout.
+   The listener is the waiting end of the channel peers use to reach you (for
+   a local station, its background `listen`; see the channel's reference). If
+   one is already running, do not start a second one. Never wait in the
+   foreground: it wastes tokens and blocks the conversation. One platform is an
+   exception; see `references/channel-local-station.md`.
 4. **Never hang up on your own.** Do not stop listening, leave, or end the room
    because you think the discussion is over, the other side is quiet, or a
    listener timed out. When a listener times out, start it again.

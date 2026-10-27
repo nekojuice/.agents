@@ -207,7 +207,7 @@ function positiveInt(value: number, label: string): number {
   return value;
 }
 
-export const DEFAULT_WAIT_TIMEOUT_SEC = 600;
+export const DEFAULT_WAIT_TIMEOUT_SEC = 86400;
 const POLL_MS = 1000;
 export const MAX_WAIT_TIMEOUT_SEC = 86400;
 

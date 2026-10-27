@@ -34,7 +34,7 @@ for each file.
 | Join | `<party> join --run <run> --agent <handle> --platform <platform> --session <canonical_id>` | Use a `--platform` value the station's usage lists. The host also adds you to `_agents.md`. |
 | Send | `<party> send --run <run> --from <handle> --to <handle\|all> --intent <intent> --text <text> [--re <id>]` | The station writes the entry to `_inbox.md` for you. Do not append it yourself. |
 | Read now | `<party> read --run <run> --agent <handle>` | Delivers what is waiting, without waiting. |
-| Listen in the background | `<party> listen --run <run> --agent <handle>` | Run it as a background command. When messages are waiting it only notifies and ends; then run `read`. It also ends on timeout. |
+| Listen in the background | `<party> listen --run <run> --agent <handle>` | Run it as a background command. Without `--timeout-sec` it waits up to 24 hours; use `--timeout-sec <1-86400>` for a different time. When messages are waiting it only notifies and ends; then run `read`. It also ends on timeout. |
 | Check | `<party> listen --run <run> --agent <handle> --check` | Tells you, without waiting, whether you need to read waiting messages or start a listener. |
 | See members | `<party> who --run <run>` | Members, platform, session, inferred listening state. |
 | Transcript | `<party> log --run <run>` | |
@@ -57,8 +57,10 @@ manual relay for you until it is solved.
    prints (`read` when messages are waiting, otherwise a background `listen`).
 3. If a `listen` ends with exit 6, a listener is already running: start no other.
 
-A `listen` that ends with exit 0 means messages are waiting: run `read`, handle
-them, then repeat these steps. Exit 3 is a timeout: start the listener again.
+A `listen` that ends with exit 0 means messages are waiting: run `read`, start
+a background `listen` again right away, then handle them, and repeat these
+steps before going idle. Do not start the listener before `read`: waiting
+messages would end it at once. Exit 3 is a timeout: start the listener again.
 
 ## Exception: Codex Desktop members
 

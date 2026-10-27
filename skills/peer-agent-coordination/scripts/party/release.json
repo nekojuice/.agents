@@ -1,0 +1,23 @@
+{
+  "formatVersion": 1,
+  "sourcePackage": "nkj-agent-party",
+  "sourceVersion": "0.1.0",
+  "files": [
+    {
+      "path": "package.json",
+      "sha256": "de5d8717fbe078a5eaa6c6e8a5e5cd7b62040b4e1d126f1417322eb2fc49b00a"
+    },
+    {
+      "path": "src/cli.ts",
+      "sha256": "8728d29bef47b15fe83f5611e83e42aa1b47c28d0ab5171a007caca7e6f72256"
+    },
+    {
+      "path": "src/room.ts",
+      "sha256": "1f9f1f21aee7edb6ab4dbb41bad8d82cb9cf0f30011f22277f4be25040801c52"
+    },
+    {
+      "path": "src/format.ts",
+      "sha256": "36d0dd2cac31172d1e971d8b17a367b9ef3af03d35686af11b93392c93d0d4a2"
+    }
+  ]
+}

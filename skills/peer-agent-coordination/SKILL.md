@@ -11,8 +11,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Claude Code Opus 4.8, Claude Code Opus 5.5
-  version: "2.2"
-  last_updated: "2026-10-27T11:05:47"
+  version: "2.3"
+  last_updated: "2026-10-27T14:54:00"
 ---
 
 # peer-agent-coordination
@@ -128,7 +128,7 @@ Pick per recipient, in this order, and use the first that works:
 | --- | --- | --- |
 | 1 | You and the recipient are on the same platform, and it has built-in cross-session messaging | `references/channel-builtin.md` |
 | 2 | Different platforms, and both sides support AHP or a compatible host tool set | `references/channel-ahp.md` |
-| 3 | Otherwise, a local mailbox station is available in the run | `references/channel-local-station.md` |
+| 3 | Otherwise, the local mailbox station bundled with this skill (`scripts/party/`, needs Node.js 26+) | `references/channel-local-station.md` |
 | — | Nothing above can reach the recipient | `references/manual-relay.md` |
 
 Whatever the channel, the full message is in `_inbox.md`; the channel only

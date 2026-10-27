@@ -1,13 +1,30 @@
 # Channel: local mailbox station
 
-Use this when no built-in messaging or AHP connects you to the recipient and a
-local mailbox station such as `party` is used for the run. Any agent that can
-run shell commands can use it.
+Use this when no built-in messaging or AHP connects you to the recipient. The
+channel is the `party` mailbox station bundled with this skill; any agent that
+can run shell commands can use it.
 
-`<party>` below means the station's entry command, for example
-`node <station-repo>/src/cli.ts`. Use the exact command the station prints.
+The `party` station ships with this skill. `<skill-root>` is the directory of
+the `SKILL.md` you loaded; the station's fixed entry is
+`<skill-root>/scripts/party/src/cli.ts`. `<party>` below means:
+
+```text
+node "<skill-root>/scripts/party/src/cli.ts"
+```
+
+Quote the path; it may contain spaces. It works from any working directory. Do
+not look for another station repository, run `npm install`, or build anything:
+the bundled files only need Node.js 26 or later. If `node --version` is missing
+or older, tell your user Node.js 26+ is required; do not install it yourself.
+After the first command, use the exact follow-up commands the station prints.
+
 Every command takes `--run <run>`; there is no default location. The station
-keeps its state in `<run>/_party/`.
+keeps its state in `<run>/_party/`, never in the skill directory.
+
+The files under `scripts/party/` are a published copy, not a place to edit:
+they are updated only by publishing from the station's development project,
+and `scripts/party/release.json` lists the source version and a SHA-256 hash
+for each file.
 
 ## Commands
 

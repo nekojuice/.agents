@@ -1,0 +1,16 @@
+# Development dependencies, caches and build output must not enter the skill.
+# The published station files under scripts/party/ are chosen by the release
+# command's explicit list, not by these rules, and stay tracked.
+node_modules/
+__pycache__/
+*.tsbuildinfo
+*.log
+dist/
+coverage/
+
+# Discussion data belongs in each run directory, never in the skill.
+_party/
+
+# Operating system files
+.DS_Store
+Thumbs.db

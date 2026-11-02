@@ -8,8 +8,9 @@ sessions).
 2. Find the recipient's session by its `canonical_id` with the platform's
    session listing.
 3. Send it a short pointer only: the message `id` and the record path.
-4. Before going idle, keep your background listener running as SKILL.md
-   section 5 requires.
+4. This channel needs no background listener: the platform's delivery wakes
+   the recipient. If the platform cannot wake an idle session, use the next
+   channel in SKILL.md section 7.
 
 The platform's own permission rules still apply on both sides. A message the
 platform holds or refuses is not delivered; if it cannot reach the recipient,

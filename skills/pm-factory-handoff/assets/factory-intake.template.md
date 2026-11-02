@@ -44,3 +44,18 @@
 
 - Review factory discussion and proposed changes before dispatch.
 - Perform human E2E before final acceptance.
+
+## Delegation (when the PM started this delegation)
+
+- User approval: <user's statement and date>
+- Peer room: <this run directory, or none if the user declined peer>
+
+## Automation authorization (only under an approved automation plan)
+
+- Approval: <user's quoted approval and date>
+- Batch: <this run's order among the batch's runs>; the user reviews all changes of the batch in one gate before building
+- Dispatch: after that review, confirmed runs are dispatched in order without a separate confirmation
+- Commit: <one commit when this run reaches await-e2e | other rule | none>; never push
+- Depends on: <earlier runs in the batch, or none>
+- Stop conditions: <beyond the factory's own, or none>
+- Human E2E and sync/archive: after the whole batch

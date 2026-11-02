@@ -4,8 +4,8 @@ description: Implementation discipline for the session applying an opsx (OpenSpe
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.2"
-  last_updated: "2026-10-20T15:52:52"
+  version: "1.3"
+  last_updated: "2026-11-02T11:47:29"
 extends: openspec-apply-change, test-first
 ---
 
@@ -70,13 +70,16 @@ When you finish the change, produce the list of things a developer should verify
 
 **Abstraction level** — this is the canonical rule; `opsx-propose-guide` and coordinating workflows reference it:
 
-- Each item is a **feature or business flow**: e.g. "on a given screen, confirm a given feature works" or "run one complete business flow and confirm nothing is off."
+- Two levels. Use the one the coordinator names (e.g. `verification_level`); otherwise judge by the work:
+  - **broad** (default; large or chained implementation) — each item is an end-to-end **feature or business flow**, described through the UI when there is one: e.g. "run one complete business flow and confirm nothing is off." Do not list individual controls, message text, or internal implementation.
+  - **focused** (a small change or debug the user initiated) — state what must be observed after the change, and for a debug, the bug's cause. When the change targets a control or a message, name it.
+- Problems fixed in self-fix rounds are not listed and do not make the work focused.
 - **Group screen checks by screen**: everything to look at on one screen sits in one item or one place.
-- Do not list individual controls, message text, or internal implementation.
 - List only items that **need human judgment**. Leave out what unit tests or hard checks already cover, and simple logic checks (`need-ask-user-guide`, `## Present pending decisions at checkpoints`).
 - Placeholder contrast — it shows the level only, not a template:
-  - Too fine: "Click `<control>`; message `<text>` appears."
-  - Right level: "On `<screen>`, complete one `<flow>` and confirm the result."
+  - Too fine for broad: "Click `<control>`; message `<text>` appears."
+  - Broad: "On `<screen>`, complete one `<flow>` and confirm the result."
+  - Focused: "Cause: `<cause>`. Enter an invalid `<field>` on `<screen>`; `<field>` is highlighted and `<message>` appears."
 - **Safety boundary** — the same as in `opsx-propose-guide` section 5: no step may run a command that prints secret values; to check that a secret exists, list only the file name. No step may call a paid external service. If verification genuinely needs a real paid service, mark it human-only and note the cost and side effects.
 
 Deliver this list on **both** tracks:

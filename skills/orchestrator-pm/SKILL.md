@@ -3,15 +3,17 @@ name: orchestrator-pm
 description: >-
   Project-management control-plane orchestrator for durable project direction,
   progress review, intake triage, investigation coordination, fact and decision
-  curation, and human-approved handoff into a new .factory run. Use only when
-  the user explicitly invokes /orchestrator-pm or explicitly enables PM mode.
-  It owns .manager state, never implements product changes, never runs the
-  factory, and preserves human checkpoints between PM and factory sessions.
+  curation, human-approved handoff into a new .factory run, and, under an
+  automation plan the user approves, coordinating a batch of factory runs with
+  one factory session. Use only when the user explicitly invokes
+  /orchestrator-pm or explicitly enables PM mode. It owns .manager state, never
+  implements product changes, never does the factory's work, and preserves
+  human checkpoints between PM and factory sessions.
 disable-model-invocation: true
 metadata:
   author: Codex GPT-5.6-Sol, Claude Code Opus 4.8, Claude Code Opus 5.5
-  version: "1.2"
-  last_updated: "2026-10-20T15:52:52"
+  version: "1.3"
+  last_updated: "2026-11-02T12:22:04"
 extends: pm-status-review, pm-intake-triage, pm-factory-handoff, pm-investigation-worker, peer-agent-coordination
 ---
 
@@ -24,15 +26,16 @@ This skill runs only after explicit invocation. Do not auto-enter PM mode from o
 ## Hard rules
 
 1. **Human authority wins.** Treat explicit human conclusions, approvals, and acceptance as higher authority than PM inference.
-2. **One active PM session.** Assume only one PM session is active at a time. A later session may replace it by reading durable `.manager` state; no permanent agent identity or callback is required.
-3. **Own only the PM control plane.** Write only inside `.manager/**`, with two exceptions: a factory handoff the human explicitly approves through `pm-factory-handoff`, and text edits to a non-product managed object under the [Non-product route](#non-product-route).
+2. **One active PM session.** Assume only one PM session is active at a time. A later session may replace it by reading durable `.manager` state; no permanent agent identity is required.
+3. **Own only the PM control plane.** Write only inside `.manager/**`, with these exceptions: a factory handoff the human explicitly approves through `pm-factory-handoff`, a handoff file the PM delivers into a factory run ([Delegation](#delegation)), and text edits to a non-product managed object under the [Non-product route](#non-product-route). Peer messages are a channel, not document writes.
 4. **No product implementation.** Do not edit product source, project specifications, repositories, or deployment state. This does not cover text edits to a non-product managed object under the Non-product route; code or configuration outside that object stays off-limits. Investigation is read-only outside the current manager run.
-5. **Workers stay run-local.** Every worker receives one exact `run_dir` and one or more exact artifact paths inside it. Workers may not update manager root state, the library, product files, or `.factory`.
-6. **No silent factory start.** Propose a factory candidate, wait for an explicit human instruction to establish it, create the handoff, then stop. The human starts a new factory session.
-7. **No factory callback; pull-only return.** Factory sessions do not report to PM or write `.manager`. A factory may leave `handoff-manager-<topic>.md` at its own run root; read and process it only when the human instructs, including a human-requested status review. Record the processing in the PM's own run and never write back to the factory run.
-8. **Keep the factory independent.** A factory handoff must be self-contained and must not require reading `.manager` or this skill. A factory may optionally consult all of `.manager` read-only, treating `_runs/` as clues only; it never writes `.manager`, and manager content never becomes a required factory input.
-9. **Preserve provenance.** Never promote an inference into a durable fact or decision without source, scope, date, and confidence or authority.
-10. **Do not fabricate progress.** State unknown, ambiguous, or contradictory evidence plainly and ask the human when the distinction matters.
+5. **Stay at project level.** Manage direction, scope, scheduling, and status. Leave research, design, and implementation questions at factory granularity to the factory; do not dig into them, decide them, or edit the factory's working files.
+6. **Workers stay run-local.** Every worker receives one exact `run_dir` and one or more exact artifact paths inside it. Workers may not update manager root state, the library, product files, or `.factory`.
+7. **No silent factory start.** Propose a factory candidate, wait for an explicit human instruction to establish it, create the handoff, then stop. The human starts the factory session. An approved [Automation](#automation) plan follows that section instead.
+8. **Return through handoff files.** Factory sessions never write `.manager`. A factory returns through `handoff-manager-<topic>.md` at its run root, optionally announced over peer. Read it on the human's instruction or a peer notice; draft canonical updates into the run's `staging/` and apply them only after the user checks the draft. Record the processing in the PM's own run and never edit the handoff file.
+9. **Keep the factory independent.** A factory handoff must be self-contained and must not require reading `.manager` or this skill. A factory may optionally consult all of `.manager` read-only, treating `_runs/` as clues only; it never writes `.manager`, and manager content never becomes a required factory input.
+10. **Preserve provenance.** Never promote an inference into a durable fact or decision without source, scope, date, and confidence or authority.
+11. **Do not fabricate progress.** State unknown, ambiguous, or contradictory evidence plainly and ask the human when the distinction matters.
 
 ## Required references
 
@@ -82,7 +85,8 @@ All hard rules still apply; rules 3 and 4 carry the exceptions above. Items on t
 | Ask for substantial evidence gathering | Dispatch one or more `pm-investigation-worker` workers |
 | Hand off / delegate / establish a candidate to the factory (交接/派工/委派, or equivalent wording) | Load and follow `pm-factory-handoff` |
 | Ask to implement, apply, or execute product changes | Explain the PM/factory checkpoint and prepare or identify the approved factory handoff; do not implement. When the managed object falls under the [Non-product route](#non-product-route), follow that route instead |
-| Process a handoff file a factory left for the manager | Read `handoff-manager-*.md`; route progress, status, and canonical manager corrections through `pm-status-review`, and only new questions or candidates through `pm-intake-triage`; record the processing in the PM's own run |
+| Run several approved candidates through the factory as one batch (自動化/批次施工, or equivalent wording) | Follow [Automation](#automation) |
+| Process a handoff file a factory left for the manager, on the human's instruction or a peer notice | Read `handoff-manager-*.md`; route progress, status, and canonical manager corrections through `pm-status-review` into `staging/`, and only new questions or candidates through `pm-intake-triage`; record the processing in the PM's own run |
 
 ## Coordinate investigations
 
@@ -98,16 +102,40 @@ For each worker prompt, provide:
 
 After workers return, the PM session must compare and synthesize their evidence. Worker conclusions never update canonical state directly.
 
-## Multi-agent collaboration
+## Delegation
 
-`peer-agent-coordination` defines how several agent sessions collaborate through shared run directories. Multi-session collaboration is costly: load it and follow its protocol when the user mentions it or a collaborative discussion with the user calls for it, and never enable it on PM initiative alone. Ordinary evidence gathering still dispatches `pm-investigation-worker`.
+`peer-agent-coordination` defines how agent sessions talk through a shared run directory. A delegation to the factory that the PM starts uses it by default; the human's approval of the delegation enables it. Otherwise enable it only when the user mentions it or a collaborative discussion with the user calls for it. Ordinary evidence gathering still dispatches `pm-investigation-worker`.
+
+When delegating:
+
+- The discussion room is the factory run directory; the PM creates it and starts as host.
+- Delegate to an agent on the PM's own platform unless the user names another.
+- Pick the channel per peer section 7; whether a background listener is needed follows peer section 5.
+- Within one batch, the same PM and factory identities continue across factory runs; each factory run is its own room.
+- The factory consults `.manager` read-only on its own; it does not message the PM with questions, and the PM does not answer factory-level questions.
+
+To pass further matters to an existing factory run, send a message in its room. For a serious matter, a large body of content, or to avoid interrupting the factory's work, write `handoff-factory-<topic>.md` at that factory run's root and announce it over peer. Outside [Automation](#automation), discuss every such matter with the user before sending it; draft a handoff at the manager run root under the same name and deliver it after the user confirms. A handoff states problems and evidence, not the fix.
+
+## Automation
+
+Run a batch of factory work under a plan the user approves. The PM may propose a plan; it never starts one on its own.
+
+1. Agree the scope with the user and write it as the run's `_automation.md` from [assets/automation.template.md](assets/automation.template.md). Create no factory run before the user approves the plan.
+2. Create each factory run through `pm-factory-handoff`, writing the authorization the factory needs into its `_intake.md` by value.
+3. The batch has one PM session and one factory session. The user starts the factory session by default; the PM may start it where the platform allows. The PM moves the same factory session between runs over peer.
+4. **Design pass** — the factory takes every run through discussion, propose, and change-doc review first. Decisions the records do not settle are listed per run.
+5. **Batch change review** — the user reviews all changes and each run's pending decisions in one gate. Building starts only after the user confirms (all runs or a subset).
+6. **Build pass** — the factory applies, checks, commits, and hands off each confirmed run in dependency order. On each run's handoff, draft into `staging/` (rule 8). A stopped run pauses only the runs that depend on it.
+7. When the whole scope is done, have the factory consolidate `_review-backlog.md`; the user runs E2E once, and sync/archive follows.
+
+The plan pre-authorizes only two things: after the batch change review, dispatching each confirmed run in order without a separate dispatch confirmation; and one commit per factory run by default, which the user may change or turn off. Human E2E acceptance, sync/archive, and push are never pre-authorized; push needs the user's separate explicit authorization.
 
 ## Maintain durable state
 
 - Treat `_charter.md`, `_status.md`, `_milestones.md`, `_backlog.md`, and `_library/**` as canonical manager state.
 - Treat `.manager/_runs/<run>/**` as working memory and evidence, not canonical project truth.
-- Update `_status.md` only during an explicit status reconciliation or when the user explicitly asks to update project status.
-- Maintain `_milestones.md` as the durable milestone and feature-progress ledger; update it only during status reconciliation, and change a status only on evidence.
+- Draft every canonical update (charter, status, milestones, backlog, library) into the run's `staging/` and apply it only after the user checks the draft, including reconciliations the user requested.
+- Change `_status.md` only through an explicit status reconciliation or the user's request to update project status. Keep `_milestones.md` as the durable milestone and feature-progress ledger, change it only through status reconciliation, and change a status only on evidence.
 - Promote confirmed run outcomes into the backlog or library as appropriate.
 - Keep historical acceptance intact. Record newly discovered regressions as linked cases rather than silently rewriting history.
 - Prefer named outcomes and evidence-backed stages over percentage-complete estimates.
@@ -119,6 +147,7 @@ Stop for the human when:
 - Project direction or scope has a material ambiguity.
 - A PM-assessed completion conflicts with human acceptance.
 - A candidate is ready to become a factory handoff.
+- An automation plan needs approval.
 - A write outside `.manager/**` would be required, except edits to a non-product managed object under the Non-product route, whose checkpoint is the user's git diff review or an equivalent before/after diff.
 - Investigation would require mutating a product repository or external system.
 
@@ -128,7 +157,7 @@ Keep the chat summary compact and durable detail in the manager run:
 
 ```text
 PM_STATUS_V1
-mode: discuss | status-review | triage | investigation | handoff | non-product-edit
+mode: discuss | status-review | triage | investigation | handoff | automation | non-product-edit
 run_dir: <path or none>
 project_state: <short>
 milestone_progress: <short, or none>
@@ -140,4 +169,4 @@ next_human_checkpoint: <one action or none>
 
 ## Stop
 
-Stop after delivering the current PM outcome or reaching a human gate. Do not remain active in the background and do not start a factory session.
+Stop after delivering the current PM outcome or reaching a human gate. Do not start a factory session outside an approved [Automation](#automation) plan. In a delegation with a peer room, stay reachable per `peer-agent-coordination` section 5 until the user ends the room. Otherwise do not remain active in the background.

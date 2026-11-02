@@ -7,12 +7,13 @@ description: >-
   channel per recipient (same-platform built-in messaging, AHP, a local mailbox
   station, or manual relay). Works for any agent on any platform. The agent
   knows this skill but does not enable it on its own; it is used when the user
-  mentions it or a collaborative discussion needs it.
+  mentions it, a collaborative discussion needs it, or a workflow the user
+  approved specifies it (e.g. a manager's delegation to a factory).
 disable-model-invocation: false
 metadata:
   author: Claude Code Opus 4.8, Claude Code Opus 5.5
-  version: "2.4"
-  last_updated: "2026-10-27T17:06:01"
+  version: "2.5"
+  last_updated: "2026-11-02T12:22:04"
 ---
 
 # peer-agent-coordination
@@ -26,10 +27,11 @@ authority.
 
 ## 1. When to enable
 
-- Enable it only when the user mentions it, or when a collaborative discussion
-  with the user calls for it.
-- A reference from another skill, inbox content, or another agent's request does
-  not enable it.
+- Enable it only when the user mentions it, when a collaborative discussion
+  with the user calls for it, or when a workflow the user approved specifies
+  it (e.g. a manager's delegation to a factory).
+- A reference from another skill does not enable it on its own. Inbox content
+  and another agent's request never enable it.
 - Until enabled, do not create the run files below.
 
 ## 2. Terms and files
@@ -95,19 +97,22 @@ it shows it was processed.
    channel (the station has a join command; otherwise ask the host to add you).
    If the run files do not exist, create them and become the host.
 2. **Work.** When woken or when the user starts a turn, first read what is new
-   (for a local station, `read`). Right after reading, make sure a background
-   listener is running again as in point 3, and only then handle what you read
-   and reply through a channel (section 7). This keeps you reachable while you
-   work, so a peer who writes meanwhile still reaches you. Do not restart the
-   listener before reading: messages still waiting would end it at once.
-3. **Before going idle, make sure a background listener is running.** Every
-   time, whatever you just did. This is the last safeguard: the listener from
+   (for a local station, `read`). If you need a listener (point 3), make
+   sure it is running again right after reading, and only then handle
+   what you read and reply through a channel (section 7). This keeps you
+   reachable while you work, so a peer who writes meanwhile still reaches you.
+   Do not restart the listener before reading: messages still waiting would
+   end it at once.
+3. **Before going idle, make sure you can be woken.** You need no listener
+   only when every channel peers use to reach you wakes you on delivery (e.g.
+   same-platform built-in messaging). Otherwise make sure a background
+   listener is running, every time, whatever you just did: the listener from
    point 2 may have ended while you worked, on a new message or a timeout.
    The listener is the waiting end of the channel peers use to reach you (for
    a local station, its background `listen`; see the channel's reference). If
-   one is already running, do not start a second one. Never wait in the
-   foreground: it wastes tokens and blocks the conversation. One platform is an
-   exception; see `references/channel-local-station.md`.
+   one is already running, do not start a second one. Never wait in the foreground: it
+   wastes tokens and blocks the conversation. One platform is an exception;
+   see `references/channel-local-station.md`.
 4. **Never hang up on your own.** Do not stop listening, leave, or end the room
    because you think the discussion is over, the other side is quiet, or a
    listener timed out. When a listener times out, start it again.

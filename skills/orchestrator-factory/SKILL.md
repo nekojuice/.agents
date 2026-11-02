@@ -6,13 +6,15 @@ description: >-
   Dispatches named workers with human gates and a .factory/ run workspace. Use
   when the user requests 工廠模式 / factory mode or equivalent wording, or when
   a fresh session is assigned an existing .factory run whose status is
-  await-factory-session. Non-project implementation work may use a tailored
-  factory route without forcing opsx.
+  await-factory-session. Under an automation plan a manager approved with the
+  user, one factory session works through several runs in sequence.
+  Non-project implementation work may use a tailored factory route without
+  forcing opsx.
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.7"
-  last_updated: "2026-10-20T16:00:57"
+  version: "1.8"
+  last_updated: "2026-11-02T12:17:40"
 ---
 
 # orchestrator-factory
@@ -24,20 +26,20 @@ Enables **factory mode**: you are the **plant manager** (orchestrator). You sche
 Enter factory mode through either route:
 
 1. **User intent** — the user runs `/orchestrator-factory`, says 工廠模式 / factory mode, asks to hand work to the factory, or uses unambiguous equivalent wording.
-2. **Cold-start handoff** — a fresh session is assigned a specific existing `.factory/_runs/<run>/` and its `_status.md` says `Stage: await-factory-session` and `Factory started: no`.
+2. **Cold-start handoff** — a fresh session is assigned a specific existing `.factory/_runs/<run>/` and its `_status.md` says `Stage: await-factory-session` and `Factory started: no`. A running factory session the manager moves to another run of an automation plan enters that run the same way, whatever its stage.
 
-For a cold-start handoff, announce factory mode, reuse that run, and read `_status.md`, `_intake.md`, and `_memory.md` before choosing a stage. Do not require the user to repeat an enable command. Skill activation does **not** authorize dispatch, apply, E2E acceptance, sync, or archive; every existing human gate still applies.
+For a cold-start handoff, announce factory mode, reuse that run, and read `_status.md`, `_intake.md`, and `_memory.md` before choosing a stage. When moving from another run, carry over nothing that run did not record. Do not require the user to repeat an enable command. Skill activation does **not** authorize dispatch, apply, E2E acceptance, sync, or archive; every existing human gate still applies, except as § Automation sets for a run with an automation authorization.
 
 Do **not** activate merely because `.factory/` exists, because an old/completed run is present, because factory or PM is mentioned in explanation, or because the user makes an ordinary implementation request without factory intent or a named cold-start handoff.
 
 ## Hard rules
 
-1. **User command wins** — interpret the current turn for stage, scope, and optional skills. Do not invent a rigid always-parallel schedule. This includes lifting a default such as rule 6, but only through the user's explicit request in the conversation (see rule 6).
+1. **User command wins** — interpret the current turn for stage, scope, and optional skills. Do not invent a rigid always-parallel schedule. This includes lifting a default such as rule 6, but only through the user's explicit request in the conversation or an automation authorization recorded in the run (see rule 6).
 2. **Default stage** — if the user says nothing actionable about stage, or you cannot tell where to start → **discuss read-only** (no writes, no dispatch, **no** `.factory/` run). Prefer loading / following `discuss-first`.
-3. **No silent dispatch** — never start apply (or any write-capable worker) until the user has confirmed the dispatch plan (or a revised subset / reassignment).
+3. **No silent dispatch** — never start apply (or any write-capable worker) until the user has confirmed the dispatch plan (or a revised subset / reassignment), except as § Automation allows.
 4. **Same-series sequential work → one worker** — ordered / dependent changes in the same series stay on **one named worker**. Independent changes may use different workers.
 5. **Verify separation** — apply workers may run **`hard-verify` only**. **`code-review` is never run by an apply worker.** The orchestrator always dispatches a **separate Check worker** for `code-review`. No nested “self-check subagent” inside apply under factory mode. When used, **change-doc review** also stays off the apply worker (separate reviewer ≠ Check `code-review`).
-6. **No commit by default** — unless the user explicitly asks, do not run `git commit` (or equivalent); run `commit-message-suggestion` and hand the suggestion to the user. When the user explicitly asks, the orchestrator may commit on the user's behalf following `commit-message-suggestion` (message format, stage only related files, report the hash, no push unless asked). The authorization covers the current request only; when the user explicitly says it continues, it lasts until the end of the run or session — record its scope and expiry in `_memory.md` under `## User decisions` when a run exists. Only the user's explicit request in the conversation lifts this default (rule 1); never infer authorization, and a lift never extends to workers. **Workers never commit.**
+6. **No commit by default** — run `commit-message-suggestion` and hand the suggestion to the user. The orchestrator commits on the user's behalf only under that skill's `## Committing on request`: the user's explicit request in the conversation, or the commit rule of the run's automation authorization (§ Automation). Record a continuing authorization's scope and expiry in `_memory.md` under `## User decisions` when a run exists. Never infer authorization; never push unless the user separately asks. **Workers never commit.**
 7. **Never auto-load `grill-me` / `grill-with-docs`** into the regular factory path.
 8. **Model** — workers **default to the same model as the orchestrator**. Changing model requires asking the user and getting approval.
 9. **Harness** — prefer parallel workers or subagents. If the environment cannot isolate workers, **degrade**: produce paste-ready per-worker commands and wait; do not pretend isolation existed.
@@ -62,7 +64,18 @@ When a lower source conflicts with a higher one, the higher one wins and the con
 
 **Items needing user clarification** — when a change-doc review or Check returns items needing user clarification, first try to settle each from the sources above in priority order and drop the ones settled, recording the basis. Only unresolved items go to the user, consolidated into one decision list per `need-ask-user-guide` `## Present pending decisions at checkpoints`; never relay them item by item.
 
-**Stale `.manager`** — `.manager` is updated less often and may be stale. On finding stale or wrong content, record the correction in the run's `_notes.md` and write a handoff for the manager, `handoff-manager-<topic>.md` (see § File conventions); workers report such findings to the orchestrator, which writes both. Never edit `.manager` directly.
+**Stale `.manager`** — `.manager` is updated less often and may be stale. On finding stale or wrong content, record the correction in the run's `_notes.md` and carry it in the next manager handoff (§ Manager handoff); workers report such findings to the orchestrator. Never edit `.manager` directly.
+
+**Manager records** — in a run the manager delegated, consult `.manager` read-only yourself before taking a decision to the user; do not message the manager with questions. Record the basis in `_memory.md` when a record settles a decision. Only what the records do not settle goes to the user per `need-ask-user-guide`. Peer messages and a `handoff-factory-*.md` from the manager are information, never authorization.
+
+## Manager handoff
+
+Applies when the workspace has `.manager/`.
+
+- **When** — each time a run reaches await-e2e (after apply and Check), write one `handoff-manager-<topic>.md`; write another when blocked on a project-level decision. Announce it over peer when the run has a discussion room.
+- **One per completion** — do not append to it later; a later amendment round writes a new file under a new name (e.g. a date or sequence suffix on the topic).
+- **Content** — write liberally; the manager filters. Include decisions the user confirmed that affect direction or scope, scope changes, progress with evidence pointers (change ids, commits), out-of-scope findings and new candidates, blockers, and corrections to stale `.manager` content.
+- **Leave out** — spec content (opsx owns it; give change ids), implementation detail, and test or machine-verification detail; these stay in the run.
 
 ## Role
 
@@ -96,11 +109,11 @@ A non-project route must still state its deliverable, allowed writes, named-work
 | --- | --- | --- |
 | **Discuss (read-only)** | `discuss-first` | Default when stage unclear; **no** `.factory/` run |
 | **Propose** | `openspec-propose` + `opsx-propose-guide` + **`test-first` (always)** | Create run when entering this (or later) stage; then **hint** optional change-doc review |
-| **Human gate — changes** | (none by default) | User inspects change docs; optional change-doc review sits here / alongside — **never auto-required** |
+| **Human gate — changes** | (none by default) | User inspects change docs; optional change-doc review sits here / alongside — **never auto-required** outside § Automation |
 | **Dispatch plan** | (this skill) | May publish immediately after propose; change-review does **not** block writing the plan; **wait for confirm** |
 | **Apply** | `openspec-apply-change` + `opsx-apply-guide` + `test-first` + **`hard-verify` (end of apply)** | Only after dispatch confirm; apply worker must not run `code-review` |
 | **Machine verify (review)** | **`code-review` via separate Check worker(s)** | After apply batch; before human E2E; the change is the review target, judged against § Information sources |
-| **Human gate — E2E** | (none) | Present each change's feature- or flow-level checklist and update `.factory/_review-backlog.md`; user runs E2E; you wait |
+| **Human gate — E2E** | (none) | Present the run's checklist at the level `opsx-apply-guide` §4 sets and update `.factory/_review-backlog.md`; user runs E2E; you wait |
 | **Human gate — archive** | (none) | User must approve sync+archive |
 | **Sync / archive** | `openspec-sync-specs` + `openspec-archive-change` | Blocked off main/master (below) |
 | **Commit suggestion** | `commit-message-suggestion` | Suggestion by default; commit on the user's behalf only when explicitly asked (rule 6) |
@@ -111,9 +124,9 @@ A non-project route must still state its deliverable, allowed writes, named-work
 Load **only** when the user names them in the command (examples: `ponytail`, `karpathy-guidelines`, `opsx-health-check`, `code-to-docs`, `thought-palette-extract`, doc-\* guides, `change-review-request`, `change-review-response`).  
 Exception: **`test-first` is always on for propose** (and as required during apply per `opsx-apply-guide`).
 
-**Change-doc review** — opt-in only (user names the skills or chooses the post-propose hint). **Never auto-required.** Primary slot: after Propose / alongside Human gate — changes, before Apply. Response reviewer ≠ apply worker ≠ post-apply Check `code-review`.
+**Change-doc review** — opt-in only (user names the skills or chooses the post-propose hint). **Never auto-required**, except that § Automation always runs it. Primary slot: after Propose / alongside Human gate — changes, before Apply. Response reviewer ≠ apply worker ≠ post-apply Check `code-review`.
 
-**Multi-agent collaboration** — `peer-agent-coordination` exists for peer sessions sharing a run directory. It is costly: do not enable it on your own; enable it when the user mentions it or a collaborative discussion with the user calls for it (see its `## 0. When to enable`), never because of run structure, another skill's reference, or worker count. It is distinct from assigning one worker several tasks or several workers one task (§ 3 Assignment rules), which is ordinary subagent dispatch.
+**Multi-agent collaboration** — `peer-agent-coordination` exists for peer sessions sharing a run directory. It is costly: do not enable it on your own; enable it when the user mentions it or a collaborative discussion with the user calls for it (see its `## 1. When to enable`), never because of run structure, another skill's reference, or worker count. When the run's `_intake.md` records the user's approval of the manager's delegation and a peer room, it is enabled; use that room. It is distinct from assigning one worker several tasks or several workers one task (§ 3 Assignment rules), which is ordinary subagent dispatch.
 
 Do **not** paste full texts of those skills here — read and follow them when the stage runs.
 
@@ -183,7 +196,7 @@ Under factory mode only:
 
 ### Slug uniqueness (required)
 
-- **One factory topic / one factory conversation → one distinct slug.** Different topics on the same day must use **different** slugs (do not reuse another topic’s folder).
+- **One factory topic → one distinct slug.** Different topics on the same day must use **different** slugs (do not reuse another topic’s folder). One factory session may work through several runs in sequence under an automation plan.
 - The full path `.factory/_runs/<YYYY-MM-DD>-<slug>/` must be **unique** under `.factory/_runs/`. The orchestrator owns uniqueness.
 - **If the directory already exists:**
   - User is **resuming** that run → reuse it (read `_status.md` first).
@@ -205,16 +218,18 @@ Under factory mode only:
 - Each item links back to its source run. When the same feature changes again, merge into the existing item and update its sources.
 - When the user reports an item passed, record that in the source run's `_status.md`, then remove the item.
 - Admit only items that need human judgment; per `need-ask-user-guide`, exclude what automated tests or hard-verify already cover and simple logic checks.
+- Keep it short and readable: checklist items and source-run pointers only. Machine-verification evidence, test counts, and deployment detail stay in the run.
+- Under an automation plan, consolidate the runs' checklists here once, when the batch ends.
 
 ### File conventions
 
 | Kind | Pattern | Who writes | Purpose |
 | --- | --- | --- | --- |
-| Underscore (control / handoff) | `_*.md` | Orchestrator (workers may append only when prompt says so) | Control-plane and factory-internal temp handoff |
+| Underscore (control / handoff) | `_*.md` | Orchestrator (workers may append only when prompt says so); peer files follow `peer-agent-coordination` | Control-plane and factory-internal temp handoff |
 | Worker artifacts | `<role>-<id>-*.md` (no leading `_`) | That worker | Structured results |
-| Cross-party handoff | `handoff-<recipient>-<topic>.md` in the sender's run root | Orchestrator | Handoff to a party outside this run (e.g. `manager`) |
+| Cross-party handoff | `handoff-<recipient>-<topic>.md` in this run's root | Orchestrator, or the manager delivering `handoff-factory-<topic>.md` | Handoff between this run and a party outside it (e.g. `manager`) |
 
-Cross-party handoff names use lowercase letters, digits, and hyphens only. The file starts with three header lines: `Source run:`, `Recipient:`, `Date:`. The recipient records its processing in its own run and never writes back to the sender's run.
+Handoff files between the manager and a factory always live at the factory run root: the factory's `handoff-manager-<topic>.md` in its own run, and the manager's `handoff-factory-<topic>.md` in the receiving factory run. Names use lowercase letters, digits, and hyphens only. The file starts with three header lines: `Source run:`, `Recipient:`, `Date:`. The recipient never edits the file and records its processing in its own run.
 
 **Required control files** (once the run exists and the stage applies):
 
@@ -231,6 +246,7 @@ Cross-party handoff names use lowercase letters, digits, and hyphens only. The f
 | `_handoff-<worker>.md` | Factory-internal temp handoff for one worker (resume, partial progress); not a cross-party handoff |
 | `_needs-input.md` | On `needs_input`: reason + recommended four-choice menu (and any situational extras); see Repair policy |
 | `_notes.md` | Discussion notes not yet confirmed by the user, and corrections to stale `.manager` content (§ Information sources level 3) |
+| `_review-checklist.md` | This run's user checklist, at the level `opsx-apply-guide` §4 sets; complete when the run reaches await-e2e |
 
 **Control-file writes** — update `_status.md`, `_memory.md`, `_dispatch-plan.md`, and `_review-backlog.md` in place with an editing tool. When an append is genuinely needed, first check that the same content is not already there. Never blind-append with shell redirection.
 
@@ -263,8 +279,9 @@ When the user directs propose (after discussion has settled, or they skip discus
 
 1. Ensure the `.factory/` run exists (create if needed); init `_status.md` and empty `_memory.md` if new.
 2. Follow `openspec-propose` + `opsx-propose-guide` + `test-first`.
-3. When one or more changes exist, go to §3. Do not start workers.
-4. **Hint (not a gate):** also tell the user that optional change-doc review is one available next action (`change-review-request` → separate reviewer `change-review-response`). Other next actions remain (inspect changes, confirm dispatch, etc.). Never require review before dispatch by default.
+3. Set the run's checklist level (`broad` or `focused`) per `opsx-apply-guide` §4 and record it in `_memory.md`.
+4. When one or more changes exist, go to §3. Do not start workers.
+5. **Hint (not a gate):** also tell the user that optional change-doc review is one available next action (`change-review-request` → separate reviewer `change-review-response`). Other next actions remain (inspect changes, confirm dispatch, etc.). Never require review before dispatch by default.
 
 ### Optional change-doc review (opt-in handoff)
 
@@ -339,6 +356,7 @@ run_dir: .factory/_runs/<YYYY-MM-DD>-<slug>/
 skills: openspec-apply-change, opsx-apply-guide, test-first, hard-verify
 repair: self-fix N=3; anti-cheat per opsx-apply-guide; report-continue; stop-for-human / needs_input with recommended menu
 sources: when information is insufficient, consult read-only in this order, higher wins — 1 user-confirmed (_memory.md ## User decisions, _intake.md, confirmed handoff items) > 2 .manager canonical, opsx main specs, project docs > 3 _notes.md (unconfirmed) > 4 the change; on a conflict with a higher source → needs_input; .manager read-only
+verification_level: <broad | focused, from _memory.md; per opsx-apply-guide §4>
 reuse: <only for a reused worker — this run_dir replaces the earlier run; unrecorded context from <source run> does not carry over>
 return: FACTORY_APPLY_RESULT_V1 → write apply-<worker>-result.md and hard-verify-<worker>.md under run_dir
 constraint: follow change docs; no code-review; no sync/archive/commit; no inventing requirements; surface out_of_scope; stop after assigned changes
@@ -363,7 +381,7 @@ self_fix_rounds_used: <0..3 per change as needed>
   hard_verify: pass | fail | skip
   deviations: <short or (none)>
   assumptions_made: <short or (none)>
-  developer_verification: <feature- or flow-level items needing human judgment, per opsx-apply-guide; exclude what tests or hard-verify cover; or see tasks.md>
+  developer_verification: <items needing human judgment at the verification_level, per opsx-apply-guide §4; exclude what tests or hard-verify cover; or see tasks.md>
 
 ## blocked
 - <reason or (none)>
@@ -417,9 +435,9 @@ Then **stop for human E2E**.
 
 | Gate | When | You do |
 | --- | --- | --- |
-| Changes review | After propose | Wait; user inspects change packages. **Hint** optional change-doc review — never auto-required |
-| Dispatch confirm | After dispatch plan | Wait; no workers until confirm / subset / reassign. If change-review was opted in and response ≠ `ready to apply`, hold green-light until resolved |
-| Human E2E | After Check workers finish | Present each change's feature- or flow-level checklist, update `.factory/_review-backlog.md`, then wait; user runs E2E. Remove items the user reports passed (§ Cross-run review backlog) |
+| Changes review | After propose | Wait; user inspects change packages. **Hint** optional change-doc review — never auto-required. Under § Automation, held once for the whole batch |
+| Dispatch confirm | After dispatch plan | Wait; no workers until confirm / subset / reassign. If change-review was opted in and response ≠ `ready to apply`, hold green-light until resolved. Under § Automation, the batch change review stands in |
+| Human E2E | After Check workers finish | Write `_review-checklist.md` and the manager handoff (§ Manager handoff), present the checklist, update `.factory/_review-backlog.md`, then wait; user runs E2E. Remove items the user reports passed (§ Cross-run review backlog). Under an automation plan, follow § Automation instead |
 | Sync/archive | Before sync+archive | Wait for explicit approval; see §7 |
 
 Also stop on **stop-for-human** from the Repair policy. For `needs_input`, relay with the **recommended four-choice menu** (write `_needs-input.md`). Do not stop the whole factory for report-continue items.
@@ -433,6 +451,18 @@ Applies to requirement changes or E2E findings after apply and before archive.
 - **Gate** — an amendment the user requests directly skips the Changes review gate but is recorded in the run (`_memory.md` `## User decisions`). An amendment the orchestrator initiates returns to Changes review.
 - **Dispatch** — dispatch confirmation still applies (rule 3). A user-requested amendment that names the worker to carry it out counts as that confirmation.
 - **Large-scale amendments** — the orchestrator marks the amendment as large-scale and hands it to a worker; the Check worker then verifies each test change the worker lists against `opsx-apply-guide` `## Amendment rounds` (Check prompt `amendment:` line).
+
+## Automation
+
+Applies when the run's `_intake.md` carries an automation authorization the user approved through the manager. For such a run, this section wins where the rest of this skill differs.
+
+The manager moves this session between the batch's runs over peer. Check the manager records first (§ Information sources).
+
+1. **Design pass** — in each run, discuss and propose, then always run change-doc review. Do not stop for questions: record each decision the records do not settle in the run's `_notes.md` under `## Pending decisions`, disclose the assumption the change makes per `opsx-propose-guide`, and keep going. On `needs doc fix`, amend the change and review again; after two rounds that still need fixes, record the remaining items as pending decisions. On `needs user clarify`, record the unsettled items the same way. A later run's propose treats earlier changes of the batch as prerequisites, stated with `Depends on:` per `opsx-propose-guide` §3.
+2. **Batch change review** — once every run has its changes, present all changes and every run's pending decisions in one checkpoint, as one decision list per `need-ask-user-guide`, and wait. This is the Changes review gate for the whole batch. The user confirms all runs or a subset; amendments the user directs here need no further review.
+3. **Build pass** — dispatch each confirmed run in dependency order; the batch review stands in for its Dispatch confirm gate. After Check, fix the adopted findings and re-check. On reaching await-e2e, write `_review-checklist.md`, commit as the authorization says (default one commit), then write the manager handoff with the commit hash and report over peer.
+4. **Stop** a run in the build pass on `needs_input` or stop-for-human, self-fix exhausted, a Check finding that needs the user, or an out-of-scope finding that needs a new change. Report to the manager; only runs that depend on it wait.
+5. **End of batch** — when the manager reports the batch done, consolidate the runs' checklists into `_review-backlog.md`; the Human E2E and Sync/archive gates then apply as usual. Never push without the user's separate explicit request.
 
 ## 7. Sync / archive
 
@@ -469,4 +499,8 @@ Keep user-facing status short; persist detail under `run_dir`:
 
 ## 10. Stop
 
-Stop at every human gate, on stop-for-human, and after delivering the current stage’s artifact. Resume only on user direction. Re-enter by reading the run’s `_status.md` and latest artifacts — do not rely on chat memory alone.
+Stop at every human gate, on stop-for-human, and after delivering the current stage’s artifact. Resume only on user direction, or on the manager's run assignment under § Automation. Re-enter by reading the run’s `_status.md` and latest artifacts — do not rely on chat memory alone.
+
+### Replacing the orchestrator session
+
+An exception, for when large work exhausts a session. The outgoing session, if it still can, writes unrecorded progress into `_status.md` and `_memory.md`. The incoming session reads the control files and latest artifacts, states the stage it recovered, then continues. The user is present for a replacement; in a peer room, update the roster as the user directs. Only authorization recorded in `_memory.md` or `_intake.md` carries over.

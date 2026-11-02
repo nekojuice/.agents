@@ -51,11 +51,11 @@
 
 ## 專案邏輯
 
-共有三種指揮者。PM 模式與反向規格只在使用者明確啟用時進入；工廠模式另可在新 session 接手已建立的交接時進入，進入後所有人閘照樣生效。
+共有三種指揮者。PM 模式與反向規格只在使用者明確啟用時進入；工廠模式另可在新 session 接手已建立的交接時進入，進入後所有人閘照樣生效。使用者核可的自動化計畫會調整人閘位置：檢視 change 與人工 E2E 各合併成整批一次，省去逐 run 的派工確認，每個 run 預設 commit 一次，push 仍要另外授權。
 
 ### 工廠模式
 
-由 `orchestrator-factory` 調度，走一項開發的主線。每個人閘都停下等使用者；檢查通過不等於可以出貨。
+由 `orchestrator-factory` 調度，走一項開發的主線。每個人閘都停下等使用者，自動化時依上述方式合併；檢查通過不等於可以出貨。
 
 ```mermaid
 flowchart TD
@@ -71,14 +71,14 @@ flowchart TD
 
 ### PM 模式
 
-由 `orchestrator-pm` 調度，管專案方向與狀態。產品是程式時，實作交給工廠；受管對象是 skill 或文件等非程式內容時，走非產品路線，由 manager 先寫異動決策再直接修改。
+由 `orchestrator-pm` 調度，管專案方向與狀態。產品是程式時，實作交給工廠；使用者核可自動化計畫時，manager 經 peer 協調同一個工廠 session 依序處理一整批 run。受管對象是 skill 或文件等非程式內容時，走非產品路線，由 manager 先寫異動決策再直接修改。正典狀態的更新一律先擬稿，使用者檢查後才沖入。
 
 ```mermaid
 flowchart TD
   A[進件分類] --> B[唯讀調查]
   B --> C[狀態盤點]
   C --> D{受管對象}
-  D -- 程式 --> E[人閘 核可後交接工廠]
+  D -- 程式 --> E[人閘 核可後交接工廠 或核可自動化計畫]
   D -- 非程式 --> F[異動決策 直接修改 使用者以 diff 審查]
 ```
 
@@ -107,7 +107,7 @@ flowchart TD
 | 9 | `code-review` | 改寫自 [Matt Pocock](https://github.com/mattpocock/skills) | 是 | 規範與規格雙軸審查，依資訊來源優先序判斷並標註問題分類 |
 | 10 | `openspec-sync-specs` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 將變更規格同步進主規格 |
 | 11 | `openspec-archive-change` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 完成後歸檔 change |
-| 12 | `commit-message-suggestion` | 自製 | 是 | 產生 commit 訊息建議，使用者明確要求時可代為提交 |
+| 12 | `commit-message-suggestion` | 自製 | 是 | 產生 commit 訊息建議，使用者明確要求或核可的自動化計畫指定時可代為提交，不含 push |
 | 13 | `change-log` | 自製 | 是 | 產出改動清單，向使用者與開發者說明變更 |
 | 選配 | `change-review-request` | 自製 | 是 | 撰寫提案審查邀請，列出決策脈絡來源 |
 | 選配 | `change-review-response` | 自製 | 是 | 回覆提案審查，寫出結論、疑慮分類與下一步 |
@@ -119,15 +119,15 @@ flowchart TD
 | `orchestrator-pm` | 自製 | 否 | PM 模式總指揮：專案方向、進度與交接；非程式內容可走非產品路線直接修改 |
 | `pm-intake-triage` | 自製 | 是 | 進件分類與整併，候選工作標註交工廠或非產品路線 |
 | `pm-investigation-worker` | 自製 | 是 | 唯讀調查工作者，依派工產出指定的發現檔，也可拆解文件或規則 |
-| `pm-status-review` | 自製 | 是 | 證據式狀態盤點，處理工廠留給 manager 的交接檔 |
-| `pm-factory-handoff` | 自製 | 是 | 人閘核可後建立自足的工廠交接 |
+| `pm-status-review` | 自製 | 是 | 證據式狀態盤點，篩選工廠留給 manager 的交接檔並擬待沖入稿 |
+| `pm-factory-handoff` | 自製 | 是 | 人閘核可後建立自足的工廠交接，自動化計畫下可一次建立多個 |
 
 ### 協作與判斷
 
 | Skill | 作者 | 自動啟用 | 簡述 |
 | --- | --- | --- | --- |
 | `need-ask-user-guide` | 自製 | 是 | 委派工作中判斷是否詢問使用者，規範檢查點的待決與提醒呈現 |
-| `peer-agent-coordination` | 自製 | 是 | 多 agent 共用工作區的協調協定；不主動啟用，使用者提及或協作討論需要時才用，沒有即時通道時由使用者人工轉送 |
+| `peer-agent-coordination` | 自製 | 是 | 多 agent 共用工作區的協調協定；不主動啟用，使用者提及、協作討論需要，或使用者核可的流程（如 manager 委派）指定時才用，沒有即時通道時由使用者人工轉送 |
 | `decision-support` | 自製 | 是 | 把糾纏的決策拆成獨立節點，逐節點權衡與推薦 |
 | `explain` | 自製 | 是 | 把目標拆成摘要與元素清單 |
 

@@ -6,7 +6,7 @@ These files are the cold-start intake for the factory's commanding agent: a fres
 
 Create a unique `.factory/_runs/<YYYY-MM-DD>-<slug>/`, initializing `.factory/.gitignore` with the single line `_runs/` when it does not exist. Use lowercase English letters, digits, and hyphens. Never overwrite an unrelated run.
 
-This cold-start package is the new factory run's own control files. It does not use the cross-party `handoff-<recipient>-<topic>.md` naming, which applies to handoff files left at a sender run's root.
+This cold-start package is the new factory run's own control files. It does not use the cross-party `handoff-<recipient>-<topic>.md` naming, which applies to handoff files left at a factory run's root.
 
 ## Required files
 
@@ -22,6 +22,8 @@ Provide:
 - Evidence and relevant project paths.
 - Open questions the factory discussion must resolve.
 - Expected verification and human checkpoints.
+- For a delegation the PM started: the user's approval and the peer room path.
+- Under an automation plan, the authorization by value: the batch flow (one batch change review, then ordered dispatch), commit rule (never push), stop conditions, dependencies on other runs in the batch, and the user's quoted approval with its date.
 - Optional source: the manager run and candidate id, labeled as an optional clue that the factory never needs to read.
 
 ### `_status.md`

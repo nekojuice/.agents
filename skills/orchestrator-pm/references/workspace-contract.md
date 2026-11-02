@@ -18,8 +18,9 @@
       |- _run.md
       |- notes.md
       |- findings/
+      |- staging/                          (optional; drafts of canonical updates)
       |- changes/                          (optional; Non-product route)
-      |- handoff-<recipient>-<topic>.md    (optional; cross-party handoff)
+      |- _automation.md                    (optional; automation plan)
       `- outcome.md
 ```
 
@@ -28,6 +29,8 @@ Use lowercase English letters, digits, and hyphens in run slugs. Keep each full 
 Canonical files (`_charter`, `_status`, `_milestones`, `_backlog`, `_library/**`) are meant to be tracked by the workspace repository. Runs are working memory: keep them under `_runs/`, which is git-ignored through `.manager/.gitignore` (a single line, `_runs/`). This requires no parent directory to ignore `.manager/` itself; a nested ignore cannot re-include an already-ignored parent.
 
 ## Canonical files
+
+Every change to these files is drafted in a run's `staging/` first and applied after the user checks the draft.
 
 ### `_charter.md`
 
@@ -67,16 +70,23 @@ Store worker artifacts by default. Give each worker one or more unique paths; th
 
 Store change-decision documents for the Non-product route, named `<NN>-<target>.md`, one per edit target. Use this directory only on that route.
 
+### `staging/`
+
+Store drafts of canonical updates: an `_index.md` review index listing each change with its basis, and draft files mirroring the canonical paths they would replace. Apply a draft only after the user checks it.
+
+### `_automation.md`
+
+Store an automation plan from `assets/automation.template.md`: scope, factory runs with order and dependencies, the two-pass flow, commit rule, stop conditions, report points, and the user's quoted approval.
+
 ### `outcome.md`
 
 Store the run conclusion, answered questions, proposed cases, human decisions, promoted facts or decisions, and any created factory handoff.
 
 ## Cross-party handoff files
 
-- Place a cross-party handoff file at the sender's run root, named `handoff-<recipient>-<topic>.md` with lowercase letters, digits, and hyphens.
+- Handoff files between the manager and a factory always live at the factory run root: the factory's `handoff-manager-<topic>.md` in its own run, and the manager's `handoff-factory-<topic>.md` in the receiving factory run. A draft the PM discusses with the user before delivering stays at the manager run root under the same name. Use lowercase letters, digits, and hyphens.
 - Start the file with three header lines: `Source run:`, `Recipient:`, and `Date:`.
-- The recipient records its processing in its own run and never writes back to the sender's run.
-- Process a factory's `handoff-manager-<topic>.md` under these rules; apply the same rules when the PM sends one.
+- The recipient never edits the file; it records its processing in its own run.
 - The cold-start `.factory` package created by `pm-factory-handoff` is not a cross-party handoff file and keeps its own control files.
 
 ## Ownership
@@ -88,6 +98,6 @@ Store the run conclusion, answered questions, proposed cases, human decisions, p
 | Manager runs (`_runs/**`) | Read/write | Write only assigned artifact paths in its run | Read only, optional; clues only |
 | Product repositories | Read only | Read only within assignment | Owned by factory workflow |
 | Non-product managed object | Write under the Non-product route | Read only within assignment | Not involved |
-| `.factory/**` | Read only for status review and handoff files; create approved handoff only, plus `.factory/.gitignore` when absent | No access | Owned after human starts factory |
+| `.factory/**` | Read only for status review and handoff files; create approved handoff runs, plus `.factory/.gitignore` when absent; peer files of a delegation it started; delivered `handoff-factory-<topic>.md` | No access | Owned after the factory session starts |
 
-Do not create a callback, event, or reverse dependency from factory to manager. The only return channel is a `handoff-manager-<topic>.md` at a factory run root, which the PM pulls when the human instructs.
+The factory returns to the manager only through `handoff-manager-<topic>.md` at its run root, optionally announced over peer. The PM reads it on the human's instruction or a peer notice, and drafts canonical updates into `staging/`.

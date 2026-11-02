@@ -4,8 +4,8 @@ description: Authoring discipline for the commanding agent who runs the opsx (Op
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.3"
-  last_updated: "2026-10-20T15:43:47"
+  version: "1.4"
+  last_updated: "2026-11-02T12:17:40"
 extends: openspec-propose
 ---
 
@@ -97,9 +97,7 @@ Lay down, in `tasks.md`, a skeleton of how the change should be verified so the 
 - For work that warrants tests, state the **unit-test intent** (test-first): what behavior should be covered.
 - For work that only needs checking rather than testing, state **what should be checked**.
 - Mark any end-to-end / browser-driven verification as **human-only** — it is for a developer to run by hand, never something the implementing session drives itself.
-- Write human-only items at the **feature or business-flow level**, grouped by screen, and only where human judgment is needed — not individual controls, message text, or internal implementation, and not what unit tests or hard checks already cover (`need-ask-user-guide`). The canonical rule is `opsx-apply-guide` section 4. A placeholder contrast that shows the level only, not a template:
-  - Too fine: "Click `<control>`; message `<text>` appears."
-  - Right level: "On `<screen>`, complete one `<flow>` and confirm the result."
+- Write human-only items at the level `opsx-apply-guide` section 4 sets, grouped by screen, and only where human judgment is needed — not what unit tests or hard checks already cover (`need-ask-user-guide`). That section is the canonical rule and holds the placeholder contrast.
 - **Safety boundary** — no step may run a command that prints secret values; to check that a secret exists, list only the file name. No step may call a paid external service. If verification genuinely needs a real paid service, mark it human-only and note the cost and side effects.
 
 This is only a skeleton. The final, concrete verification list is produced by the implementing session (it may differ from what was foreseen here) and confirmed with the user then. Do not turn the skeleton into a rigid script.

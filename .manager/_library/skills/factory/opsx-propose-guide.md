@@ -1,7 +1,7 @@
 # opsx-propose-guide 元素對照
 
 - 分支：factory
-- 對照版本：`skills/opsx-propose-guide/SKILL.md` version 1.4，last_updated 2026-11-02T12:17:40
+- 對照版本：`skills/opsx-propose-guide/SKILL.md` version 1.5，last_updated 2026-11-02T13:38:09
 - 讀過的檔案：`SKILL.md`、`agents/openai.yaml`（僅 `allow_implicit_invocation: true`）；交叉引用核對（唯讀）：`orchestrator-factory` 的 `### Amendment rounds`、Propose 階段與 § Automation 設計段，`opsx-apply-guide` 的 `## Amendment rounds` 與 §4
 - 狀態：已檢查，2026-11-02 移入 manager 正式文件
 
@@ -37,12 +37,11 @@
 | E18 | 硬規則 | 驗證安全邊界 | 任何步驟不得執行會印出秘密值的指令，確認秘密存在時只列檔名；不得呼叫付費外部服務；確實需要真實付費服務時標為 human-only 並註明成本與副作用 | §5 |
 | E19 | 邊界條件 | 骨架不是腳本 | 骨架只是雛形；最終具體驗證清單由實作 session 產出（可與骨架不同）並當時與使用者確認；不得寫成僵硬腳本 | §5 末段 |
 | E20 | 硬規則 | 範例識別資訊 | 任務包要求文件、README 或範例時，要求範例中的識別資訊（帳號、主機、組織、產品等）使用匿名虛構名稱或佔位；工具本身與專案本身的名稱除外；tasks 不得指示實作者使用真實外部名稱 | Example identifiers in requested docs |
-| E21 | 人閘／自檢 | 交出前檢查清單 | 十項：Scope（含不得有 commit 指示）、Naming、Ordering、Assumptions（本 change 限定、不貼整份工作表、不把未定 TBD 當指示、跨 change 以引用重用）、Self-containment、Acceptance（成功條件具體到實作者能判定完成）、Verification skeleton（單元測試意圖或檢查項目、E2E 標 human-only、human-only 項目在功能或流程層級、不印秘密、不呼叫付費服務）、Cross-repo contracts、Example identifiers、Amendments（寫明被取代行為並依 Amendments 標註） | §6 |
+| E21 | 人閘／自檢 | 交出前檢查清單 | 十項：Scope（含不得有 commit 指示）、Naming、Ordering、Assumptions（本 change 限定、不貼整份工作表、不把未定 TBD 當指示、跨 change 以引用重用）、Self-containment、Acceptance（成功條件具體到實作者能判定完成）、Verification skeleton（單元測試意圖或檢查項目、E2E 標 human-only、human-only 項目依 `opsx-apply-guide` §4 設定的層級、不印秘密、不呼叫付費服務）、Cross-repo contracts、Example identifiers、Amendments（寫明被取代行為並依 Amendments 標註） | §6 |
 | E22 | 硬規則 | 不提供填空範本 | 不給交接填空模板，避免下游「抄作業」而失焦；只說明任務包必須包含什麼，讓每包依自身工作撰寫 | §6 末段 |
 
 ## 3. 其他
 
-- **§6 檢查清單與 §5 的層級說法不一致**：§5（E17）已改為依 `opsx-apply-guide` §4 設定的層級（broad 或 focused），§6 的 Verification skeleton 項（E21）仍寫「human-only 項目在功能或流程層級」，等於只承認 broad；focused 級可點名控制項與訊息，照 §6 自檢會被誤判為不合格。
 - 「Acceptance（成功條件具體）」只出現在 §6 檢查清單，正文各節沒有對應說明。
 - 修訂的觸發條件、修訂與開新 change 的分界、人閘（E11）只定義在 `orchestrator-factory`；非工廠情境單獨使用本 skill 時，這些規則仍須讀工廠 skill 才能取得。
 - §5 提到 test-first 的單元測試意圖，但沒有提到 `test-first` 要先鎖定 seam；骨架是否應寫出 seam 未說明。
@@ -50,7 +49,7 @@
 
 ## 4. 與前版差異
 
-對照前版對照稿（version 1.3，last_updated 2026-10-20T15:43:47）與 `git diff HEAD`。元素編號沿用。
+對照前版對照稿（version 1.4，last_updated 2026-11-02T12:17:40）與 `git diff HEAD`。元素編號沿用。
 
 新增：
 
@@ -58,8 +57,7 @@
 
 修改：
 
-- E17 人工項目抽象層級：不再在本 skill 重述「功能或業務流程層級，不列個別控制項、訊息文字、內部實作」，改為依 `opsx-apply-guide` §4 設定的層級；兩則佔位對照移除，改指向 `opsx-apply-guide` §4。
-- 摘要：補記工廠自動化設計段對本 skill 的引用（揭露假設、§3 `Depends on:`）。
+- E21 交出前檢查清單：Verification skeleton 項的 human-only 項目由「功能或流程層級」改為依 `opsx-apply-guide` §4 設定的層級，與 §5（E17）一致。
 
 移除：
 
@@ -67,4 +65,4 @@
 
 §3 變動：
 
-- 新增「§6 檢查清單與 §5 的層級說法不一致」。
+- 移除「§6 檢查清單與 §5 的層級說法不一致」：§6 已改為引用 `opsx-apply-guide` §4。

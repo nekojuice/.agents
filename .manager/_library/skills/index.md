@@ -1,6 +1,6 @@
 # Skill 元素對照索引
 
-每份依 explain 寫成：摘要、元素、其他、與前版差異。skill 修改後須同步更新對應檔。
+每份依 explain 寫成：摘要、元素、其他、與前版差異。skill 修改後依 orchestrator-pm `references/non-product-route.md` 第 7 節重拆對應檔。
 
 | 分支 | skill | 檔案 |
 | --- | --- | --- |

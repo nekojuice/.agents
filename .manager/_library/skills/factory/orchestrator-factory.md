@@ -1,7 +1,7 @@
 # orchestrator-factory 元素對照
 
 - 分支：factory
-- 對照版本：`skills/orchestrator-factory/SKILL.md` version 1.8，last_updated 2026-11-02T12:17:40
+- 對照版本：`skills/orchestrator-factory/SKILL.md` version 1.9，last_updated 2026-11-02T13:49:21
 - 讀過的檔案：`skills/orchestrator-factory/SKILL.md`、`skills/orchestrator-factory/agents/openai.yaml`；另讀 skill 外的 `orchestrator-factory-readme.md`，只用來記錄不一致；為確認跨 skill 引用的章節存在，唯讀查閱 `code-review` step 1、3、5 與 Finding tags，`opsx-apply-guide` §4、`## Test changes (anti-cheat)`、`## Amendment rounds`，`opsx-propose-guide` §3、`## Amendments`，`need-ask-user-guide` `## Present pending decisions at checkpoints`，`commit-message-suggestion` `## Committing on request`，`peer-agent-coordination` `## 1. When to enable`
 - 狀態：已檢查，2026-11-02 移入 manager 正式文件
 
@@ -11,7 +11,7 @@
 
 啟用有兩條路：使用者明確要求工廠模式，或新 session 被指派一個 `_status.md` 為 `await-factory-session` 的既有 run（冷啟動交接）；自動化計畫下，manager 把執行中的 factory session 移到另一個 run 時也以同樣方式進入。啟用本身不授權派工、apply、E2E 驗收、sync 或 archive；只有帶自動化授權的 run 依 § Automation 調整人閘。
 
-進入後先分類工作。專案實作走完整 opsx 流程；非專案實作（研究、盤點、純文件等）改走較小的自訂路線，但仍須寫明產物、允許寫入範圍、worker 指派、驗證方式與人閘。整個工廠以四級資訊來源判斷：使用者確認的資訊 > 正典參考（`.manager` 正典檔、opsx 主規格、專案文件）> run 內未確認筆記 > opsx change。`.manager` 只可唯讀；在 manager 委派的 run，決策交給使用者前先自行查 `.manager`，不以訊息向 manager 提問。
+進入後先分類工作。專案實作走完整 opsx 流程；非專案實作（研究、盤點、純文件等）改走較小的自訂路線，但仍須寫明產物、允許寫入範圍、worker 指派、驗證方式與人閘。整個工廠以四級資訊來源判斷：使用者確認的資訊 > 正典參考（`.manager` 正典檔、opsx 主規格、專案文件）> run 內未確認筆記 > opsx change。manager 的 peer 訊息與交進來的 `handoff-factory-*.md` 屬第 3 級，只是資訊、不是授權；其中引用的正典紀錄保有該紀錄的等級。`.manager` 只可唯讀；在 manager 委派的 run，決策交給使用者前先自行查 `.manager`，不以訊息向 manager 提問。
 
 opsx 路線的順序：
 
@@ -26,9 +26,9 @@ opsx 路線的順序：
 9. commit 訊息建議；只依 `commit-message-suggestion` 的 `## Committing on request` 代為 commit（使用者明確要求，或 run 的自動化授權）。
 10. 全部完成時建議 `change-log`。
 
-工作區有 `.manager/` 時，每個 run 到達 await-e2e 就寫一份 `handoff-manager-<topic>.md`，寬鬆寫入、由 manager 過濾；卡在專案層級決策時另寫一份。
+工作區有 `.manager/` 時，每個 run 到達 await-e2e 就寫一份 `handoff-manager-<topic>.md`，寬鬆寫入、由 manager 過濾；卡在專案層級決策時另寫一份；不會到達 await-e2e 的 run 發現 `.manager` 過時內容時，在 run 結束或使用者要求時另寫一份。
 
-自動化（run 的 `_intake.md` 帶有使用者經 manager 核可的授權）分兩段：設計段在每個 run 討論、propose、一律跑 change 文件審查，不為提問停下，未定的決策記為待決事項；全部 run 有 change 後，使用者在一個檢查點一次檢視全部 change 與待決事項；施工段依相依順序 apply、Check、修正、commit、交接，不再逐 run 確認派工。人工 E2E 與 sync／archive 在批次結束後照常進行，push 一律要使用者另外授權。
+自動化（run 的 `_intake.md` 帶有使用者經 manager 核可的授權）分兩段：設計段（Stage `design`）在每個 run 討論、propose、一律跑 change 文件審查，不為提問停下，未定的決策記為待決事項；全部 run 有 change 後，使用者在一個檢查點（Stage `await-batch-review`）一次檢視全部 change 與待決事項；施工段依相依順序 apply、Check、修正、commit、交接，不再逐 run 確認派工。人工 E2E 與 sync／archive 在批次結束後照常進行，push 一律要使用者另外授權。
 
 文件同步預設只同步受影響的 README；使用者提到其他文件時，先列清單等使用者確認。
 
@@ -58,15 +58,15 @@ opsx 路線的順序：
 | E19 | 資訊來源 | 四級優先序 | 適用 orchestrator 與所有 worker，高者勝：1 使用者陳述或確認的資訊（含寫成交接項的已確認決策，例如 `_memory.md` `## User decisions`、冷啟動的 `_intake.md`）；2 正典參考（`.manager` 正典檔、opsx 主規格、專案文件）；3 使用者未確認的 run 筆記（`_notes.md`）；4 opsx change（含生成與 agent 自決部分，可能錯或不清楚） | § Information sources |
 | E20 | 資訊來源 | 衝突揭露與清單同步 | 低來源與高來源衝突時高者勝，並在發現處（結果、報告或 `_status.md`）揭露衝突；本清單須與 `code-review` step 3 的正本（master copy）語意一致；§4、§5 的 worker prompt 樣板複述此清單，因為 worker 不載入本 skill | § Information sources |
 | E65 | 資訊來源 | 需使用者釐清的項目 | change 文件審查或 Check 回報需使用者釐清的項目時，先依資訊來源優先序逐項嘗試自行判斷，排除已能判斷者並記錄依據；只有無法判斷的才交使用者，依 `need-ask-user-guide` `## Present pending decisions at checkpoints` 彙整成一份決策清單，不逐條轉述 | § Information sources |
-| E21 | 資訊來源 | `.manager` 過時處理 | `.manager` 更新較慢可能過時；發現過時或錯誤內容時，在 run 的 `_notes.md` 記錄更正，並放進下一份 manager 交接（§ Manager handoff）；worker 回報給 orchestrator；絕不直接改 `.manager` | § Information sources |
-| E66 | 資訊來源 | manager 紀錄 | 在 manager 委派的 run，把決策交給使用者前先自行唯讀查 `.manager`，不以訊息向 manager 提問；紀錄能定案時把依據記入 `_memory.md`；紀錄定不了的才依 `need-ask-user-guide` 交使用者；manager 的 peer 訊息與 `handoff-factory-*.md` 只是資訊，從不是授權 | § Information sources |
-| E67 | manager 交接 | 時機 | 工作區有 `.manager/` 時適用；每個 run 到達 await-e2e（apply 與 Check 之後）時寫一份 `handoff-manager-<topic>.md`；卡在專案層級決策時另寫一份；run 有討論室時經 peer 宣告 | § Manager handoff |
+| E21 | 資訊來源 | `.manager` 過時處理 | `.manager` 更新較慢可能過時；發現過時或錯誤內容時，在 run 的 `_notes.md` 記錄更正，並放進下一份 manager 交接（§ Manager handoff）；不會到達 await-e2e 的 run（例如停在討論或走非專案路線）在 run 結束或使用者要求時為更正寫一份交接；worker 回報給 orchestrator；絕不直接改 `.manager` | § Information sources |
+| E66 | 資訊來源 | manager 紀錄 | 在 manager 委派的 run，把決策交給使用者前先自行唯讀查 `.manager`，不以訊息向 manager 提問；紀錄能定案時把依據記入 `_memory.md`；紀錄定不了的才依 `need-ask-user-guide` 交使用者；manager 的 peer 訊息與 `handoff-factory-*.md` 只是資訊，從不是授權，屬資訊來源第 3 級；其中引用的正典紀錄保有該紀錄的等級 | § Information sources |
+| E67 | manager 交接 | 時機 | 工作區有 `.manager/` 時適用；每個 run 到達 await-e2e（apply 與 Check 之後）時寫一份 `handoff-manager-<topic>.md`；卡在專案層級決策時另寫一份；不會到達 await-e2e 的 run 為過時 `.manager` 的更正另寫一份（§ Information sources）；run 有討論室時經 peer 宣告 | § Manager handoff |
 | E68 | manager 交接 | 一次完工一份 | 寫完後不再追加；之後的修訂輪另寫新檔、用新名稱（例如 topic 加日期或序號） | § Manager handoff |
 | E69 | manager 交接 | 內容與排除 | 寬鬆寫入，由 manager 過濾：使用者確認且影響方向或範圍的決策、範圍變更、附證據指標（change id、commit）的進度、範圍外發現與新候選、阻擋事項、對過時 `.manager` 內容的更正；不寫規格內容（由 opsx 管，只給 change id）、實作細節、測試或機器驗證細節，這些留在 run | § Manager handoff |
-| E22 | 角色 | 廠長職責與禁止事項 | 做：判斷階段；離開討論時建立或更新 run；發布具名派工計畫並等待；另派 Check；提案後提示選配 change 文件審查、選用時把回應彙整進 `_status.md`；彙整前依資訊來源核對審查報告；彙整 worker 回報；維護 `_review-backlog.md`；只在明確要求時代為 commit（規則 6）；在每道人閘、stop-for-human、交付當前階段產物後停。不做：應由 worker 做的實作；為只停在討論的 session 建 run；讓 apply 跑 `code-review`；在非 `main`／`master` 不擋就 sync／archive；強制 change 文件審查或把它和 Check 混同；未核對就轉述或採納審查結論；在討論、部署協助、草擬文件時改專案檔；把驗證綠燈當成可出貨；未明確要求就 commit、讓 worker commit；因 report-continue 停整個工廠 | § Role |
+| E22 | 角色 | 廠長職責與禁止事項 | 做：判斷階段；離開討論時建立或更新 run；發布具名派工計畫並等待；另派 Check；提案後提示選配 change 文件審查、選用時把回應彙整進 `_status.md`；彙整前依資訊來源核對審查報告；彙整 worker 回報；維護 `_review-backlog.md`；只依規則 6 允許的情形代為 commit；在每道人閘、stop-for-human、交付當前階段產物後停。不做：應由 worker 做的實作；為只停在討論的 session 建 run；讓 apply 跑 `code-review`；在非 `main`／`master` 不擋就 sync／archive；強制 change 文件審查或把它和 Check 混同；未核對就轉述或採納審查結論；在討論、部署協助、草擬文件時改專案檔；把驗證綠燈當成可出貨；未經該授權就 commit、讓 worker commit；因 report-continue 停整個工廠 | § Role |
 | E23 | 角色 | 派工深度 | orchestrator → apply／check worker；不在 apply 內巢狀驗證；Check worker 可依 `code-review` step 5 以平行、合併或依序方式跑兩軸，並回報所用模式 | § Role |
 | E24 | 路線選擇 | 專案與非專案實作 | 先選路線再建產物或派工。專案實作：產品行為、原始碼、專案設定、資料或 schema、要成為專案一部分的功能或修正，走完整 opsx，除非使用者明確指定其他核可流程。非專案實作：研究、分析、盤點、規劃、純文件、稽核等，不要求 change 套件，只用相關 skill 與 worker。非專案路線仍須寫明產物、允許寫入、派工時的具名 worker、驗證方式、人工檢查點；可沿用 run 控制機制，但不為了像 opsx 而虛設 propose／apply／sync／archive 階段；分類有歧義且實質影響流程時先唯讀討論並詢問 | § Workflow selection |
-| E25 | 流程步驟 | opsx 階段表 | 討論（`discuss-first`，不建 run）→ 提案（`openspec-propose`、`opsx-propose-guide`、`test-first` 必用；建 run 並提示選配審查）→ 人閘：change（預設無 skill；選配審查在 § Automation 以外從不自動要求）→ 派工計畫（提案後可立即發布，審查不阻擋寫計畫，等確認）→ apply（`openspec-apply-change`、`opsx-apply-guide`、`test-first`、結尾 `hard-verify`）→ 機器驗證（Check worker 跑 `code-review`，change 為審查對象）→ 人閘：E2E（依 `opsx-apply-guide` §4 設定的層級呈現本 run 清單並更新 `_review-backlog.md`）→ 人閘：archive → sync／archive（`openspec-sync-specs`、`openspec-archive-change`，非主幹擋下）→ commit 建議（預設只給建議，明確要求時才代為 commit）→ change log（完全完成時建議） | § Factory stages |
+| E25 | 流程步驟 | opsx 階段表 | 討論（`discuss-first`，不建 run）→ 提案（`openspec-propose`、`opsx-propose-guide`、`test-first` 必用；建 run 並提示選配審查）→ 人閘：change（預設無 skill；選配審查在 § Automation 以外從不自動要求）→ 派工計畫（提案後可立即發布，審查不阻擋寫計畫，等確認）→ apply（`openspec-apply-change`、`opsx-apply-guide`、`test-first`、結尾 `hard-verify`）→ 機器驗證（Check worker 跑 `code-review`，change 為審查對象）→ 人閘：E2E（依 `opsx-apply-guide` §4 設定的層級呈現本 run 清單並更新 `_review-backlog.md`）→ 人閘：archive → sync／archive（`openspec-sync-specs`、`openspec-archive-change`，非主幹擋下）→ commit 建議（預設只給建議，只依規則 6 允許的情形代為 commit）→ change log（完全完成時建議） | § Factory stages |
 | E26 | 選配 | 選配 skill 僅點名時載入 | 只在使用者於指令中點名時載入（例：`ponytail`、`karpathy-guidelines`、`opsx-health-check`、`code-to-docs`、`thought-palette-extract`、doc 類指引、`change-review-request`、`change-review-response`）；例外：`test-first` 在 propose 永遠啟用，apply 依 `opsx-apply-guide` 使用；不在本 skill 貼這些 skill 的全文 | § Optional skills |
 | E27 | 選配 | change 文件審查定位 | 只在使用者點名或選擇提案後的提示時進行，從不自動要求，但 § Automation 一律執行；主要位置在提案後、與人閘 change 並行、apply 前；回應審查者 ≠ apply worker ≠ apply 後的 Check | § Optional skills |
 | E28 | 選配 | 多 agent 協作 | `peer-agent-coordination` 供共用 run 目錄的 peer session 使用，成本高；不自行啟用，使用者提及或與使用者的協作討論需要時才啟用（見其 `## 1. When to enable`），不因 run 結構、其他 skill 的引用或 worker 數量而啟用；run 的 `_intake.md` 記載使用者核可 manager 的委派與 peer 討論室時即已啟用，使用該討論室；與指派一個 worker 多項工作、或多個 worker 同一工作的一般 subagent 派工不同 | § Optional skills |
@@ -81,8 +81,8 @@ opsx 路線的順序：
 | E37 | run 工作區 | 內容範圍 | 放編排狀態、派工計畫、worker 結果、驗證報告、跨 worker 記憶；不放產品原始碼；不取代 `openspec/**` 規格或 change 套件；驗證報告只能依工廠覆寫放在 `run_dir`，不得在 repo 其他地方當檢查草稿 | § What belongs here |
 | E38 | run 工作區 | 跨 run 審查待辦 | `.factory/_review-backlog.md` 累積跨 run 的人工審查項目，orchestrator 是唯一寫者；依功能或業務流程分組，畫面驗收依畫面分組；每項連回來源 run，同一功能再變更時合併並更新來源；使用者回報通過時記入來源 run 的 `_status.md` 後移除該項；只收需要人判斷的項目，依 `need-ask-user-guide` 排除自動測試或 hard-verify 已涵蓋的項目與簡單邏輯檢查；保持簡短易讀，只放檢查項目與來源 run 指標，機器驗證證據、測試數量、部署細節留在 run；自動化計畫下，批次結束時一次彙整各 run 的清單 | § Cross-run review backlog |
 | E39 | 產物格式 | 檔名慣例 | 控制／交接 `_*.md`：orchestrator 寫，prompt 允許時 worker 才可追加，peer 協作檔依 `peer-agent-coordination`，用於控制面與工廠內部暫存交接；worker 產物 `<role>-<id>-*.md`（不以 `_` 開頭）：由該 worker 寫；跨方交接 `handoff-<recipient>-<topic>.md`：放本 run 根目錄，由 orchestrator 寫，或由 manager 交付 `handoff-factory-<topic>.md`。manager 與 factory 之間的交接檔一律放在 factory run 根目錄：factory 的 `handoff-manager-<topic>.md` 在自己的 run，manager 的 `handoff-factory-<topic>.md` 在收件的 factory run；名稱只用小寫英數與連字號，檔頭三行 `Source run:`、`Recipient:`、`Date:`；收件方從不改寫該檔，在自己的 run 記錄處理 | § File conventions |
-| E40 | 產物格式 | 必要控制檔 | `_status.md`：run 建立後一律存在，每次階段轉換更新，內容為階段、分支、worker、Blockers／Decisions needed／Reminders、修訂輪、閘事件、最新產物指標；`_dispatch-plan.md`：發布派工計畫時，存放等待或已確認的具名 worker 表；`_memory.md`：有跨 worker 事實需保存時，主摘要加所有後續 worker 該讀的共享事實（決策、路徑、環境），使用者確認的決策放 `## User decisions`，保持簡短 | § File conventions |
-| E41 | 產物格式 | 選用控制檔 | `_handoff-<worker>.md`：給單一 worker 的工廠內部暫存交接（恢復、部分進度），不是跨方交接；`_needs-input.md`：原因加四選單；`_notes.md`：使用者未確認的討論筆記，以及對過時 `.manager` 內容的更正（資訊來源第 3 級）；`_review-checklist.md`：本 run 的使用者檢查清單，層級依 `opsx-apply-guide` §4，run 到達 await-e2e 時完成 | § File conventions |
+| E40 | 產物格式 | 必要控制檔 | `_status.md`：run 建立後一律存在，每次階段轉換更新，內容為階段、分支、worker、Blockers／Decisions needed／Reminders、修訂輪、閘事件、最新產物指標；`_dispatch-plan.md`：發布派工計畫時，存放等待或已確認的具名 worker 表；`_memory.md`：有跨 worker 事實需保存時，主摘要加所有後續 worker 該讀的共享事實（決策、路徑、環境），使用者確認的決策放 `## User decisions`，保持簡短；`_intake.md`：由 PM 交接寫入，工廠從不改寫，內容為已確認脈絡、委派紀錄，以及有時的 `## Automation authorization`；`_review-checklist.md`：run 到達 await-e2e 時，本 run 的使用者檢查清單，層級依 `opsx-apply-guide` §4。此表標題註明「run 存在且該階段適用時」 | § File conventions |
+| E41 | 產物格式 | 選用控制檔 | `_handoff-<worker>.md`：給單一 worker 的工廠內部暫存交接（恢復、部分進度），不是跨方交接；`_needs-input.md`：原因加四選單；`_notes.md`：使用者未確認的討論筆記，以及對過時 `.manager` 內容的更正（資訊來源第 3 級） | § File conventions |
 | E42 | 產物格式 | 控制檔寫入方式 | `_status.md`、`_memory.md`、`_dispatch-plan.md`、`_review-backlog.md` 以編輯工具原地更新；確實需要追加時先確認相同內容不存在；不得以 shell 重導盲目追加 | § File conventions |
 | E43 | 產物格式 | worker 產物範例 | `apply-w1-result.md`（`FACTORY_APPLY_RESULT_V1`）、`hard-verify-w1.md`、`check-<change-id>-code-review.md`、`change-review-request-NN.md`（選配審查簡報）、`change-review-response-NN.md`（選配審查裁決，`NN` 成對） | § File conventions |
 | E44 | 產物格式 | worker prompt 共同要求與跨 run 續用 | 每份 prompt 含 `run_dir: .factory/_runs/<…>/`，存在時 worker 必讀 `_memory.md`、`_status.md`；worker 依資訊來源判斷，可唯讀讀 `.manager`；預設只在當前 run 工作；具名 worker 可跨 run 續用，prompt 須重申新 run 的 `run_dir`、限制與要讀的控制檔，並聲明前一個 run 未記錄的脈絡不沿用；對話只放短摘要，細節留在 `run_dir` | § File conventions |
@@ -102,58 +102,45 @@ opsx 路線的順序：
 | E58 | 人閘 | 四道人閘 | 檢視 change（提案後；提示選配審查，從不自動要求；§ Automation 下整批只做一次）；確認派工（派工計畫後；確認、子集或改派前不派 worker；選用審查且回應非 `ready to apply` 時暫緩綠燈；§ Automation 下由批次檢視 change 代替）；人工 E2E（Check 完成後；寫 `_review-checklist.md` 與 manager 交接、呈現清單、更新 `_review-backlog.md` 後等待，移除使用者回報通過的項目；自動化計畫下改依 § Automation）；sync／archive（明確核可）。另在 stop-for-human 時停；`needs_input` 以四選單轉達並寫 `_needs-input.md`；report-continue 不停整個工廠 | §6 |
 | E59 | 流程步驟 | 修訂輪 | 適用 apply 後、archive 前的需求變更或 E2E 發現。意圖與範圍不變 → 修訂既有 change；新能力或語意改變 → 開新 change。change 文件標註依 `opsx-propose-guide` `## Amendments`，可改哪些既有斷言依 `opsx-apply-guide` `## Amendment rounds`；輪次記入 `_status.md`，Stage 沿用既有值。使用者直接要求的修訂免回檢視 change 閘，但記入 `_memory.md` `## User decisions`；orchestrator 發起的修訂回到檢視 change 閘。派工確認仍適用（規則 3），使用者要求修訂並指名 worker 即視為確認。大規模修訂由 orchestrator 標記並交給 worker，Check worker 以 `amendment:` 逐項核對 worker 列出的測試變更 | §6 Amendment rounds |
 | E70 | 自動化 | 適用與優先 | run 的 `_intake.md` 帶有使用者經 manager 核可的自動化授權時適用；對這種 run，本節與本 skill 其他段落不同處以本節為準；manager 經 peer 在批次的各 run 之間移動本 session；先查 manager 紀錄（§ Information sources） | § Automation |
-| E71 | 自動化 | 設計段 | 每個 run 討論、propose 後一律跑 change 文件審查；不為提問停下：紀錄定不了的決策記入該 run `_notes.md` 的 `## Pending decisions`，依 `opsx-propose-guide` 揭露 change 所作的假設後繼續；`needs doc fix` 時修改 change 再審，兩輪後仍需修改就把剩餘項目記為待決事項；`needs user clarify` 的未解項目同樣記錄；後面 run 的 propose 以同批較早的 change 為前提，依 `opsx-propose-guide` §3 以 `Depends on:` 寫明 | § Automation 1 |
-| E72 | 自動化／人閘 | 批次檢視 change | 每個 run 都有 change 後，在一個檢查點呈現全部 change 與各 run 的待決事項，依 `need-ask-user-guide` 彙整成一份決策清單並等待；這是整批的檢視 change 閘；使用者確認全部或部分 run；此時使用者指示的修訂不需再審 | § Automation 2 |
+| E71 | 自動化 | 設計段 | Stage 為 `design`；每個 run 討論、propose 後一律跑 change 文件審查；不為提問停下：紀錄定不了的決策記入該 run `_notes.md` 的 `## Pending decisions`，依 `opsx-propose-guide` 揭露 change 所作的假設後繼續；`needs doc fix` 時修改 change 再審，兩輪後仍需修改就把剩餘項目記為待決事項；`needs user clarify` 的未解項目同樣記錄；後面 run 的 propose 以同批較早的 change 為前提，依 `opsx-propose-guide` §3 以 `Depends on:` 寫明 | § Automation 1 |
+| E72 | 自動化／人閘 | 批次檢視 change | Stage 為 `await-batch-review`；每個 run 都有 change 後，在一個檢查點呈現全部 change 與各 run 的待決事項，依 `need-ask-user-guide` 彙整成一份決策清單並等待；這是整批的檢視 change 閘；使用者確認全部或部分 run；此時使用者指示的修訂不需再審 | § Automation 2 |
 | E73 | 自動化 | 施工段 | 依相依順序派工各個已確認的 run，批次檢視代替其確認派工閘；Check 後修正採納的 finding 並複查；到達 await-e2e 時寫 `_review-checklist.md`，依授權 commit（預設一次），再寫附 commit hash 的 manager 交接並經 peer 回報 | § Automation 3 |
 | E74 | 自動化 | 停止條件 | 施工段的 run 遇 `needs_input` 或 stop-for-human、self-fix 用盡、需要使用者的 Check finding、需開新 change 的範圍外發現時停下；回報 manager；只有相依於它的 run 等待 | § Automation 4 |
 | E75 | 自動化 | 批次結束 | manager 回報批次完成時，把各 run 的清單彙整進 `_review-backlog.md`；之後人工 E2E 與 sync／archive 閘照常適用；未經使用者另外明確要求不 push | § Automation 5 |
 | E60 | 邊界條件 | sync／archive 條件 | 只在人工 E2E 後（含使用者指示的修正）且使用者明確核可 sync 與 archive：1 偵測目前分支；2 不是 `main` 也不是 `master` → 擋下、警告在功能分支執行會損害 `main`／`master` 上的主規格檔，並停止；3 在 `main`／`master` 且已核可 → 依 `openspec-sync-specs`、`openspec-archive-change`。人工驗證項目未勾時，使用者口頭確認即可歸檔，確認內容與時間記入 `_status.md`；不得替使用者勾選或宣稱已驗證 | §7 |
-| E61 | 流程步驟 | commit 建議與 change-log | 使用者要求或批次收尾時跑 `commit-message-suggestion` 並把文字交給使用者，只在明確要求時代為 commit（規則 6）；整個工廠工作完全完成時建議 `change-log`，再依該 skill 把輸出交給使用者 | §8 |
-| E62 | 產物格式 | 狀態摘要樣板 | `## Factory status`：Stage（discuss／await-factory-session／propose／await-dispatch／apply／machine-verify／await-e2e／await-archive／done）、run_dir（或只討論時為 none）、Branch（是否允許 sync／archive）、Workers、Change-doc review（none 或略過／等待回應／ready to apply／needs doc fix／needs user clarify）、Blockers（最多 3 點；已記錄但仍阻擋的決策一律列出並附紀錄指標，不計入上限）、Decisions needed（尚未記錄的阻擋決策）、Reminders（非阻擋提醒）；送出前查任務指定紀錄（`.manager`、文件、run）；篩選準則依 `need-ask-user-guide` `## Present pending decisions at checkpoints` | §9 |
+| E61 | 流程步驟 | commit 建議與 change-log | 使用者要求或批次收尾時跑 `commit-message-suggestion` 並把文字交給使用者，只依規則 6 允許的情形代為 commit；整個工廠工作完全完成時建議 `change-log`，再依該 skill 把輸出交給使用者 | §8 |
+| E62 | 產物格式 | 狀態摘要樣板 | `## Factory status`：Stage（discuss／await-factory-session／propose／design／await-batch-review／await-dispatch／apply／machine-verify／await-e2e／await-archive／done）、run_dir（或只討論時為 none）、Branch（是否允許 sync／archive）、Workers、Change-doc review（none 或略過／等待回應／ready to apply／needs doc fix／needs user clarify）、Blockers（最多 3 點；已記錄但仍阻擋的決策一律列出並附紀錄指標，不計入上限）、Decisions needed（尚未記錄的阻擋決策）、Reminders（非阻擋提醒）；送出前查任務指定紀錄（`.manager`、文件、run）；篩選準則依 `need-ask-user-guide` `## Present pending decisions at checkpoints` | §9 |
 | E63 | 流程步驟 | 停止與恢復 | 每道人閘、stop-for-human、交付當前階段產物後停止；只依使用者指示恢復，或依 § Automation 下 manager 的 run 指派恢復；恢復時讀 run 的 `_status.md` 與最新產物，不只依賴對話記憶 | §10 |
 | E76 | 流程步驟 | 更換 orchestrator session | 例外情形，用於大型工作耗盡 session 時：卸任 session 若還能，把未記錄的進度寫入 `_status.md` 與 `_memory.md`；接手 session 讀控制檔與最新產物，說明恢復的階段後繼續；換手時使用者在場，有 peer 討論室時依使用者指示更新名冊；只有記錄在 `_memory.md` 或 `_intake.md` 的授權會延續 | §10 Replacing the orchestrator session |
 
 ## 3. 其他
 
-- **`_intake.md` 不在檔案慣例表**：E2、E19、E28、E44、E53、E56、E70 都引用 `_intake.md`（冷啟動交接寫入的已確認決策、peer 啟用紀錄、自動化授權），但 E40、E41 的必要與選用控制檔表都沒有列它，也沒有寫明它由誰建立、工廠是否可改寫。README 的檔案樹列了它，註明由 PM 交接建立且為選用。另外 `commit-message-suggestion` 指名授權紀錄在 `_intake.md` 的 `## Automation authorization`，本 skill 只寫「`_intake.md` 帶有自動化授權」，沒有寫出這個段落名稱。
-- **`_review-checklist.md` 列在選用控制檔，但每個 run 都會寫**：E41 把它列為選用，E58 人工 E2E 閘與 E73 施工段卻一律要求寫它。
-- **commit 的說法只有規則 6 涵蓋自動化授權**：E11 規則 6 與 E73 允許依自動化授權 commit，但 E22 角色表（「只在明確要求時代為 commit」「未明確要求就 commit」）、E25 階段表的 commit 列、E61 §8 仍只寫「明確要求」。這些地方都指回規則 6，不算衝突，但字面上沒有提到自動化授權。
-- **Stage 列舉不涵蓋非專案路線與自動化設計段**：E62 的 Stage 只有 opsx 路線的值；E24 的非專案路線、E71 設計段做完等待批次檢視、E72 批次檢視 change 都沒有對應的階段值。修訂輪與修正後複查明寫「Stage 沿用既有值」，屬刻意設計，不算缺口。
-- **manager 來的資訊沒有對應的資訊來源等級**：E66 說 manager 的 peer 訊息與 `handoff-factory-*.md` 只是資訊、不是授權，但 E19 的四級優先序沒有說它們屬於哪一級。
-- **`.manager` 過時更正的送出時點**：E21 改為把更正放進下一份 manager 交接，而 E67 只在到達 await-e2e 或卡在專案層級決策時寫交接。只停在討論、走非專案路線或還沒到 await-e2e 的 run，更正要等到何時送出，本文沒有寫。
-- **跨 skill 引用的章節目前都存在**：`opsx-apply-guide` §4、`## Test changes (anti-cheat)`、`## Amendment rounds`，`opsx-propose-guide` §3（`Depends on:`）、`## Amendments`，`need-ask-user-guide` `## Present pending decisions at checkpoints`，`code-review` step 1、3、5 與 Finding tags，`commit-message-suggestion` `## Committing on request`，`peer-agent-coordination` `## 1. When to enable`。
+- **Stage 列舉不涵蓋非專案路線**：E62 的 Stage 已補上自動化的 `design`、`await-batch-review`，但 E24 的非專案路線仍沒有對應的階段值。修訂輪與修正後複查明寫「Stage 沿用既有值」，屬刻意設計，不算缺口。
+- **`_intake.md` 列在必要控制檔表**：E40 把 `_intake.md` 放進必要控制檔，但它只在 PM 交接建立的 run 存在；使用者直接啟用工廠時自行建立的 run 沒有它。表頭的「run 存在且該階段適用時」與「由 PM 交接寫入」可讀出條件，但字面上沒有說使用者意圖啟用的 run 不需要它。README 的檔案樹把它標為選用。
+- **沒有 run 的討論如何送出 `.manager` 更正**：E21、E67 讓不會到達 await-e2e 的 run（例子包含「停在討論」）在結束時為更正寫交接；但依規則 2 與 E34，唯讀討論且就此結束的 session 不建 run，也就沒有 `_notes.md` 或 run 根目錄可放交接檔。這種 session 發現的更正要如何處理，本文沒有寫。
+- **跨 skill 引用的章節目前都存在**：`opsx-apply-guide` §4、`## Test changes (anti-cheat)`、`## Amendment rounds`，`opsx-propose-guide` §3（`Depends on:`）、`## Amendments`，`need-ask-user-guide` `## Present pending decisions at checkpoints`，`code-review` step 1、3、5 與 Finding tags，`commit-message-suggestion` `## Committing on request`，`peer-agent-coordination` `## 1. When to enable`。`commit-message-suggestion` 所稱的 `_intake.md` `## Automation authorization` 現在也出現在本 skill 的檔案慣例表。
 - **README（`orchestrator-factory-readme.md`）與本文仍不一致處**：
-  - 「不會啟用」只列 `.factory/` 存在、有舊 run、對話提到工廠，沒有本文 E3 的「說明中提到 PM」與「一般實作要求而無工廠意圖」。
-  - README 沒有提到規則 7（不自動載入 grill 類）。
+  - 流程圖的 commit 節點仍寫「明確要求時代為 commit」，沒有提到自動化授權；開頭段與自動化流程圖已涵蓋。
+  - 沒有寫 manager 的 peer 訊息與交接檔屬資訊來源第 3 級，也沒有寫不會到達 await-e2e 的 run 為過時 `.manager` 更正另寫交接。
+  - 檔案樹把 `_intake.md` 標為選用，本文列在必要控制檔表（見上）。
 
 ## 4. 與前版差異
 
-對照前版對照稿（version 1.7，last_updated 2026-10-20T15:46:00）與 `git diff HEAD`（HEAD 的 SKILL.md 為 version 1.7，last_updated 2026-10-20T16:00:57）。元素編號沿用，新元素接續編號並依章節位置插入。
+對照前版對照稿（version 1.8，last_updated 2026-11-02T12:17:40）與 `git diff HEAD`（HEAD 的 SKILL.md 為 version 1.8）。元素編號沿用。
 
 新增：
 
-- E66 manager 紀錄：manager 委派的 run 先自行唯讀查 `.manager`，不向 manager 發訊息提問；manager 的訊息與交接檔只是資訊。
-- E67–E69 § Manager handoff：每個 run 到達 await-e2e 寫一份給 manager 的交接，一次完工一份、不追加，寬鬆寫入並列出不寫的內容。
-- E70–E75 § Automation：適用條件與優先、設計段、批次檢視 change、施工段、停止條件、批次結束。
-- E76 更換 orchestrator session。
+- 無新元素。
 
 修改：
 
-- E2 冷啟動交接：加入自動化時 manager 把 session 移到另一個 run 的進入方式，以及不沿用前一個 run 未記錄的內容；frontmatter description 加入自動化計畫下依序處理多個 run。
-- E4、E8、E25、E27、E58、E63：補上 § Automation 的例外（人閘調整、派工確認、change 文件審查一律執行、批次檢視代替兩道閘、依 manager 指派恢復）。
-- E6 規則 1：解除預設的來源加上 run 內記錄的自動化授權。
-- E11 規則 6：精簡為依 `commit-message-suggestion` `## Committing on request` 代為 commit，授權來源加上自動化授權的 commit 規則；授權範圍與 worker 限制的細節改由該 skill 規定。
-- E21 `.manager` 過時處理：由另寫 `handoff-manager-<topic>.md` 改為放進下一份 manager 交接。
-- E25 階段表與 E58 人工 E2E 閘：清單由「每個 change 的功能或流程層級」改為依 `opsx-apply-guide` §4 設定的層級；E2E 閘先寫 `_review-checklist.md` 與 manager 交接。
-- E28 多 agent 協作：peer 章節引用改為 `## 1. When to enable`；`_intake.md` 記載使用者核可委派與討論室時即已啟用。
-- E33 覆寫 (7)：註明 `violates-change` 與 `change-design-flaw` 都只用於 Spec 軸；(4) 註明複查依修正後複查。這兩處不在本輪 diff 內，HEAD 的 1.7（16:00:57）已有，前版對照稿（15:46:00）未記錄。
-- E36 slug：由「一個主題或一段對話一個 slug」改為一個主題一個 slug，自動化計畫下一個 session 可依序處理多個 run。
-- E38 跨 run 審查待辦：加入保持簡短易讀、證據與部署細節留在 run，以及自動化時批次結束才一次彙整。
-- E39 檔名慣例：`_*.md` 寫者加入 peer 協作檔例外；manager 與 factory 之間的交接檔一律放 factory run 根目錄，manager 可交付 `handoff-factory-<topic>.md`；收件方從不改寫交接檔。
-- E41 選用控制檔：新增 `_review-checklist.md`。
-- E46 提案：新增第 3 步設定 run 的清單層級並記入 `_memory.md`。
-- E53 apply prompt：新增 `verification_level` 欄。
-- E54 `FACTORY_APPLY_RESULT_V1`：`developer_verification` 改為依 `verification_level` 與 `opsx-apply-guide` §4。
+- E21 `.manager` 過時處理、E67 manager 交接時機：不會到達 await-e2e 的 run（停在討論、非專案路線）在 run 結束或使用者要求時為更正另寫一份交接。
+- E66 manager 紀錄：manager 的 peer 訊息與 `handoff-factory-*.md` 明定屬資訊來源第 3 級，引用的正典紀錄保有原等級。
+- E22 角色表、E25 階段表 commit 列、E61 §8：「只在明確要求時代為 commit」改為「只依規則 6 允許的情形」，禁止事項改為「未經該授權就 commit」。
+- E40 必要控制檔：新增 `_intake.md`（PM 交接寫入、工廠從不改寫、含 `## Automation authorization`）與 `_review-checklist.md`（run 到達 await-e2e 時）。
+- E41 選用控制檔：移除 `_review-checklist.md`。
+- E62 狀態摘要：Stage 新增 `design`、`await-batch-review`；E71、E72 標明對應的 Stage 值。
+- 摘要同步上述資訊來源等級、更正交接時機與自動化 Stage 值。
 
 移除：
 
@@ -161,7 +148,7 @@ opsx 路線的順序：
 
 §3 變動：
 
-- 移除「finding 分類的軸別註記不完整」：覆寫 (7) 已註明兩個分類都只用於 Spec 軸。
-- 新增「`_review-checklist.md` 列在選用控制檔，但每個 run 都會寫」「commit 的說法只有規則 6 涵蓋自動化授權」「manager 來的資訊沒有對應的資訊來源等級」「`.manager` 過時更正的送出時點」。
-- `_intake.md` 項補記 `## Automation authorization` 段落名稱只出現在 `commit-message-suggestion`；Stage 列舉項補記自動化設計段與批次檢視。
-- 跨 skill 引用清單補上本版新增的引用。
+- 移除已修正的五項：`_intake.md` 不在檔案慣例表、`_review-checklist.md` 列在選用控制檔、commit 說法只有規則 6 涵蓋自動化授權、manager 來的資訊沒有對應的資訊來源等級、`.manager` 過時更正的送出時點。
+- 「Stage 列舉」項縮為只剩非專案路線。
+- 新增「`_intake.md` 列在必要控制檔表」「沒有 run 的討論如何送出 `.manager` 更正」。
+- README 項：移除已同步的兩項（「不會啟用」缺兩種情形、缺規則 7）；新增流程圖 commit 節點、第 3 級與更正交接時機未同步、`_intake.md` 選用標示三項。

@@ -7,7 +7,7 @@
 | ID | Type | Summary | Source | Stage | Next action |
 | --- | --- | --- | --- | --- | --- |
 | SK-X2 | initiative | 從歷次工作紀錄抽取通用規則，收納為 skill 元素 | 2026-10-19 交接 | inbox | 另開蒐集輪 |
-| SK-R | initiative | 非產品路線的工作流程規範化：需求對照、審查輪、元素對照同步、staging 位置 | 2026-11-02 使用者 | investigating | run `2026-11-02-non-product-route-workflow` |
+| SK-R2 | debt | 元素對照重拆時發現的殘留不一致：orchestrator-pm、pm-factory-handoff、pm-status-review、orchestrator-factory、commit-message-suggestion、peer-agent-coordination 與兩份 readme（正文在各對照 §3） | 2026-11-02 元素對照 | inbox | 下一輪修改 skill 時併入 |
 
 ## Deferred
 
@@ -25,3 +25,4 @@
 | SK-X1 | 建置發布結果一致性的檢查項 | 不做 | 建置與發布高敏感、各專案差異大、agent 看不到部署目標 |
 | SK-X5 | java-coding-style 屬專案專用且含外部專案名稱 | 已處理 | 自使用者級移除，改由專案工作區託管 |
 | SK-C | pm 與 factory 協調、自動化：factory 主動交接、檢查清單兩級、manager 委派用 peer、待沖入區、自動化兩段流程 | 已完成，使用者確認沖入 | run `2026-11-02-pm-factory-coordination`；決策 automation-authorization、manager-project-level |
+| SK-R | 非產品路線的工作流程規範化：需求對照、審查輪、元素對照同步、staging 位置；併修上一輪殘留不一致 | 已完成，使用者確認沖入 | run `2026-11-02-non-product-route-workflow`；orchestrator-pm `references/non-product-route.md` |

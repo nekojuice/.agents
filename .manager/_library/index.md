@@ -9,7 +9,7 @@
 
 | Title | Status | Scope | Summary | Path |
 | --- | --- | --- | --- | --- |
-| manager 可修改 skill | accepted | 本 repo | skill 修改不屬程式實作；先寫異動決策，再由 manager session 直接修改，以 git diff 審查 | decisions/manager-edits-skills.md |
+| manager 可修改 skill | accepted | 本 repo | skill 修改不屬程式實作；依 Non-product route reference：需求對照、異動決策、修改、審查、diff 驗收、擬稿 | decisions/manager-edits-skills.md |
 | 專案中立規則 | accepted | 全 repo | skill 本文與 manager 正式文件不得含外部專案內容；外部材料只存 `_runs/` | decisions/project-neutrality.md |
 | 資訊來源優先序 | accepted | 工廠與審查類 | 使用者 > manager 與主規格 > run 筆記 > change；工廠可唯讀 .manager | decisions/information-source-priority.md |
 | 跨對象交接檔命名 | accepted | 工廠與 PM | handoff-<recipient>-<topic>.md，manager 與 factory 之間一律放 factory run；收件方不改檔 | decisions/handoff-file-naming.md |

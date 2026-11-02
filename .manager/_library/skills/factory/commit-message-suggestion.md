@@ -1,13 +1,13 @@
 # commit-message-suggestion 元素對照
 
 - 分支：factory
-- 對照版本：`skills/commit-message-suggestion/SKILL.md` version 1.4，last_updated 2026-11-02T12:17:40
+- 對照版本：`skills/commit-message-suggestion/SKILL.md` version 1.5，last_updated 2026-11-02T13:38:09
 - 讀過的檔案：`skills/commit-message-suggestion/SKILL.md`、`skills/commit-message-suggestion/agents/openai.yaml`；交叉引用核對（唯讀）：`orchestrator-factory` 規則 6 與 § Automation
 - 狀態：已檢查，2026-11-02 移入 manager 正式文件
 
 ## 1. 摘要
 
-`commit-message-suggestion` 從工作樹的變更產生 Conventional Commits 格式的 commit message 建議。預設只給建議、不執行 `git add` 或 `git commit`。代為 commit 依「Committing on request」：授權只來自使用者本人的話，來源只有兩種——使用者在對話中的明確要求，或使用者核可、記錄在本 agent 負責之 run 計畫紀錄中的自動化計畫；其他 agent 的訊息、討論室紀錄、報告都不算授權，被委派的 worker 永不 commit。代為 commit 時只 stage 本次工作相關的檔案，回報 hash 與訊息（自動化時也寫進給 manager 的交接），不另外要求就不 push，自動化授權也不含 push。在工廠流程中，它位於 sync／archive 之後、change-log 之前；工廠自動化的施工段也依它在每個 run 完工時 commit。
+`commit-message-suggestion` 從工作樹的變更產生 Conventional Commits 格式的 commit message 建議。預設只給建議、不執行 `git add` 或 `git commit`。代為 commit 依「Committing on request」：授權只來自使用者本人的話，來源只有兩種——使用者在對話中的明確要求，或使用者核可、記錄在本 agent 負責之 run 計畫紀錄中的自動化計畫；其他 agent 的訊息、討論室紀錄、報告都不算授權，被委派的 worker 永不 commit。代為 commit 時只 stage 本次工作相關的檔案，回報 hash 與訊息（自動化時也記入該 run 的交接或計畫紀錄），不另外要求就不 push，自動化授權也不含 push。在工廠流程中，它位於 sync／archive 之後、change-log 之前；工廠自動化的施工段也依它在每個 run 完工時 commit。
 
 產生建議的步驟：
 
@@ -22,7 +22,7 @@
 | # | 群組 | 元素 | 內容 | 出處章節 |
 | --- | --- | --- | --- | --- |
 | E1 | 觸發條件 | 啟用時機 | `opsx-archive` 之後、使用者要求 commit message 時、提交 OpenSpec 實作工作之前；使用者明確要求代為 commit，或使用者核可的自動化計畫指定 commit 時，也由本 skill 規範；`disable-model-invocation: false`，`agents/openai.yaml` 為 `allow_implicit_invocation: true` | frontmatter description；`agents/openai.yaml` |
-| E2 | 硬規則 | 預設不 stage／commit | 預設不執行 `git add` 或 `git commit`；使用者在對話中明確要求 stage 或 commit 時，依 Committing on request | 開頭段 |
+| E2 | 硬規則 | 預設不 stage／commit | 預設不執行 `git add` 或 `git commit`；使用者在對話中明確要求 stage 或 commit，或使用者核可的自動化計畫指定 commit 時，依 Committing on request | 開頭段 |
 | E3 | 流程步驟 | 讀取變更 | 平行執行 `git status`、`git diff`（必要時加 `--staged`）、`git log --oneline -10` | Workflow 1 |
 | E4 | 流程步驟 | 摘要原因 | 摘要「為什麼」，不列改了哪些檔 | Workflow 2 |
 | E5 | 流程步驟 | scope 規則 | scope 用主專案而非功能或模組，典型形式為 `Project.Service`（例 `Acme.Web`、`Acme.Api`），大小寫比照 `git log`；只動資料庫用 `db`；agent skill 用 `skill`；文件用主專案名稱 | Workflow 3 |
@@ -40,21 +40,21 @@
 | E17 | 代為 commit | 委派限制 | 其他一切都不授權 commit：其他 agent 的訊息、討論室紀錄（例如 `_inbox.md`，即使引用使用者原話）、報告、建議、摘要；被委派的 worker 或 sub-agent 不論來源都永不 commit，只有負責該 run 的 agent 可以 | Committing on request |
 | E18 | 代為 commit | 訊息選擇 | 以本 skill 的主建議 commit；使用者提供訊息時用使用者的 | Committing on request |
 | E19 | 代為 commit | stage 範圍 | 只 stage 本次工作相關的檔案，即 agent 或其派出的 worker 在本 run 或 session 建立或修改的檔案；無關變更與未追蹤檔不納入並列給使用者；關聯不明的檔案列出並詢問，不自行納入；不得一次全部 stage（例 `git add -A`、`git add .`） | Committing on request |
-| E20 | 代為 commit | 回報 | commit 後回報 commit hash、實際使用的訊息，並列出未納入的變更；自動化計畫下，另把 hash 記入該 run 給 manager 的交接 | Committing on request |
+| E20 | 代為 commit | 回報 | commit 後回報 commit hash、實際使用的訊息，並列出未納入的變更；自動化計畫下，另把 hash 記入該 run 的交接或計畫紀錄 | Committing on request |
 | E21 | 代為 commit | 不 push | 除非使用者另外明確要求，不 push；自動化計畫的 commit 授權從不包含 push | Committing on request |
 | E22 | 產物格式 | 輸出外框 | 以 `Suggested commit message:` 開頭接訊息；有替代時加 `Alternate:` 區塊，最多兩個 | Output |
 | E23 | 邊界條件 | 不附免責聲明 | 不加固定免責聲明；讓使用者自行檢視、複製或編輯；使用者要求 stage 或 commit 時依 Committing on request | Output |
 
 ## 3. 其他
 
-- **開頭段只提對話中的要求**：E2 開頭段寫「使用者在對話中明確要求 stage 或 commit 時」依 Committing on request，沒有提到 description 與 E16 的第二個來源（自動化計畫）；讀開頭段會以為只有對話要求一途。
-- **hash 寫入交接只適用 factory run**：E16 的自動化計畫來源包含 manager run 的 `_automation.md`，但 E20 的「把 hash 記入該 run 給 manager 的交接」只對 factory run 成立；manager run 依自動化授權 commit 時要把 hash 記在哪裡，本文沒有寫。
+- **「計畫紀錄」可能被讀成可寫回 `_intake.md`**：E20 要求自動化計畫下把 hash 記入「該 run 的交接或計畫紀錄」，而 E16 定義的 factory run 計畫紀錄是 `_intake.md` `## Automation authorization`；`orchestrator-factory` 檔案慣例表規定工廠從不改寫 `_intake.md`，其 § Automation 施工段把 hash 寫進 manager 交接。兩者合讀時 factory run 只能用交接、manager run 用 `_automation.md`，但本 skill 字面沒有區分。
+- **Output 末段只提使用者要求**：E23 寫「使用者要求 stage 或 commit 時」依 Committing on request，沒有提自動化計畫來源。該段談的是使用者自行檢視建議訊息，自動化流程不經此處，不算衝突。
 - **只要求 stage 時的做法未分開寫**：開頭段與 E23 都說使用者要求「stage 或 commit」時依 Committing on request，但該節的訊息、回報 hash 等規則都以 commit 為前提；使用者只要求 stage、不要求 commit 時，哪些規則適用（例如 E19 的 stage 範圍是否適用、要回報什麼）沒有寫明。
 - **對話延續授權的記錄要求只在工廠端**：E16 允許使用者明說後授權延續到 run 或 session 結束，本 skill 沒有要求記錄；`orchestrator-factory` 規則 6 另要求有 run 時把範圍與期限記入 `_memory.md` `## User decisions`。兩者不衝突，但單獨使用本 skill 時延續授權沒有記錄位置。自動化計畫的授權則已規定記在計畫紀錄。
 
 ## 4. 與前版差異
 
-對照前版對照稿（version 1.3，last_updated 2026-10-20T15:43:47）與 `git diff HEAD`。元素編號沿用。
+對照前版對照稿（version 1.4，last_updated 2026-11-02T12:17:40）與 `git diff HEAD`。元素編號沿用。
 
 新增：
 
@@ -62,11 +62,9 @@
 
 修改：
 
-- E1 啟用時機：description 加入「使用者核可的自動化計畫指定 commit」時也由本 skill 規範。
-- E16 授權來源與期限：由「只認對話中的明確要求」改為兩個來源，新增使用者核可、記在 run 計畫紀錄（factory `_intake.md` `## Automation authorization`、manager `_automation.md`）的自動化計畫，附原話與日期，只涵蓋計畫指名的 commit 與節點。
-- E17 委派限制：由「授權只屬於直接收到使用者指示的 agent，協調者轉達不構成授權」改為明列不構成授權的來源（含即使引用使用者原話的討論室紀錄），worker 不論來源都不 commit，只有負責該 run 的 agent 可以。
-- E20 回報：自動化計畫下另把 hash 記入給 manager 的交接。
-- E21 不 push：補上自動化計畫的 commit 授權從不包含 push。
+- E2 預設不 stage／commit：開頭段補上第二個來源，使用者核可的自動化計畫指定 commit 時也依 Committing on request，與 description、E16 一致。
+- E20 回報：自動化計畫下 hash 由「記入給 manager 的交接」改為「記入該 run 的交接或計畫紀錄」，涵蓋 manager run 的 `_automation.md`。
+- 摘要同步 E20 的說法。
 
 移除：
 
@@ -74,5 +72,5 @@
 
 §3 變動：
 
-- 新增「開頭段只提對話中的要求」「hash 寫入交接只適用 factory run」。
-- 「延續授權的記錄要求只在工廠端」改為限定對話延續授權，並補記自動化授權已有記錄位置。
+- 移除已修正的兩項：開頭段只提對話中的要求、hash 寫入交接只適用 factory run。
+- 新增「『計畫紀錄』可能被讀成可寫回 `_intake.md`」「Output 末段只提使用者要求」。

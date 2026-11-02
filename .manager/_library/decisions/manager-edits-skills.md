@@ -2,7 +2,7 @@
 
 - Status: accepted
 - Scope: 本 repo
-- Date: 2026-10-19，2026-10-20 修訂流程
+- Date: 2026-10-19，2026-10-20 修訂流程，2026-11-02 流程移入 skill
 - Authority: 使用者明確指示
 
 ## Decision
@@ -11,9 +11,8 @@ orchestrator-pm 的「不實作產品」規則針對程式實作。本 repo 的�
 
 ## How to apply
 
-- 修改前先在 run 的 `changes/` 寫異動決策，使用者檢查後指示修改。
-- 直接修改 skill 本文，使用者以 git diff 審查。
+- 流程依 orchestrator-pm 的 Non-product route 與 `references/non-product-route.md`：需求對照、逐輪定案、異動決策、修改、審查、git diff 驗收、擬稿與沖入、commit 與收尾。需求對照與審查為預設步驟。
 - 寫入時遵守 `create-skill-guide` 與專案中立規則。
-- 異動完成後，依異動決策的「manager 影響」產出 manager 待沖入稿，使用者檢查後才更新正式文件。
+- 本 repo 的 library 保存 skill 元素對照（`_library/skills/`），屬路線第 7 節的拆解紀錄：修改後依新本文重拆並列入擬稿。
+- skill 與 manager 正式檔分開 commit。
 - 寫入 skill 本文以外的程式或設定，仍依一般 PM 邊界處理。
-- 流程依 orchestrator-pm 的 Non-product route。

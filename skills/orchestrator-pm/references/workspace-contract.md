@@ -17,9 +17,13 @@
    `- <YYYY-MM-DD>-<slug>/
       |- _run.md
       |- notes.md
+      |- inputs/                           (optional; original request or handoff)
       |- findings/
       |- staging/                          (optional; drafts of canonical updates)
+      |- requirements-comparison.md        (optional; Non-product route)
       |- changes/                          (optional; Non-product route)
+      |- reviews/                          (optional; review reports and triage)
+      |- handoff-factory-<topic>.md        (optional; draft before delivery)
       |- _automation.md                    (optional; automation plan)
       `- outcome.md
 ```
@@ -30,7 +34,7 @@ Canonical files (`_charter`, `_status`, `_milestones`, `_backlog`, `_library/**`
 
 ## Canonical files
 
-Every change to these files is drafted in a run's `staging/` first and applied after the user checks the draft.
+Every change to these files is drafted in a run's `staging/` first and applied after the user checks the draft. Only the initialization in Enter PM mode creates them directly.
 
 ### `_charter.md`
 
@@ -56,11 +60,15 @@ Store durable facts and decisions with provenance. `index.md` is the routing ind
 
 ### `_run.md`
 
-Store purpose, current position, confirmed inputs, pending questions, worker inventory, and the next action. Make this the first file a replacement PM session reads.
+Store route, purpose, current position, confirmed inputs, pending questions, worker inventory, and the next action, plus any departure from this skill that the user allowed (Deviations). Make this the first file a replacement PM session reads.
 
 ### `notes.md`
 
 Store scratch notes. Never treat notes as canonical truth.
+
+### `inputs/`
+
+Store the original request, a handoff from another run, or source material the user supplied.
 
 ### `findings/`
 
@@ -68,7 +76,11 @@ Store worker artifacts by default. Give each worker one or more unique paths; th
 
 ### `changes/`
 
-Store change-decision documents for the Non-product route, named `<NN>-<target>.md`, one per edit target. Use this directory only on that route.
+Store change-decision documents for the Non-product route, named `<NN>-<target>.md`, one per edit target, with `_index.md` for batches, dependencies, and pending confirmations. Use this directory only on that route. The route's requirements comparison sits at the run root as `requirements-comparison.md`.
+
+### `reviews/`
+
+Store review reports and the PM's triage (`_triage.md`) for the Non-product route.
 
 ### `staging/`
 

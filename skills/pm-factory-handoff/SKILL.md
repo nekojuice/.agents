@@ -12,14 +12,14 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Codex GPT-5.6-Sol, Claude Code Opus 5.5
-  version: "1.2"
-  last_updated: "2026-11-02T12:22:04"
+  version: "1.3"
+  last_updated: "2026-11-02T13:49:21"
 extends: orchestrator-pm
 ---
 
 # PM Factory Handoff
 
-Create a clean, self-contained cold-start intake that the factory's commanding agent reads to begin a fresh factory session. Every file written here is that cold-start handoff package, not PM working memory. PM authority is upstream of factory, but the two workspaces remain operationally isolated.
+Create a clean, self-contained cold-start intake that the factory's commanding agent reads to begin factory work on this run. Every file written here is that cold-start handoff package, not PM working memory, except the peer files of workflow step 6, which follow `peer-agent-coordination`. PM authority is upstream of factory, but the two workspaces remain operationally isolated.
 
 ## Preconditions
 
@@ -52,7 +52,7 @@ A PM recommendation, candidate label, or tentative discussion is not approval.
 2. Present a short delegation summary — candidate, goal, scope boundary, and the proposed factory run title/slug — and get the human's confirmation before creating any factory files. Skip this confirmation only when the human explicitly directed immediate creation without confirming (e.g. "直接建立、不確認" / "create directly, no confirm"), or when an approved automation plan already lists the run.
 3. Resolve a unique `.factory/_runs/<YYYY-MM-DD>-<slug>/` path. If `.factory/.gitignore` does not exist, create it with the single line `_runs/`.
 4. Distill the candidate into confirmed goal, context, scope, exclusions, constraints, evidence, open questions, and expected human checkpoints.
-5. Instantiate `_intake.md`, `_status.md`, and `_memory.md` from this skill's assets — this is the cold-start package the factory's commanding agent reads to begin a fresh session. Under an automation plan, fill `_intake.md` `## Automation authorization` by value.
+5. Instantiate `_intake.md`, `_status.md`, and `_memory.md` from this skill's assets — this is the cold-start package the factory's commanding agent reads to begin work on this run. Under an automation plan, fill `_intake.md` `## Automation authorization` by value.
 6. A delegation the PM starts uses peer by default: create the room in the factory run per `peer-agent-coordination`, with the PM as host, and record in `_intake.md` that the user approved the delegation and the room path (orchestrator-pm `## Delegation`). Skip the room only when the user declines peer; `peer_room` is then none.
 7. Confirm that no required content exists only in `.manager` (restate it by value), remove PM-only terminology the factory could not understand without reading `.manager`, and label every remaining manager reference as optional.
 8. Validate that the handoff is useful in a fresh session with no PM chat history.

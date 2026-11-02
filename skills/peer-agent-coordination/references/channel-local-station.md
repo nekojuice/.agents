@@ -35,6 +35,7 @@ for each file.
 | Send | `<party> send --run <run> --from <handle> --to <handle\|all> --intent <intent> --text <text> [--re <id>]` | The station writes the entry to `_inbox.md` for you. Do not append it yourself. |
 | Read now | `<party> read --run <run> --agent <handle>` | Delivers what is waiting, without waiting. |
 | Listen in the background | `<party> listen --run <run> --agent <handle>` | Run it as a background command. Without `--timeout-sec` it waits up to 24 hours; use `--timeout-sec <1-86400>` for a different time. When messages are waiting it only notifies and ends; then run `read`. It also ends on timeout. |
+| Wait and take | `<party> wait --run <run> --agent <handle> [--timeout-sec <1-86400>]` | Waits until messages arrive and delivers them, like `read`. Background only; prefer `listen` then `read`. It does not check for a running listener, so never run it alongside one. |
 | Check | `<party> listen --run <run> --agent <handle> --check` | Tells you, without waiting, whether you need to read waiting messages or start a listener. |
 | See members | `<party> who --run <run>` | Members, platform, session, inferred listening state. |
 | Transcript | `<party> log --run <run>` | |

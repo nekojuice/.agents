@@ -12,8 +12,8 @@ description: >-
 disable-model-invocation: true
 metadata:
   author: Codex GPT-5.6-Sol, Claude Code Opus 4.8, Claude Code Opus 5.5
-  version: "1.3"
-  last_updated: "2026-11-02T12:22:04"
+  version: "1.4"
+  last_updated: "2026-11-02T13:49:21"
 extends: pm-status-review, pm-intake-triage, pm-factory-handoff, pm-investigation-worker, peer-agent-coordination
 ---
 
@@ -27,7 +27,7 @@ This skill runs only after explicit invocation. Do not auto-enter PM mode from o
 
 1. **Human authority wins.** Treat explicit human conclusions, approvals, and acceptance as higher authority than PM inference.
 2. **One active PM session.** Assume only one PM session is active at a time. A later session may replace it by reading durable `.manager` state; no permanent agent identity is required.
-3. **Own only the PM control plane.** Write only inside `.manager/**`, with these exceptions: a factory handoff the human explicitly approves through `pm-factory-handoff`, a handoff file the PM delivers into a factory run ([Delegation](#delegation)), and text edits to a non-product managed object under the [Non-product route](#non-product-route). Peer messages are a channel, not document writes.
+3. **Own only the PM control plane.** Write only inside `.manager/**`, with these exceptions: a factory handoff the human explicitly approves through `pm-factory-handoff`, a handoff file the PM delivers into a factory run and the peer files of a delegation it started ([Delegation](#delegation)), and text edits to a non-product managed object under the [Non-product route](#non-product-route). Peer messages are a channel, not document writes.
 4. **No product implementation.** Do not edit product source, project specifications, repositories, or deployment state. This does not cover text edits to a non-product managed object under the Non-product route; code or configuration outside that object stays off-limits. Investigation is read-only outside the current manager run.
 5. **Stay at project level.** Manage direction, scope, scheduling, and status. Leave research, design, and implementation questions at factory granularity to the factory; do not dig into them, decide them, or edit the factory's working files.
 6. **Workers stay run-local.** Every worker receives one exact `run_dir` and one or more exact artifact paths inside it. Workers may not update manager root state, the library, product files, or `.factory`.
@@ -47,6 +47,7 @@ Read these when their topic becomes active:
 - When creating or resuming a manager run, read [references/run-lifecycle.md](references/run-lifecycle.md).
 - When changing completion state, read [references/completion-precedence.md](references/completion-precedence.md).
 - When promoting facts or decisions, read [references/library-provenance.md](references/library-provenance.md).
+- On the Non-product route, read [references/non-product-route.md](references/non-product-route.md).
 
 ## Enter PM mode
 
@@ -55,7 +56,7 @@ Read these when their topic becomes active:
 3. If `.manager/` does not exist, determine whether the workspace already holds substantial project state (existing code, specifications, change history, or reference systems):
    - **State exists**: a faithful charter and progress ledger require understanding the project first. Announce that an initial baseline crawl is warranted, note that it may dispatch several read-only workers across code and specification or change documents and can take a while, then ask for consent (and any scope limit) before running it. On consent, first initialize `.manager/` as described below and create the crawl's manager run, then dispatch the baseline-crawl workers into that run through `pm-status-review` (read-only) to produce the first `_status.md` and `_milestones.md`, then discuss the charter informed by that evidence.
    - **Nothing to crawl** (new or empty workspace): discuss the project charter and control boundaries first; skip the baseline crawl.
-   - Initialize `.manager/` — including a `_runs/` directory and a `.manager/.gitignore` whose single line is `_runs/`, so canonical state is workspace-tracked while runs stay local — and instantiate the templates under `assets/` without copying placeholder guidance. Consent to the baseline crawl authorizes this initialization; otherwise initialize only after the user explicitly asks. Charter direction still requires explicit human confirmation — the crawl informs it, it does not finalize it.
+   - Initialize `.manager/` — including a `_runs/` directory and a `.manager/.gitignore` whose single line is `_runs/`, so canonical state is workspace-tracked while runs stay local — and instantiate the canonical-file templates under `assets/` (charter, status, milestones, backlog, library index) without copying placeholder guidance. Initialization creates these files directly rather than through `staging/`; the crawl's first status and milestones still go through `staging/`. Consent to the baseline crawl authorizes this initialization; otherwise initialize only after the user explicitly asks. Charter direction still requires explicit human confirmation — the crawl informs it, it does not finalize it.
 4. If resuming a named run, read its `_run.md` and only the artifacts it points to.
 5. If no run is named, do not guess among multiple active runs. Use manager root state to answer simple questions or ask which run to resume when the choice changes the outcome.
 
@@ -63,14 +64,16 @@ Read these when their topic becomes active:
 
 Use this route when the managed object is not program code, for example a skill package or a documentation set. The charter or a library decision declares the managed object and this route; otherwise the user instructs it explicitly and the PM records it in `_run.md`.
 
-On this route, "no product implementation" does not apply to text edits of the managed object. The manager session edits it directly, without a factory:
+On this route, "no product implementation" does not apply to text edits of the managed object. The manager session edits it directly, without a factory. Follow [references/non-product-route.md](references/non-product-route.md):
 
-1. Write one change-decision document per target under the run's `changes/`, from [assets/change-decision.template.md](assets/change-decision.template.md).
-2. Edit the managed object directly. A user instruction to edit after reviewing the change decisions is the approval; a PM-initiated edit stops and asks first.
-3. The user reviews the edit through git diff, or an equivalent before/after diff when the managed object is not version-controlled. This is the formal checkpoint.
-4. Draft the manager-impact updates from each change decision in the run; update canonical manager files only after the user checks the draft. Status and milestone impact goes through `pm-status-review`.
-
-A change-decision document contains: why; changes, row by row at rule level, naming the file, the section, and add, modify, or delete; not changed; dependencies; manager impact; acceptance.
+1. Requirements comparison (default) — decompose the request against the managed object.
+2. Settle with the user — every open item, round by round.
+3. Change decisions — one per target under `changes/`, plus an index.
+4. Edit — only after the user reviews the change decisions and instructs the edit; a PM-initiated edit stops and asks first.
+5. Review (default) — reviewers check the edit; the PM triages their findings before fixing.
+6. User review — git diff or an equivalent before/after diff. This is the formal checkpoint.
+7. Manager impact — drafted into `staging/`, applied after the user checks it.
+8. Commit when the user asks; close the run or split off a new one.
 
 All hard rules still apply; rules 3 and 4 carry the exceptions above. Items on this route keep the existing stages and skip `approved-for-factory` and `handed-off`. Product projects keep the factory handoff.
 
@@ -134,7 +137,7 @@ The plan pre-authorizes only two things: after the batch change review, dispatch
 
 - Treat `_charter.md`, `_status.md`, `_milestones.md`, `_backlog.md`, and `_library/**` as canonical manager state.
 - Treat `.manager/_runs/<run>/**` as working memory and evidence, not canonical project truth.
-- Draft every canonical update (charter, status, milestones, backlog, library) into the run's `staging/` and apply it only after the user checks the draft, including reconciliations the user requested.
+- Draft every canonical update (charter, status, milestones, backlog, library) into the run's `staging/` and apply it only after the user checks the draft, including reconciliations the user requested. Only the initialization in Enter PM mode creates canonical files directly.
 - Change `_status.md` only through an explicit status reconciliation or the user's request to update project status. Keep `_milestones.md` as the durable milestone and feature-progress ledger, change it only through status reconciliation, and change a status only on evidence.
 - Promote confirmed run outcomes into the backlog or library as appropriate.
 - Keep historical acceptance intact. Record newly discovered regressions as linked cases rather than silently rewriting history.
@@ -148,7 +151,7 @@ Stop for the human when:
 - A PM-assessed completion conflicts with human acceptance.
 - A candidate is ready to become a factory handoff.
 - An automation plan needs approval.
-- A write outside `.manager/**` would be required, except edits to a non-product managed object under the Non-product route, whose checkpoint is the user's git diff review or an equivalent before/after diff.
+- A write outside `.manager/**` would be required, except edits to a non-product managed object under the Non-product route, which need the user's instruction before editing and the user's git diff review or an equivalent before/after diff after it.
 - Investigation would require mutating a product repository or external system.
 
 ## PM status rollup

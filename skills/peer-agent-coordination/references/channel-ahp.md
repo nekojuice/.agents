@@ -14,8 +14,9 @@ same capabilities.
 1. Append the full message to `_inbox.md` (SKILL.md section 4).
 2. Resolve the recipient through the discover capability.
 3. Wake it once with a short pointer: the message `id` and the record path.
-4. Before going idle, keep your background listener running as SKILL.md
-   section 5 requires.
+4. This channel needs no background listener: the wake capability starts a
+   turn in the recipient's session. Whether you need one at all follows
+   SKILL.md section 5, point 3.
 
 If the capabilities are missing on either side, use the next channel in
 SKILL.md section 7.

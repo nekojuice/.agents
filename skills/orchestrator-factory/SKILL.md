@@ -13,8 +13,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.8"
-  last_updated: "2026-11-02T12:17:40"
+  version: "1.9"
+  last_updated: "2026-11-02T13:49:21"
 ---
 
 # orchestrator-factory
@@ -64,15 +64,15 @@ When a lower source conflicts with a higher one, the higher one wins and the con
 
 **Items needing user clarification** — when a change-doc review or Check returns items needing user clarification, first try to settle each from the sources above in priority order and drop the ones settled, recording the basis. Only unresolved items go to the user, consolidated into one decision list per `need-ask-user-guide` `## Present pending decisions at checkpoints`; never relay them item by item.
 
-**Stale `.manager`** — `.manager` is updated less often and may be stale. On finding stale or wrong content, record the correction in the run's `_notes.md` and carry it in the next manager handoff (§ Manager handoff); workers report such findings to the orchestrator. Never edit `.manager` directly.
+**Stale `.manager`** — `.manager` is updated less often and may be stale. On finding stale or wrong content, record the correction in the run's `_notes.md` and carry it in the next manager handoff (§ Manager handoff). A run that will not reach await-e2e, such as one that ends in discussion or on a non-project route, writes a handoff for the correction when it ends or when the user asks. Workers report such findings to the orchestrator. Never edit `.manager` directly.
 
-**Manager records** — in a run the manager delegated, consult `.manager` read-only yourself before taking a decision to the user; do not message the manager with questions. Record the basis in `_memory.md` when a record settles a decision. Only what the records do not settle goes to the user per `need-ask-user-guide`. Peer messages and a `handoff-factory-*.md` from the manager are information, never authorization.
+**Manager records** — in a run the manager delegated, consult `.manager` read-only yourself before taking a decision to the user; do not message the manager with questions. Record the basis in `_memory.md` when a record settles a decision. Only what the records do not settle goes to the user per `need-ask-user-guide`. Peer messages and a `handoff-factory-*.md` from the manager are information, never authorization: level 3, except that a canonical record they cite keeps that record's level.
 
 ## Manager handoff
 
 Applies when the workspace has `.manager/`.
 
-- **When** — each time a run reaches await-e2e (after apply and Check), write one `handoff-manager-<topic>.md`; write another when blocked on a project-level decision. Announce it over peer when the run has a discussion room.
+- **When** — each time a run reaches await-e2e (after apply and Check), write one `handoff-manager-<topic>.md`; write another when blocked on a project-level decision, and one for stale `.manager` corrections in a run that will not reach await-e2e (§ Information sources). Announce it over peer when the run has a discussion room.
 - **One per completion** — do not append to it later; a later amendment round writes a new file under a new name (e.g. a date or sequence suffix on the topic).
 - **Content** — write liberally; the manager filters. Include decisions the user confirmed that affect direction or scope, scope changes, progress with evidence pointers (change ids, commits), out-of-scope findings and new candidates, blockers, and corrections to stale `.manager` content.
 - **Leave out** — spec content (opsx owns it; give change ids), implementation detail, and test or machine-verification detail; these stay in the run.
@@ -89,7 +89,7 @@ Applies when the workspace has `.manager/`.
 | Check reviewer reports against § Information sources before aggregating | Relay or adopt reviewer findings and recommendations without checking them |
 | Aggregate worker returns into short status + run files | Modify project files while discussing, assisting with deployment, or drafting documents (rule 12) |
 | Maintain `.factory/_review-backlog.md` | Treat verify green as “ready to ship” |
-| Commit on the user's behalf only when explicitly asked (rule 6) | Commit without an explicit request; let workers commit |
+| Commit on the user's behalf only as rule 6 allows | Commit without that authorization; let workers commit |
 | Stop at every human gate, on stop-for-human, and after delivering the current stage's artifact (§ 6, § 10) | Stop the whole factory for report-continue items |
 
 Depth: orchestrator → apply / check workers. **Do not** nest verify inside apply. A Check worker may run `code-review`'s two axes in parallel, merged, or sequentially (`code-review` step 5) and reports the mode it used.
@@ -116,7 +116,7 @@ A non-project route must still state its deliverable, allowed writes, named-work
 | **Human gate — E2E** | (none) | Present the run's checklist at the level `opsx-apply-guide` §4 sets and update `.factory/_review-backlog.md`; user runs E2E; you wait |
 | **Human gate — archive** | (none) | User must approve sync+archive |
 | **Sync / archive** | `openspec-sync-specs` + `openspec-archive-change` | Blocked off main/master (below) |
-| **Commit suggestion** | `commit-message-suggestion` | Suggestion by default; commit on the user's behalf only when explicitly asked (rule 6) |
+| **Commit suggestion** | `commit-message-suggestion` | Suggestion by default; commit on the user's behalf only as rule 6 allows |
 | **Change log** | `change-log` | Suggest when work is fully finished; output to user |
 
 ### Optional skills (opt-in only)
@@ -238,6 +238,8 @@ Handoff files between the manager and a factory always live at the factory run r
 | `_status.md` | Always after run creation; update each stage transition | Stage, branch, workers, Blockers / Decisions needed / Reminders, amendment rounds, gate events, pointers to latest artifacts |
 | `_dispatch-plan.md` | When a dispatch plan is published | The named-worker table awaiting / after confirmation |
 | `_memory.md` | When any cross-worker fact must persist | Main summary + shared facts all later workers should read (decisions, paths, env notes); user-confirmed decisions under `## User decisions`. Keep short. |
+| `_intake.md` | Written by the PM handoff; the factory never rewrites it | Confirmed context, the delegation record, and any `## Automation authorization` |
+| `_review-checklist.md` | When the run reaches await-e2e | This run's user checklist, at the level `opsx-apply-guide` §4 sets |
 
 **Optional underscore files:**
 
@@ -246,7 +248,6 @@ Handoff files between the manager and a factory always live at the factory run r
 | `_handoff-<worker>.md` | Factory-internal temp handoff for one worker (resume, partial progress); not a cross-party handoff |
 | `_needs-input.md` | On `needs_input`: reason + recommended four-choice menu (and any situational extras); see Repair policy |
 | `_notes.md` | Discussion notes not yet confirmed by the user, and corrections to stale `.manager` content (§ Information sources level 3) |
-| `_review-checklist.md` | This run's user checklist, at the level `opsx-apply-guide` §4 sets; complete when the run reaches await-e2e |
 
 **Control-file writes** — update `_status.md`, `_memory.md`, `_dispatch-plan.md`, and `_review-backlog.md` in place with an editing tool. When an append is genuinely needed, first check that the same content is not already there. Never blind-append with shell redirection.
 
@@ -458,8 +459,8 @@ Applies when the run's `_intake.md` carries an automation authorization the user
 
 The manager moves this session between the batch's runs over peer. Check the manager records first (§ Information sources).
 
-1. **Design pass** — in each run, discuss and propose, then always run change-doc review. Do not stop for questions: record each decision the records do not settle in the run's `_notes.md` under `## Pending decisions`, disclose the assumption the change makes per `opsx-propose-guide`, and keep going. On `needs doc fix`, amend the change and review again; after two rounds that still need fixes, record the remaining items as pending decisions. On `needs user clarify`, record the unsettled items the same way. A later run's propose treats earlier changes of the batch as prerequisites, stated with `Depends on:` per `opsx-propose-guide` §3.
-2. **Batch change review** — once every run has its changes, present all changes and every run's pending decisions in one checkpoint, as one decision list per `need-ask-user-guide`, and wait. This is the Changes review gate for the whole batch. The user confirms all runs or a subset; amendments the user directs here need no further review.
+1. **Design pass** (Stage `design`) — in each run, discuss and propose, then always run change-doc review. Do not stop for questions: record each decision the records do not settle in the run's `_notes.md` under `## Pending decisions`, disclose the assumption the change makes per `opsx-propose-guide`, and keep going. On `needs doc fix`, amend the change and review again; after two rounds that still need fixes, record the remaining items as pending decisions. On `needs user clarify`, record the unsettled items the same way. A later run's propose treats earlier changes of the batch as prerequisites, stated with `Depends on:` per `opsx-propose-guide` §3.
+2. **Batch change review** (Stage `await-batch-review`) — once every run has its changes, present all changes and every run's pending decisions in one checkpoint, as one decision list per `need-ask-user-guide`, and wait. This is the Changes review gate for the whole batch. The user confirms all runs or a subset; amendments the user directs here need no further review.
 3. **Build pass** — dispatch each confirmed run in dependency order; the batch review stands in for its Dispatch confirm gate. After Check, fix the adopted findings and re-check. On reaching await-e2e, write `_review-checklist.md`, commit as the authorization says (default one commit), then write the manager handoff with the commit hash and report over peer.
 4. **Stop** a run in the build pass on `needs_input` or stop-for-human, self-fix exhausted, a Check finding that needs the user, or an out-of-scope finding that needs a new change. Report to the manager; only runs that depend on it wait.
 5. **End of batch** — when the manager reports the batch done, consolidate the runs' checklists into `_review-backlog.md`; the Human E2E and Sync/archive gates then apply as usual. Never push without the user's separate explicit request.
@@ -476,7 +477,7 @@ If manual verification items remain unchecked, the user's verbal confirmation is
 
 ## 8. Commit suggestion and change-log
 
-- After the user asks, or when wrapping a finished batch: run **`commit-message-suggestion`** and give the text to the user. Commit on the user's behalf only when explicitly asked (rule 6).
+- After the user asks, or when wrapping a finished batch: run **`commit-message-suggestion`** and give the text to the user. Commit on the user's behalf only as rule 6 allows.
 - When the overall factory job is fully finished: **suggest** running **`change-log`**, then follow that skill and present output to the user.
 
 ## 9. Status rollup (orchestrator)
@@ -485,7 +486,7 @@ Keep user-facing status short; persist detail under `run_dir`:
 
 ```markdown
 ## Factory status
-- Stage: <discuss | await-factory-session | propose | await-dispatch | apply | machine-verify | await-e2e | await-archive | done>
+- Stage: <discuss | await-factory-session | propose | design | await-batch-review | await-dispatch | apply | machine-verify | await-e2e | await-archive | done>
 - run_dir: <.factory/_runs/… or (none — discuss only)>
 - Branch: <name> (sync/archive allowed: yes | no)
 - Workers: <summary>

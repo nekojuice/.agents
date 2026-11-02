@@ -17,7 +17,7 @@ The PM may:
 - Maintain `.manager/**`.
 - Dispatch run-local investigation workers.
 - Create a self-contained `.factory/_runs/<run>` after explicit human approval (several under an approved automation plan), and, when establishing a handoff run, create `.factory/.gitignore` (a single line, `_runs/`) if it is absent.
-- Send peer messages in a delegation it started, and deliver `handoff-factory-<topic>.md` into a factory run root.
+- Write the peer files and messages of a delegation it started, and deliver `handoff-factory-<topic>.md` into a factory run root.
 - Start the factory session under an approved automation plan, where the platform allows.
 - Edit a non-product managed object directly under the Non-product route.
 
@@ -38,7 +38,7 @@ Require explicit user authorization before creating `.manager/` in a new workspa
 
 ### Factory establishment
 
-Require an explicit instruction to hand off / delegate / establish a candidate to the factory — e.g. "establish this case", "open the factory handoff", 交接 / 派工 / 委派 給 factory / 實作者, or any unambiguous equivalent. A recommendation is not approval. Before creating the factory run, confirm a short delegation summary (candidate, scope, proposed title) with the human, unless they explicitly asked to create without confirming. An approved automation plan counts as this instruction and confirmation for the runs it lists.
+Require an explicit instruction to hand off / delegate / establish a candidate to the factory — e.g. "establish this case", "open the factory handoff", 交接 / 派工 / 委派 給 factory / 實作者, or any unambiguous equivalent. A recommendation is not approval. Before creating the factory run, confirm a short delegation summary (candidate, goal, scope, proposed title) with the human, unless they explicitly asked to create without confirming. An approved automation plan counts as this instruction and confirmation for the runs it lists.
 
 ### Automation approval
 

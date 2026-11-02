@@ -28,7 +28,7 @@ Provide:
 
 ### `_status.md`
 
-Set the handoff state to `await-factory-session`. State that factory has not started and the human must start a separate factory session.
+Set the handoff state to `await-factory-session`. State that factory has not started and the human must start a separate factory session; under an automation plan, the PM may start the session or move the batch's factory session to this run.
 
 ### `_memory.md`
 

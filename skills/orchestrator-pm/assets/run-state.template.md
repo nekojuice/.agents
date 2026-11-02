@@ -1,10 +1,15 @@
 # Manager Run State
 
 Status: active
+Route: product | non-product
 
 ## Purpose
 
 <Why this run exists>
+
+## Deviations (optional)
+
+- <Departure from orchestrator-pm and the user's instruction that allows it>
 
 ## Current position
 

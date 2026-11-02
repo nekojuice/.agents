@@ -4,14 +4,15 @@ description: >-
   Evidence-based project status reconciliation for the orchestrator-pm control
   plane. Use when PM mode is explicitly active and the user asks what is
   complete, what is missing, whether a milestone is done, whether bugs or gaps
-  remain, or to refresh .manager/_status.md after factory or human work. It may
-  coordinate read-only investigation workers but never edits product code or
-  starts factory work.
+  remain, or to update project status after factory or human work, and when a
+  factory's handoff arrives by the human's instruction or a peer notice. Status
+  updates are drafted into staging/ first. It may coordinate read-only
+  investigation workers but never edits product code or starts factory work.
 disable-model-invocation: false
 metadata:
   author: Codex GPT-5.6-Sol, Claude Code Opus 4.8, Claude Code Opus 5.5
-  version: "1.3"
-  last_updated: "2026-11-02T12:17:40"
+  version: "1.4"
+  last_updated: "2026-11-02T13:38:09"
 extends: orchestrator-pm, pm-investigation-worker
 ---
 
@@ -28,7 +29,7 @@ Reconcile the durable PM projection with current evidence. Treat this as a pull-
 - Never infer human acceptance. Record it only from an explicit human statement.
 - Never run a command that creates persistent output outside the manager run without human approval.
 - Read a factory run's `handoff-manager-*.md` read-only, on the human's instruction or a peer notice. Record how it was processed (adopted, canonical correction, new intake item) in the current manager run. Draft every resulting correction — status, milestones, library, backlog, charter — into `staging/`. Route only new questions or candidates to `pm-intake-triage`; never write back to the factory run or modify the handoff file.
-- The factory may write more than the manager needs; filter instead of adopting wholesale. Keep decisions that affect direction or scope, progress with evidence, new candidates and out-of-scope findings, blockers, and corrections to stale `.manager` content. Record spec content only as opsx change ids; drop implementation detail.
+- The factory may write more than the manager needs; filter instead of adopting wholesale. Keep decisions that affect direction or scope, progress with evidence, new candidates and out-of-scope findings, blockers, and corrections to stale `.manager` content. When the project's specification system holds spec content (for example opsx), record only pointers to it; drop implementation detail.
 
 ## Required references
 
@@ -78,7 +79,7 @@ ambiguous: <items or none>
 human_decisions_needed: <items or none>
 manager_corrections: <library, backlog, or charter corrections from handoff files, or none>
 artifact: <run-local path or none>
-staging: <run-local path or none>
+staging: <run-local path of the drafts for the changes and manager_corrections above, or none>
 ```
 
 Stop after the reconciliation and its `staging/` draft, or after applying the draft once the user has checked it. Do not proceed into implementation.

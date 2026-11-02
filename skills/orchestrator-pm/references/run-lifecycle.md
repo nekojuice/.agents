@@ -14,7 +14,7 @@ Create a manager run when work needs durable notes, multiple evidence sources, w
 ## Work
 
 - Update `_run.md` after a material decision, worker batch, or context boundary.
-- Keep worker details in `findings/` and point to them from `_run.md`.
+- Keep worker details at their assigned run paths (default `findings/`) and point to them from `_run.md`.
 - Keep chat as a concise rollup.
 - Treat assumptions as pending until confirmed.
 
@@ -32,6 +32,10 @@ Do not rely on the previous chat transcript or on a persistent agent identity. I
 ## Conclude
 
 1. Write `outcome.md` with answers, case decisions, unresolved items, and human approvals.
-2. Promote only confirmed facts, decisions, backlog entries, or status changes, drafted in `staging/` and applied after the user checks them. On the Non-product route, the drafts come from each change-decision document's manager impact; status and milestone impact goes through `pm-status-review`. Record every cross-party handoff file processed in this run in `outcome.md`.
+2. Promote only confirmed facts, decisions, backlog entries, or status changes, drafted in `staging/` and applied after the user checks them; status and milestone proposals come from `pm-status-review` into the same `staging/`. On the Non-product route, see that route's section 7. Record every cross-party handoff file processed in this run in `outcome.md`.
 3. Mark `_run.md` as concluded and point to `outcome.md`.
 4. Keep the run as audit history; do not treat its scratch notes as current truth.
+
+## Split off a topic
+
+When a topic should continue in its own run, create the new run and write its `inputs/handoff.md`: background, current state, suggested direction, and dependencies on the source run. Record the split in the source run's `outcome.md`.

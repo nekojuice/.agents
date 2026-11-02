@@ -20,6 +20,8 @@ Record:
 
 Do not label a PM inference as confirmed unless a sufficient source or human confirmation exists.
 
+When the charter or a neutrality rule limits what canonical files may contain, cite a run-local artifact path or an abstract id as the source instead of the restricted content.
+
 ## Decision entry
 
 Record:

@@ -3,8 +3,8 @@ name: peer-agent-coordination
 description: >-
   Coordination protocol for several agent sessions discussing together in a
   shared run directory: a roster, an append-only message record, a host who can
-  change hands, staying reachable through a background listener, and choosing a
-  channel per recipient (same-platform built-in messaging, AHP, a local mailbox
+  change hands, staying reachable (a background listener when a channel cannot
+  wake you), and choosing a channel per recipient (same-platform built-in messaging, AHP, a local mailbox
   station, or manual relay). Works for any agent on any platform. The agent
   knows this skill but does not enable it on its own; it is used when the user
   mentions it, a collaborative discussion needs it, or a workflow the user
@@ -12,8 +12,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Claude Code Opus 4.8, Claude Code Opus 5.5
-  version: "2.5"
-  last_updated: "2026-11-02T12:22:04"
+  version: "2.6"
+  last_updated: "2026-11-02T13:49:21"
 ---
 
 # peer-agent-coordination
@@ -79,7 +79,8 @@ from the next entry by a blank line:
 - `id` is unique within the record, e.g. `20261027T094859Z-01`.
 - `re` points to the message this replies to.
 - An optional `| relay: pending` field is used by manual relay (see
-  `references/manual-relay.md`).
+  `references/manual-relay.md`). A pending message needs a reply, at least
+  an `ack`.
 - `to: all` means every other peer on the roster. Replies go only to the sender.
 
 | intent | Reply |
@@ -93,9 +94,9 @@ it shows it was processed.
 
 ## 5. Lifecycle
 
-1. **Join.** Read the roster and the record tail, then add yourself through your
-   channel (the station has a join command; otherwise ask the host to add you).
-   If the run files do not exist, create them and become the host.
+1. **Join.** Read the roster and the record tail, then ask the host to add you
+   to the roster; with a station, run its join command as well. If the run
+   files do not exist, create them and become the host.
 2. **Work.** When woken or when the user starts a turn, first read what is new
    (for a local station, `read`). If you need a listener (point 3), make
    sure it is running again right after reading, and only then handle

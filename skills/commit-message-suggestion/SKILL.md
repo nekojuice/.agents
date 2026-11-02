@@ -10,15 +10,16 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Composer 2.5 Fast, Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.4"
-  last_updated: "2026-11-02T12:17:40"
+  version: "1.5"
+  last_updated: "2026-11-02T13:38:09"
 ---
 
 # Commit Message Suggestion
 
 Suggest commit message(s) from the working tree. Default: do **not** run
 `git add` or `git commit`. If the user explicitly asks to stage or commit in
-the conversation, follow **Committing on request** below.
+the conversation, or an automation plan the user approved names the commit,
+follow **Committing on request** below.
 
 ## Workflow
 
@@ -139,7 +140,7 @@ feat(Acme.Web): 以權限節點重建前端權限控管
   (e.g. `git add -A` or `git add .`).
 - **Report:** after committing, report the commit hash and the exact message
   used, and list any changes left out. Under an automation plan, also record
-  the hash in the run's handoff to the manager.
+  the hash in the run's handoff or plan record.
 - **Push:** do not push unless the user separately and explicitly asks. An
   automation plan's commit authorization never includes push.
 

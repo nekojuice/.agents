@@ -4,8 +4,8 @@ description: Authoring discipline for the commanding agent who runs the opsx (Op
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.4"
-  last_updated: "2026-11-02T12:17:40"
+  version: "1.5"
+  last_updated: "2026-11-02T13:38:09"
 extends: openspec-propose
 ---
 
@@ -116,7 +116,7 @@ Because the package will be implemented by a session with **no access to this co
 - **Assumptions** — every agent-made boundary for **this** change is in the fixed document section *and* reported to the user (section 4); no full-worksheet paste; no unsettled TBD as instructions; cross-change reuse is by reference.
 - **Self-containment** — an implementer with no prior context can act on the package without asking what was meant.
 - **Acceptance** — success criteria are concrete enough that the implementer can tell when the change is done.
-- **Verification skeleton** — `tasks.md` states unit-test intent or check items, with any E2E marked human-only; human-only items are at feature or flow level; no step prints secrets or calls a paid external service (section 5).
+- **Verification skeleton** — `tasks.md` states unit-test intent or check items, with any E2E marked human-only; human-only items are at the level `opsx-apply-guide` section 4 sets; no step prints secrets or calls a paid external service (section 5).
 - **Cross-repo contracts** — when values are shared across repositories, `design.md` names the single source and the verification method (section 3).
 - **Example identifiers** — examples in requested docs use only anonymous fictional names or placeholders.
 - **Amendments** — an amendment states the behavior it supersedes and is annotated per Amendments.

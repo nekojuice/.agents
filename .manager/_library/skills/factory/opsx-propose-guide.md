@@ -1,17 +1,17 @@
 # opsx-propose-guide 元素對照
 
 - 分支：factory
-- 對照版本：`skills/opsx-propose-guide/SKILL.md` version 1.3，last_updated 2026-10-20T15:43:47
-- 讀過的檔案：`SKILL.md`、`agents/openai.yaml`（僅 `allow_implicit_invocation: true`）；交叉引用核對（唯讀）：`orchestrator-factory` 的 `### Amendment rounds` 與 Propose 階段、`opsx-apply-guide` 的 `## Amendment rounds` 與 §4
-- 狀態：已檢查，2026-10-20 移入 manager 正式文件
+- 對照版本：`skills/opsx-propose-guide/SKILL.md` version 1.4，last_updated 2026-11-02T12:17:40
+- 讀過的檔案：`SKILL.md`、`agents/openai.yaml`（僅 `allow_implicit_invocation: true`）；交叉引用核對（唯讀）：`orchestrator-factory` 的 `### Amendment rounds`、Propose 階段與 § Automation 設計段，`opsx-apply-guide` 的 `## Amendment rounds` 與 §4
+- 狀態：已檢查，2026-11-02 移入 manager 正式文件
 
 ## 1. 摘要
 
 給「指揮型 agent」的 propose 撰寫紀律。指揮型 agent 是與使用者討論並定案的中樞，決定走 opsx 流程後，產出要交給其他模型或 session 實作的 change 任務包。機械步驟（跑 CLI、產生 `proposal.md`／`design.md`／`tasks.md`）仍交給 `openspec-propose`（frontmatter 最外層 `extends: openspec-propose`）；本 skill 只規範怎麼切範圍、命名、排序與揭露，讓沒有這段對話脈絡的實作者也能正確執行。
 
-在工廠流程中，它屬於 Propose 階段，與 `openspec-propose`、`test-first` 一起載入（`orchestrator-factory` 階段表）。
+在工廠流程中，它屬於 Propose 階段，與 `openspec-propose`、`test-first` 一起載入（`orchestrator-factory` 階段表）。工廠自動化的設計段也依本 skill 揭露 change 所作的假設，後面 run 的 propose 依 §3 以 `Depends on:` 寫明同批較早的 change。
 
-使用順序：與使用者對齊並決定走 opsx → 建包時依序處理：§1 切範圍 → §2 命名編號 → §3 以文字寫明相依順序，涉及跨 repo 共用值時在 `design.md` 指定唯一來源 → §4 雙軌揭露假設並逐 change 分配 → §5 在 `tasks.md` 鋪驗證骨架 → 若任務包要求文件或範例，規定識別資訊用虛構名稱 → 交出前依 §6 檢查清單逐項自檢。撰寫修訂（apply 後、archive 前修改既有 change）時另依 Amendments 一節標註。
+使用順序：與使用者對齊並決定走 opsx → 建包時依序處理：§1 切範圍 → §2 命名編號 → §3 以文字寫明相依順序，涉及跨 repo 共用值時在 `design.md` 指定唯一來源 → §4 雙軌揭露假設並逐 change 分配 → §5 在 `tasks.md` 鋪驗證骨架，人工項目層級依 `opsx-apply-guide` §4 → 若任務包要求文件或範例，規定識別資訊用虛構名稱 → 交出前依 §6 檢查清單逐項自檢。撰寫修訂（apply 後、archive 前修改既有 change）時另依 Amendments 一節標註。
 
 ## 2. 元素
 
@@ -33,15 +33,16 @@
 | E14 | 邊界條件 | 修訂沿用紀律 | 追加的 tasks 同樣要有驗證骨架（§5）與雙軌假設揭露（§4） | Amendments |
 | E15 | 邊界條件 | 大規模修訂 | 修訂取代某功能大部分行為，或舊測試已無法一對一對應到新行為時，標為大規模（工廠模式由 orchestrator 標記，否則由撰寫修訂的指揮型 agent 標記），並要求實作者在 `tasks.md` 列出每個被改寫或刪除的測試及其原涵蓋行為 | Amendments |
 | E16 | 產物格式 | 驗證骨架 | 在 `tasks.md` 鋪驗證骨架：需要測試的寫單元測試意圖（test-first）；只需檢查的寫檢查什麼；端對端／瀏覽器驗證標為 human-only，由開發者手動執行，實作 session 不自行驅動 | §5 |
-| E17 | 邊界條件 | 人工項目抽象層級 | human-only 項目寫在功能或業務流程層級、依畫面分組、只列需要人判斷的；不列個別控制項、訊息文字、內部實作，也不列單元測試或硬檢查已涵蓋者（`need-ask-user-guide`）；正本規則在 `opsx-apply-guide` §4；附一組佔位對照（過細 vs 適當層級），聲明只示層級、不是範本 | §5 |
+| E17 | 邊界條件 | 人工項目抽象層級 | human-only 項目依 `opsx-apply-guide` §4 設定的層級撰寫、依畫面分組、只列需要人判斷的，不列單元測試或硬檢查已涵蓋者（`need-ask-user-guide`）；正本規則與佔位對照都在 `opsx-apply-guide` §4 | §5 |
 | E18 | 硬規則 | 驗證安全邊界 | 任何步驟不得執行會印出秘密值的指令，確認秘密存在時只列檔名；不得呼叫付費外部服務；確實需要真實付費服務時標為 human-only 並註明成本與副作用 | §5 |
 | E19 | 邊界條件 | 骨架不是腳本 | 骨架只是雛形；最終具體驗證清單由實作 session 產出（可與骨架不同）並當時與使用者確認；不得寫成僵硬腳本 | §5 末段 |
 | E20 | 硬規則 | 範例識別資訊 | 任務包要求文件、README 或範例時，要求範例中的識別資訊（帳號、主機、組織、產品等）使用匿名虛構名稱或佔位；工具本身與專案本身的名稱除外；tasks 不得指示實作者使用真實外部名稱 | Example identifiers in requested docs |
-| E21 | 人閘／自檢 | 交出前檢查清單 | 十項：Scope（含不得有 commit 指示）、Naming、Ordering、Assumptions（本 change 限定、不貼整份工作表、不把未定 TBD 當指示、跨 change 以引用重用）、Self-containment、Acceptance（成功條件具體到實作者能判定完成）、Verification skeleton（含人工項目層級、不印秘密、不呼叫付費服務）、Cross-repo contracts、Example identifiers、Amendments（寫明被取代行為並依 Amendments 標註） | §6 |
+| E21 | 人閘／自檢 | 交出前檢查清單 | 十項：Scope（含不得有 commit 指示）、Naming、Ordering、Assumptions（本 change 限定、不貼整份工作表、不把未定 TBD 當指示、跨 change 以引用重用）、Self-containment、Acceptance（成功條件具體到實作者能判定完成）、Verification skeleton（單元測試意圖或檢查項目、E2E 標 human-only、human-only 項目在功能或流程層級、不印秘密、不呼叫付費服務）、Cross-repo contracts、Example identifiers、Amendments（寫明被取代行為並依 Amendments 標註） | §6 |
 | E22 | 硬規則 | 不提供填空範本 | 不給交接填空模板，避免下游「抄作業」而失焦；只說明任務包必須包含什麼，讓每包依自身工作撰寫 | §6 末段 |
 
 ## 3. 其他
 
+- **§6 檢查清單與 §5 的層級說法不一致**：§5（E17）已改為依 `opsx-apply-guide` §4 設定的層級（broad 或 focused），§6 的 Verification skeleton 項（E21）仍寫「human-only 項目在功能或流程層級」，等於只承認 broad；focused 級可點名控制項與訊息，照 §6 自檢會被誤判為不合格。
 - 「Acceptance（成功條件具體）」只出現在 §6 檢查清單，正文各節沒有對應說明。
 - 修訂的觸發條件、修訂與開新 change 的分界、人閘（E11）只定義在 `orchestrator-factory`；非工廠情境單獨使用本 skill 時，這些規則仍須讀工廠 skill 才能取得。
 - §5 提到 test-first 的單元測試意圖，但沒有提到 `test-first` 要先鎖定 seam；骨架是否應寫出 seam 未說明。
@@ -49,25 +50,7 @@
 
 ## 4. 與前版差異
 
-對照 run `2026-10-19-skill-improvement` 的 `staging/_baseline-2026-10-19/factory/opsx-propose-guide.md`（前版 E1–E13，version 1.2）：
-
-- 未變：前版 E1–E7 → 本版 E1–E7；E3 補記允許隱含啟用（前版寫在來源欄）。
-- 編號變動、內容未變：前版 E8 → E9、E9 → E10、E10 → E16、E11 → E19、E13 → E22。
-- 修改：前版 E12 交出前檢查清單由七項增為十項，新增 Cross-repo contracts、Example identifiers、Amendments，Verification skeleton 項加入人工項目層級與安全條件 → 本版 E21。
-- 新增：E8 跨 repo 契約。
-- 新增：E11 修訂的定義與分工。
-- 新增：E12 修訂標註。
-- 新增：E13 指明被取代的行為。
-- 新增：E14 修訂沿用紀律。
-- 新增：E15 大規模修訂。
-- 新增：E17 人工項目抽象層級。
-- 新增：E18 驗證安全邊界。
-- 新增：E20 範例識別資訊。
-- 移除：無。
-
-### 第二輪修改（`changes/25-round2-fixes.md`）
-
-對照本對照稿前一版（version 1.3，last_updated 2026-10-20T11:50:09）。元素編號沿用。
+對照前版對照稿（version 1.3，last_updated 2026-10-20T15:43:47）與 `git diff HEAD`。元素編號沿用。
 
 新增：
 
@@ -75,9 +58,8 @@
 
 修改：
 
-- E10 系列逐 change 分配：延後範例由 `alert-03` 補上副標為 `alert-03-retention-policy`（F19）。
-- E15 大規模修訂：判定標準由「重塑大範圍」改為「取代某功能大部分行為，或舊測試已無法一對一對應到新行為」（F22）。
-- 摘要中的 frontmatter 描述：`extends` 由 `metadata` 底下移到最外層（U2）；E2 內容不變。
+- E17 人工項目抽象層級：不再在本 skill 重述「功能或業務流程層級，不列個別控制項、訊息文字、內部實作」，改為依 `opsx-apply-guide` §4 設定的層級；兩則佔位對照移除，改指向 `opsx-apply-guide` §4。
+- 摘要：補記工廠自動化設計段對本 skill 的引用（揭露假設、§3 `Depends on:`）。
 
 移除：
 
@@ -85,6 +67,4 @@
 
 §3 變動：
 
-- 移除「延後範例缺 subtitle」：範例已補副標。
-- 移除「重塑大範圍沒有判定門檻」：已有判定標準。
-- 移除「`extends` 放在 `metadata` 底下」：已移到最外層。
+- 新增「§6 檢查清單與 §5 的層級說法不一致」。

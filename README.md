@@ -53,6 +53,41 @@
 
 共有三種指揮者。PM 模式與反向規格只在使用者明確啟用時進入；工廠模式另可在新 session 接手已建立的交接時進入，進入後所有人閘照樣生效。使用者核可的自動化計畫會調整人閘位置：檢視 change 與人工 E2E 各合併成整批一次，省去逐 run 的派工確認，每個 run 預設 commit 一次，push 仍要另外授權。
 
+```mermaid
+flowchart TB
+  DEV([開發者])
+  subgraph PM[Manager]
+    M{{Manager orchestrator}}
+    MD[(".manager 文件<br/>(人類可讀)")]
+    MR(".manager/_runs/<br/>一個任務一個 run")
+    MW{{workers}}
+  end
+  subgraph FA[Factory]
+    F{{Factory orchestrator}}
+    FD[[.factory 文件]]
+    FR(".factory/_runs/<br/>一個任務一個 run")
+    FW{{workers}}
+  end
+  subgraph OS[OpenSpec]
+    CH[change<br/>任務包]
+    SP[("spec<br/>基礎邏輯決策 DB<br/>(人類不可讀)")]
+  end
+  DEV -->|操控| M
+  DEV -->|操控| F
+  M -->|維護| MD
+  M -->|執行任務| MR
+  MR -->|派遣| MW
+  M <==>|委派・交接回報| FR
+  F <-.->|peer 通訊| M
+  F -->|維護| FD
+  F -->|接手執行| FR
+  FR -->|派遣| FW
+  F -->|propose| CH
+  FW -->|apply| CH
+  CH -->|sync| SP
+  MD -.-|職責互補，不強制逐項關聯| SP
+```
+
 ### 工廠模式
 
 由 `orchestrator-factory` 調度，走一項開發的主線。每個人閘都停下等使用者，自動化時依上述方式合併；檢查通過不等於可以出貨。
@@ -60,31 +95,67 @@
 ```mermaid
 flowchart TD
   A[討論 只討論不改檔] --> B[提案 產出 change]
-  B --> C[人閘 檢視 change 選配提案審查]
-  C --> D[人閘 確認派工]
+  B --> R[change review 檢查 change 設計是否合理]
+  R --> C{人閘 檢查 change 設計是否合理}
+  C -- 需更正 --> X[依人工更正修改 change]
+  X --> R
+  C -- 合理 --> D[人閘 確認派工]
   D --> E[實作與硬閘檢查]
-  E --> F[獨立審查 依資訊來源優先序判斷]
-  F --> G[人閘 人工驗收 累積驗收清單]
-  G --> H[人閘 核可同步與歸檔]
+  E --> F[code/design review 依資訊來源優先序判斷]
+  F --> J{人閘 檢查 review 結果}
+  J -- 需修改 --> K[依人工判斷修改實作]
+  K --> F
+  J -- 通過 --> G{人閘 人工驗收 累積驗收清單}
+  G -- 不通過 --> K
+  G -- 通過 --> H[人閘 核可同步與歸檔]
   H --> I[commit 與 change log]
 ```
 
 ### PM 模式
 
-由 `orchestrator-pm` 調度，管專案方向與狀態。產品是程式時，實作交給工廠；使用者核可自動化計畫時，manager 經 peer 協調同一個工廠 session 依序處理一整批 run。受管對象是 skill 或文件等非程式內容時，走非產品路線，由 manager 先做需求對照、寫異動決策，再直接修改並審查；需求對照與審查是預設步驟。正典狀態的更新一律先擬稿，使用者檢查後才沖入。
+由 `orchestrator-pm` 調度，管專案方向與狀態。產品是程式時，實作交給工廠；使用者核可自動化計畫時，manager 經 peer 協調同一個工廠 session，先讓所有 run 完成提案與 change review，整批檢視後再依相依順序施工。受管對象是 skill 或文件等非程式內容時，走非產品路線，由 manager 先做需求對照、寫異動決策，再直接修改並審查；需求對照與審查是預設步驟。正典狀態的更新除初始化外一律先擬稿，使用者檢查後才沖入。
 
 ```mermaid
 flowchart TD
-  A[進件分類] --> B[唯讀調查]
-  B --> C[狀態盤點]
-  C --> D{受管對象}
-  D -- 程式 --> E[人閘 核可後交接工廠 或核可自動化計畫]
-  D -- 非程式 --> F[需求對照 異動決策 直接修改 審查 使用者以 diff 驗收]
+  A{依意圖分流} -- 進件 --> B[進件分類]
+  A -- 調查 --> C[唯讀調查]
+  A -- 進度 --> D[狀態盤點]
+  A -- 施工 --> E{受管對象}
+  B -- 候選 --> E
+  D --> S
+  E -- 程式 --> F[人閘 核可後交接工廠 或核可自動化計畫]
+  F --> G[工廠交接回報]
+  G --> S[擬稿進 staging]
+  E -- 非程式 --> N1[需求對照 與使用者逐輪定案]
+  N1 --> N2[人閘 檢視異動決策後指示修改]
+  N2 --> N3[直接修改]
+  N3 --> N4[審查]
+  N4 --> N5{分流審查結果}
+  N5 -- 採納 --> N6[修正]
+  N6 --> N4
+  N5 -- 無新問題 --> N7[人閘 使用者以 diff 驗收]
+  N7 --> S
+  S --> T[人閘 檢查擬稿後沖入]
 ```
 
 ### 反向規格
 
-由 `orchestrator-reverse-spec` 調度，替未導入 OpenSpec 的既有專案反寫主規格，流程止於審查過的規格，不改動產品程式。
+由 `orchestrator-reverse-spec` 調度，替未導入 OpenSpec 的既有專案反寫主規格，流程止於審查過的規格，不改動產品程式。從決策到程式，每往下一層都會流失資訊，程式只留下行為，留不下理由。因此反向規格只能推回 opsx spec，推不回 `.manager` 記錄的決策脈絡。這些脈絡只能在開發過程中累積，一旦錯過就無法補回。
+
+```mermaid
+flowchart TD
+  A[討論 只討論不改檔] --> B[探索 平行唯讀調查 切分 capability]
+  B --> C[人閘 確認派工]
+  C --> D[撰寫只含 spec 的 change]
+  D --> E[人閘 核可同步與歸檔]
+  E --> F[同步與歸檔進主規格]
+  F --> G[健檢審查 以程式為準比對 spec]
+  G --> H[人閘 對齊衝突清單]
+  H --> I[修正 spec]
+  I --> J{人閘 是否再修一輪}
+  J -- 再一輪 --> I
+  J -- 完成 --> K[審查過的主規格]
+```
 
 ## Skill 一覽
 

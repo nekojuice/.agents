@@ -1,9 +1,9 @@
 # need-ask-user-guide 元素對照
 
 - 分支：factory
-- 對照版本：`skills/need-ask-user-guide/SKILL.md` version 1.1，last_updated 2026-10-20T13:40:41
-- 讀過的檔案：`skills/need-ask-user-guide/SKILL.md`、`skills/need-ask-user-guide/agents/openai.yaml`
-- 狀態：已檢查，2026-10-20 移入 manager 正式文件
+- 對照版本：`skills/need-ask-user-guide/SKILL.md` version 1.2，last_updated 2026-11-03T17:13:07
+- 讀過的檔案：`skills/need-ask-user-guide/SKILL.md`、`skills/need-ask-user-guide/agents/openai.yaml`；交叉引用核對（唯讀）：`orchestrator-factory` 的 § Cross-run review queue 與 §5b（agent E2E review 與 orchestrator 覆核）
+- 狀態：已檢查，2026-11-04 移入 manager 正式文件
 
 ## 1. 摘要
 
@@ -15,7 +15,7 @@
 2. 對事實疑問先查來源（先看提供的脈絡與任務指定來源，含持久紀錄），依任務選權威來源，調查深度與後果成比例。
 3. 以決策表判斷是否該問；例行選擇走「選擇、執行、驗證、回報」。
 4. 必須問時，在自然檢查點彙整、先排除事實問題與重複（含前幾輪或已記錄者），壓縮到上游決策，但不把獨立選擇綁成套餐。
-5. 檢查點回報分成 Decisions needed 與 Reminders 兩區，已記錄但仍阻擋的決策另以阻擋項呈現。
+5. 檢查點回報分成 Decisions needed 與 Reminders 兩區，已記錄但仍阻擋的決策另以阻擋項呈現；要使用者手動驗證的清單也是打斷，只留需要人判斷的項目，排除自動測試、硬檢查與經協調者覆核的 agent E2E review 已驗證的項目。
 6. 送出前再檢查一次：答案是否已存在（含持久紀錄）、調查能否解決、是否真的影響結果或權限、Decisions needed 每項是否真的阻擋。
 
 ## 2. 元素
@@ -48,7 +48,7 @@
 | E24 | 檢查點回報 | Decisions needed 區 | 只列同時符合兩條件的項目：不做此決策相依工作就無法前進，且此決策沒有既有答案或紀錄；每項以提問四要素呈現；可以是空的，空時寫 "No decisions needed."；不以提醒填充，也不為湊數而補 | Present pending decisions at checkpoints |
 | E25 | 檢查點回報 | Reminders 區 | 放提醒、已知限制、非阻擋問題、範圍外發現、已記錄的待答問題；已記錄的問題引用其記錄位置，不重新當成新決策提出；此區不需回覆，已記錄但仍阻擋者除外 | Present pending decisions at checkpoints |
 | E26 | 檢查點回報 | 已記錄但仍阻擋 | 已記錄且仍阻擋流程的決策不降級為免回覆的提醒；附紀錄指標，以仍阻擋的方式呈現：流程定義了阻擋欄位（例如 `Blockers`）時放該欄，否則列在 Reminders 首項並標明仍阻擋；不重新當成新決策提出 | Present pending decisions at checkpoints |
-| E27 | 檢查點回報 | 人工驗證清單也是打斷 | 要求使用者手動驗證或審查的清單也是一種打斷；只列需要人判斷的項目，排除自動測試或硬檢查已涵蓋的項目與簡單邏輯檢查 | Present pending decisions at checkpoints |
+| E27 | 檢查點回報 | 人工驗證清單也是打斷 | 要求使用者手動驗證或審查的清單也是一種打斷；只列需要人判斷的項目，排除自動測試或硬檢查已涵蓋的項目、agent E2E review 已驗證且證據經協調者覆核的項目，以及簡單邏輯檢查 | Present pending decisions at checkpoints |
 | E28 | 範例 | 六則示範 | 套件管理工具（讀 lockfile、腳本與文件流程，自行判定）；兩種本地實作（依鄰近慣例、跑檢查、回報有意義的取捨）；相容性（問上游的相容需求，細節由答案推導）；資料刪除（備份不等於授權，先確定目標與權限）；必要審查（準備可審查結果並停在檢查點，檢查通過不取代使用者驗收）；檢查點回報（已列在 run 待決清單的問題：不阻擋則放 Reminders 並引用，仍阻擋則附指標呈現為阻擋；只有新出現且阻擋下一步的問題放 Decisions needed） | Examples |
 | E29 | 送出前檢查 | 提問前自檢 | 確認答案尚未存在（含任務指定的持久紀錄，有紀錄就用它）；合理調查無法解決；會影響結果或必要授權；考慮有支持的便宜假設是否足夠；合併同一依賴的問題，同時保留獨立決策；確認 Decisions needed 每項真的阻擋進度，不阻擋的移到 Reminders | Before sending a question |
 | E30 | 成功標準 | 衡量方式 | 完成授權工作、可避免的打斷更少、重大假設可見、必要核准完整；問題少本身不是判斷較好的證據 | Before sending a question |
@@ -57,29 +57,26 @@
 
 - **「委派工作」沒有定義**：適用範圍以「委派工作」與「一般對話」劃分（E1、E2），但沒有寫兩者的界線，例如使用者在對話中直接交辦的單一任務是否算委派工作；與使用者主導的討論之間的關係，只靠「依協作層級交付」（E6）處理。
 - **檢查點回報的欄位名稱依賴外部流程**：E26 的「已記錄但仍阻擋」在流程有阻擋欄位時放該欄，否則放 Reminders 首項；本 skill 自己的兩區結構沒有阻擋欄位，因此在沒有定義 `Blockers` 的流程中，仍阻擋的項目會出現在標為「不需回覆」的 Reminders 區內，靠「標明仍阻擋」區分。
+- **E27 的 agent E2E 排除依賴外部流程**：「agent E2E review」與「協調者覆核」在本 skill 內沒有定義，實際規則在 `orchestrator-factory` §5b（逐項標為可信、不可信或重跑，`verified-with-limits` 只排除已驗證部分）；沒有協調者的情境，這項排除沒有對象。與工廠的 `_review-queue.md`「排除已覆核的 agent E2E 結果已涵蓋者」說法一致。
 - 其餘未發現衝突或自相矛盾。
 
 ## 4. 與前版差異
 
-對照 run `2026-10-19-skill-improvement` 的 `staging/_baseline-2026-10-19/factory/need-ask-user-guide.md`（前版 version 1.0，元素 E1–E25）。
+對照前版對照稿（version 1.1，last_updated 2026-10-20T13:40:41）與 commit 6bccacb 的 diff（前版之後只有這個 commit 改動本 skill）。元素編號沿用。
 
 新增：
 
-- E2 適用範圍涵蓋整個委派工作，含每輪或檢查點回報與協調者彙整後的回報。
-- E24 檢查點回報的 Decisions needed 區（兩條件、四要素、可為空、不填充）。
-- E25 檢查點回報的 Reminders 區（已記錄問題引用位置，不重提）。
-- E26 已記錄但仍阻擋的決策不降級，放阻擋欄位或 Reminders 首項。
-- E27 人工驗證清單也是打斷，只列需人判斷的項目。
+- 無。
 
 修改：
 
-- E1（前版 E1）啟用時機：description 新增「在檢查點回報呈現待決事項時也使用」。
-- E5（前版 E4）沿用既有決策與授權：來源由對話擴大到任務指定的持久紀錄（管理文件、專案文件、run 筆記、決策紀錄）。
-- E10（前版 E9）先查來源：明列任務指定來源包含持久紀錄。
-- E19（前版 E18）提問前處理：重複項擴大到前幾輪提過或已寫入持久紀錄的問題。
-- E28（前版 E23）範例：由五則增為六則，新增檢查點回報範例。
-- E29（前版 E24）送出前自檢：新增查持久紀錄並採用其答案，以及確認 Decisions needed 每項真的阻擋。
+- E27 人工驗證清單也是打斷：排除項新增「agent E2E review 已驗證且證據經協調者覆核的項目」。
+- 摘要第 5 步：補上人工驗證清單的排除範圍。
 
 移除：
 
 - 無。
+
+§3 變動：
+
+- 新增「E27 的 agent E2E 排除依賴外部流程」。

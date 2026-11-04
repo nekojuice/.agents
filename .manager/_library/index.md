@@ -14,7 +14,8 @@
 | 資訊來源優先序 | accepted | 工廠與審查類 | 使用者 > manager 與主規格 > run 筆記 > change；工廠可唯讀 .manager | decisions/information-source-priority.md |
 | 跨對象交接檔命名 | accepted | 工廠與 PM | handoff-<recipient>-<topic>.md，manager 與 factory 之間一律放 factory run；收件方不改檔 | decisions/handoff-file-naming.md |
 | 代為 commit 的授權範圍 | accepted | commit 相關 | 明確要求或核可的自動化計畫才 commit；worker 不 commit；不含 push；新增 skill 用 feat | decisions/commit-on-request.md |
-| 自動化授權契約 | accepted | PM 與工廠 | manager run 管批次施工；設計段開完 change，使用者一次檢視後依序施工；只預先授權逐 run 派工確認與每 run commit | decisions/automation-authorization.md |
+| 自動化授權契約 | accepted | PM 與工廠 | manager run 管批次施工；設計段開完 change，使用者一次檢視後依序施工；只預先授權逐 run 派工確認（含 Check 與 agent E2E）與每 run commit | decisions/automation-authorization.md |
+| agent E2E review 階段 | accepted | 工廠與 E2E | Check 後、人工前由專責 E2E worker 實際操作；覆核後精簡人工清單；review queue 與 issue backlog 的清理屬歸檔 | decisions/agent-e2e-review.md |
 | manager 停在專案層級 | accepted | PM 系列 | 只管方向、範圍、排程與狀態；factory 自查 .manager 不提問；正式檔先擬稿 | decisions/manager-project-level.md |
 | 待決事項呈現 | accepted | 委派工作回報 | 只列阻擋且未記錄的決策；已記錄仍阻擋者列阻擋項 | decisions/pending-decisions-presentation.md |
 | 討論模式例外提醒 | accepted | 討論模式 | 只答所問；四類嚴重風險可一行提醒 | decisions/discussion-exception-reminders.md |

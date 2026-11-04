@@ -15,4 +15,5 @@ manager 只管專案的方向、範圍、排程與狀態。factory 粒度的研�
 - factory 自行唯讀查閱 `.manager`，不以訊息向 manager 提問；manager 也不回答 factory 粒度的問題。
 - manager 發動的委派，manager 在討論室保持可被喚醒直到使用者結束討論室；預設同平台，不需自製站台的背景接聽。factory 換手時使用者在場，名冊依使用者指示更新。
 - 非自動化時，補交給 factory 的事項先與使用者討論後才發出。
+- 必要時 manager 可更新 factory 根目錄的 `_review-queue.md`、`_issue-backlog.md`；factory 歸檔時移交的未處理 issue 由 manager 收件處理。
 - factory 的交接可以多寫，manager 收件時篩選，不全盤接收；所有正式檔更新先擬稿到 run 的 `staging/`，使用者檢查後才沖入。

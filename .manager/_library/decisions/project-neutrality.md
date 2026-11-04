@@ -2,7 +2,7 @@
 
 - Status: accepted
 - Scope: 本 repo 全部 skill 本文與 manager 正式文件
-- Date: 2026-10-19
+- Date: 2026-10-19，2026-11-04 補 E2E 專案資產
 - Authority: 使用者明確指示
 
 ## Decision
@@ -21,3 +21,4 @@ skill 本文（`SKILL.md`、references、assets、agents 設定）與 manager �
 - commit 前以專案詞彙掃描變更的 skill 檔。
 - 追溯改善來源時，正式文件只寫抽象訴求編號，具體證據留在 run。
 - 修正既有違規時以匿名虛構名稱或一般描述取代，不在任何文件中重述違規名稱。
+- E2E 的專案知識（受測環境、帳號用途、腳本、碎片、情境、recipes）放在各專案的 `.e2e/`；e2e-review 只放通用規範與工具。

@@ -1,9 +1,9 @@
 # opsx-propose-guide 元素對照
 
 - 分支：factory
-- 對照版本：`skills/opsx-propose-guide/SKILL.md` version 1.5，last_updated 2026-11-02T13:38:09
-- 讀過的檔案：`SKILL.md`、`agents/openai.yaml`（僅 `allow_implicit_invocation: true`）；交叉引用核對（唯讀）：`orchestrator-factory` 的 `### Amendment rounds`、Propose 階段與 § Automation 設計段，`opsx-apply-guide` 的 `## Amendment rounds` 與 §4
-- 狀態：已檢查，2026-11-02 移入 manager 正式文件
+- 對照版本：`skills/opsx-propose-guide/SKILL.md` version 1.7，last_updated 2026-11-04T10:24:00
+- 讀過的檔案：`SKILL.md`、`agents/openai.yaml`（僅 `allow_implicit_invocation: true`）；交叉引用核對（唯讀）：`orchestrator-factory` 的 `### Amendment rounds`、Propose 階段、§5b 與 § Automation 設計段，`opsx-apply-guide` 的 `## Amendment rounds`、§3 與 §4，`e2e-review`（工作樹 version 1.2）`SKILL.md` 的 Boundaries
+- 狀態：已檢查，2026-11-04 移入 manager 正式文件
 
 ## 1. 摘要
 
@@ -11,7 +11,7 @@
 
 在工廠流程中，它屬於 Propose 階段，與 `openspec-propose`、`test-first` 一起載入（`orchestrator-factory` 階段表）。工廠自動化的設計段也依本 skill 揭露 change 所作的假設，後面 run 的 propose 依 §3 以 `Depends on:` 寫明同批較早的 change。
 
-使用順序：與使用者對齊並決定走 opsx → 建包時依序處理：§1 切範圍 → §2 命名編號 → §3 以文字寫明相依順序，涉及跨 repo 共用值時在 `design.md` 指定唯一來源 → §4 雙軌揭露假設並逐 change 分配 → §5 在 `tasks.md` 鋪驗證骨架，人工項目層級依 `opsx-apply-guide` §4 → 若任務包要求文件或範例，規定識別資訊用虛構名稱 → 交出前依 §6 檢查清單逐項自檢。撰寫修訂（apply 後、archive 前修改既有 change）時另依 Amendments 一節標註。
+使用順序：與使用者對齊並決定走 opsx → 建包時依序處理：§1 切範圍 → §2 命名編號 → §3 以文字寫明相依順序，涉及跨 repo 共用值時在 `design.md` 指定唯一來源 → §4 雙軌揭露假設並逐 change 分配 → §5 在 `tasks.md` 鋪驗證骨架，端對端驗證標為 E2E（實作 session 不做，協調流程可先交專責 E2E reviewer，剩下的交開發者），層級依 `opsx-apply-guide` §4 → 若任務包要求文件或範例，規定識別資訊用虛構名稱 → 交出前依 §6 檢查清單逐項自檢。撰寫修訂（apply 後、archive 前修改既有 change）時另依 Amendments 一節標註。
 
 ## 2. 元素
 
@@ -32,12 +32,12 @@
 | E13 | 硬規則 | 指明被取代的行為 | 修訂改變既有行為時，寫明取代了哪一項行為；這是實作者可改寫或刪除既有斷言的唯一邊界（`opsx-apply-guide` 的 `## Amendment rounds`） | Amendments |
 | E14 | 邊界條件 | 修訂沿用紀律 | 追加的 tasks 同樣要有驗證骨架（§5）與雙軌假設揭露（§4） | Amendments |
 | E15 | 邊界條件 | 大規模修訂 | 修訂取代某功能大部分行為，或舊測試已無法一對一對應到新行為時，標為大規模（工廠模式由 orchestrator 標記，否則由撰寫修訂的指揮型 agent 標記），並要求實作者在 `tasks.md` 列出每個被改寫或刪除的測試及其原涵蓋行為 | Amendments |
-| E16 | 產物格式 | 驗證骨架 | 在 `tasks.md` 鋪驗證骨架：需要測試的寫單元測試意圖（test-first）；只需檢查的寫檢查什麼；端對端／瀏覽器驗證標為 human-only，由開發者手動執行，實作 session 不自行驅動 | §5 |
-| E17 | 邊界條件 | 人工項目抽象層級 | human-only 項目依 `opsx-apply-guide` §4 設定的層級撰寫、依畫面分組、只列需要人判斷的，不列單元測試或硬檢查已涵蓋者（`need-ask-user-guide`）；正本規則與佔位對照都在 `opsx-apply-guide` §4 | §5 |
-| E18 | 硬規則 | 驗證安全邊界 | 任何步驟不得執行會印出秘密值的指令，確認秘密存在時只列檔名；不得呼叫付費外部服務；確實需要真實付費服務時標為 human-only 並註明成本與副作用 | §5 |
+| E16 | 產物格式 | 驗證骨架 | 在 `tasks.md` 鋪驗證骨架：需要測試的寫單元測試意圖（test-first）；只需檢查的寫檢查什麼；端對端／瀏覽器驗證標為 E2E，實作 session 從不自行執行；協調流程可先交專責 E2E reviewer（`opsx-apply-guide` §3），剩下的交開發者 | §5 |
+| E17 | 邊界條件 | E2E 項目抽象層級 | E2E 項目依 `opsx-apply-guide` §4 設定的層級撰寫、依畫面分組、只列需要人判斷的，不列單元測試或硬檢查已涵蓋者（`need-ask-user-guide`）；正本規則與佔位對照都在 `opsx-apply-guide` §4 | §5 |
+| E18 | 硬規則 | 驗證安全邊界 | 任何步驟不得執行會印出秘密值的指令，確認秘密存在時只列檔名；不得呼叫付費外部服務；確實需要真實付費服務時如實標示並註明成本與副作用；E2E reviewer 只在使用者核可的範圍內執行，否則留給人工 | §5 |
 | E19 | 邊界條件 | 骨架不是腳本 | 骨架只是雛形；最終具體驗證清單由實作 session 產出（可與骨架不同）並當時與使用者確認；不得寫成僵硬腳本 | §5 末段 |
 | E20 | 硬規則 | 範例識別資訊 | 任務包要求文件、README 或範例時，要求範例中的識別資訊（帳號、主機、組織、產品等）使用匿名虛構名稱或佔位；工具本身與專案本身的名稱除外；tasks 不得指示實作者使用真實外部名稱 | Example identifiers in requested docs |
-| E21 | 人閘／自檢 | 交出前檢查清單 | 十項：Scope（含不得有 commit 指示）、Naming、Ordering、Assumptions（本 change 限定、不貼整份工作表、不把未定 TBD 當指示、跨 change 以引用重用）、Self-containment、Acceptance（成功條件具體到實作者能判定完成）、Verification skeleton（單元測試意圖或檢查項目、E2E 標 human-only、human-only 項目依 `opsx-apply-guide` §4 設定的層級、不印秘密、不呼叫付費服務）、Cross-repo contracts、Example identifiers、Amendments（寫明被取代行為並依 Amendments 標註） | §6 |
+| E21 | 人閘／自檢 | 交出前檢查清單 | 十項：Scope（含不得有 commit 指示）、Naming、Ordering、Assumptions（本 change 限定、不貼整份工作表、不把未定 TBD 當指示、跨 change 以引用重用）、Self-containment、Acceptance（成功條件具體到實作者能判定完成）、Verification skeleton（單元測試意圖或檢查項目、E2E 標為 E2E 且從不由實作 session 執行、E2E 項目依 `opsx-apply-guide` §4 設定的層級、不印秘密、不呼叫付費服務）、Cross-repo contracts、Example identifiers、Amendments（寫明被取代行為並依 Amendments 標註） | §6 |
 | E22 | 硬規則 | 不提供填空範本 | 不給交接填空模板，避免下游「抄作業」而失焦；只說明任務包必須包含什麼，讓每包依自身工作撰寫 | §6 末段 |
 
 ## 3. 其他
@@ -49,7 +49,7 @@
 
 ## 4. 與前版差異
 
-對照前版對照稿（version 1.4，last_updated 2026-11-02T12:17:40）與 `git diff HEAD`。元素編號沿用。
+對照前版對照稿（version 1.5，last_updated 2026-11-02T13:38:09）與 commit 6bccacb 的 diff。元素編號沿用。
 
 新增：
 
@@ -57,7 +57,11 @@
 
 修改：
 
-- E21 交出前檢查清單：Verification skeleton 項的 human-only 項目由「功能或流程層級」改為依 `opsx-apply-guide` §4 設定的層級，與 §5（E17）一致。
+- E16 驗證骨架：端對端驗證的標記由 human-only（開發者手動執行）改為 E2E；實作 session 仍從不自行執行；協調流程可先交專責 E2E reviewer，剩下的交開發者。
+- E17 由「人工項目抽象層級」改為「E2E 項目抽象層級」，規則內容不變。
+- E18 安全邊界：付費服務項由「E2E reviewer 也不執行」（1.6）改為「只在使用者核可的範圍內執行，否則留給人工」（1.7），與 `e2e-review` 一致。
+- E21 交出前檢查清單：Verification skeleton 項改為 E2E 標為 E2E 且從不由實作 session 執行、E2E 項目依 `opsx-apply-guide` §4 的層級。
+- 摘要：§5 步驟補上 E2E 的去向。
 
 移除：
 
@@ -65,4 +69,4 @@
 
 §3 變動：
 
-- 移除「§6 檢查清單與 §5 的層級說法不一致」：§6 已改為引用 `opsx-apply-guide` §4。
+- 1.6 時的「付費服務與 `e2e-review` 的邊界說法不同」已於 1.7 修正。

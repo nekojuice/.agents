@@ -15,6 +15,7 @@
 | factory | code-review | factory/code-review.md |
 | factory | commit-message-suggestion | factory/commit-message-suggestion.md |
 | factory | discuss-first | factory/discuss-first.md |
+| factory | e2e-review | factory/e2e-review.md |
 | factory | hard-verify | factory/hard-verify.md |
 | factory | need-ask-user-guide | factory/need-ask-user-guide.md |
 | factory | opsx-apply-guide | factory/opsx-apply-guide.md |

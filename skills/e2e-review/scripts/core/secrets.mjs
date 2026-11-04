@@ -7,8 +7,11 @@ export function addSecret(v) {
     if (s.length >= 4) values.add(s)
 }
 
+// Every string field of an account entry is secret except userId and note (e.g. password, a second password for a change test).
+export const PUBLIC_ACCOUNT_FIELDS = ['userId', 'note']
 export function addAccountSecrets(accounts) {
-    for (const a of Object.values(accounts ?? {})) addSecret(a?.password)
+    for (const a of Object.values(accounts ?? {}))
+        for (const [k, v] of Object.entries(a ?? {})) if (!PUBLIC_ACCOUNT_FIELDS.includes(k) && typeof v === 'string') addSecret(v)
 }
 
 // Key names that hold secrets: exact short names, or names ending in a secret word (camelCase, snake_case, kebab-case).

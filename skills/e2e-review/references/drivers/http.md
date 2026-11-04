@@ -35,8 +35,10 @@ Unlike web fragments, API fragments may import other modules, e.g. builders from
 | `record({ type, id, state, note })` | Add or update an entry with an id in the round's `data/manifest.json` |
 | `dry` | True in a dry run |
 
+Fragments also receive `H.account(key)`: a copy of another account's entry, for requests that carry its credentials (e.g. a password change). Its secret fields are redacted in every artifact like any account's, and accounts read this way or switched to with `as()` are listed in the report. `account` is a reserved helper name: a project helper `helpers/account.mjs` is ignored and `check` warns.
+
 - The client is logged in as `--account=<key>`; without an account it sends no credentials.
-- In a dry run no request is sent, not even the login: each call returns `{ status: 0, dry: true, request }` with the request it would have sent, and the exchange is still written to `dry/exchanges/`.
+- In a dry run no request is sent, not even the login: each call returns `{ status: 0, dry: true, request }` with the request it would have sent, and the exchange is still written to `dry/<name>/exchanges/`.
 - A failed call is not retried. A write that fails is reported, not resent.
 
 ## Login
@@ -52,8 +54,8 @@ export default async (api, account, ctx) => {
 }
 ```
 
-- Login runs once per account key and command; a scenario reuses the session across its steps.
-- Cookies set by the login response and returned headers are kept in memory only, registered for redaction, and never written to any artifact. Login exchanges keep only method, URL, and status; their request and response bodies are omitted, because a token in the response is not yet known as a secret when the exchange is written.
+- Login runs once per account key and command; a scenario reuses the session across its steps. Concurrent calls of one account wait for the same login, so none is sent without the session.
+- Cookies set by the login response and returned headers are kept in memory only, registered for redaction, and never written to any artifact. Login exchanges keep only method, URL, status, and the key of the account being logged in (`login: true`); their request and response bodies are omitted, because a token in the response is not yet known as a secret when the exchange is written.
 - Login logic lives only in `auth.mjs`, so a change of the login method touches one file.
 
 ## Logging
@@ -62,7 +64,7 @@ export default async (api, account, ctx) => {
 | --- | --- |
 | `steps.jsonl` | One step per fragment run or `api` command, with surface, kind, driver |
 | `exchanges/NNN-<label>-<METHOD>.json` | Every call: time, surface, account key, method, URL, status, request headers and body, response headers and body; redacted before truncation; bodies over 20,000 characters truncated with their length |
-| `data/manifest.json` | Every successful or failed write call (POST, PUT, PATCH, DELETE) as an automatic entry, except login calls; ids added with `record` |
+| `data/manifest.json` | Every successful or failed write call (POST, PUT, PATCH, DELETE) as an automatic event, except login calls; ids and states added with `record`, each as its own event |
 
 ## Request templates
 

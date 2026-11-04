@@ -32,7 +32,7 @@ Generic rules ship with the skill in `scripts/drivers/playwright/helpers/uiLint.
 | `readonly-counter` | Read-only field still showing a character counter |
 | `overflow-x` | Horizontal page scrollbar (whole-page scope only) |
 
-Project-specific rules, such as those tied to a component library's class names, go in `.e2e/surfaces/<web surface>/helpers/uiLintExtra.js`: a function `async (page, scope) => findings` returning the same shape `{ type, rule, what, samples }`. The `ui-lint` probe merges both.
+Project-specific rules, such as those tied to a component library's class names, go in `.e2e/surfaces/<web surface>/helpers/uiLintExtra.js`: a function `async (page, scope) => findings` returning the same shape `{ type, rule, what, samples }`. The `ui-lint` probe merges both. The report translates the generic rules; a project rule is shown with its `what`, so write `what` in the project's report language (PROJECT.md `Report language`).
 
 ## Adding or changing a rule
 

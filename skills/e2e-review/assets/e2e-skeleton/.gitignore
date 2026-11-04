@@ -1,3 +1,22 @@
+# Folders the skill defines stay versioned even when a parent .gitignore ignores names such as lib/, data/, or helpers/.
+!config/
+!surfaces/
+!surfaces/*/actions/
+!surfaces/*/probes/
+!surfaces/*/helpers/
+!data/
+!data/templates/
+!data/builders/
+!data/sets/
+!scenarios/
+!scenarios/lib/
+!recipes/
+!audit/
+!tools/
+# Installed packages never enter version control, even inside tools/.
+tools/**/node_modules/
+tools/**/.venv/
+# Local only: passwords, pointers and the data registry, direct-run reports.
 config/accounts.local.json
 state/
 out/

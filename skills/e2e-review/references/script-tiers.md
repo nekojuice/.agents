@@ -9,7 +9,7 @@ Scripts accumulate with use, the way project decisions accumulate in manager doc
 | Scenario | A checklist block or full business flow, every step scripted, comparisons coded in | A block of acceptance items; an application-to-approval flow; API setup followed by screen checks | `.e2e/scenarios/`, shared pieces in `.e2e/scenarios/lib/` |
 | Recipe | A solidified flow that still contains agent-operated steps, mixed with script steps; not yet an acceptance basis | Preparing data or state with a tool the scripts cannot drive yet, then handing over to scripts | `.e2e/recipes/`; see [recipes.md](recipes.md) |
 
-Generic, project-independent probes ship with each driver (`scripts/drivers/<driver>/probes/`); the playwright driver has `shot`, `ui-lint`, `contact-sheet`.
+Generic, project-independent probes ship with each driver (`scripts/drivers/<driver>/probes/`); the playwright driver has `shot`, `ui-lint`, `contact-sheet`, `download`.
 
 ## Surfaces
 
@@ -43,9 +43,9 @@ Test data the review creates through the system's API (or screens) is designed, 
 | `.e2e/data/builders/` | Functions that turn a template plus parameters (dates, codes) into a request | Pure functions; no network calls |
 | `.e2e/data/sets/` | Named data sets: which records to build, with which parameters | One file per purpose, e.g. the records a due-date list needs |
 
-- What a round actually creates or changes is recorded in the round's `data/manifest.json`. API write calls are recorded automatically; fragments add record ids with `api.record`, scenarios with `ctx.addWrite`.
+- What a round actually creates or changes is recorded in the round's `data/manifest.json`. API write calls are recorded automatically; fragments add record ids with `api.record`, scenarios with `ctx.addWrite`. Every call adds an event, so intermediate states (created, submitted, approved, a setting changed and restored) stay visible; `latest` gives the last state per record.
 - Records that later rounds will reuse are registered in `.e2e/state/data-<env>.json` (not committed), where `<env>` is `env.json` `name`, else `dataScope`. Read it before creating data; reuse instead of duplicating.
-- Name created records with the project's test prefix, as PROJECT.md says.
+- Test data rules (identifiable test data, new records instead of changing existing ones, the exception for system-wide settings): SKILL.md "Boundaries". Here: name created records with the project's test prefix from PROJECT.md, record ids in the manifest, and register reusable records in the environment registry.
 
 ## Demotion and repair
 
@@ -63,11 +63,12 @@ Rules for every driver:
 
 - Return JSON-serializable values.
 - Fragments that write must be safe to rerun: check the target state first, skip the write when already done, and say in the return value whether a write happened.
-- Fragments that write honor `P.dry`: build the request or fill the form, but do not send or save; return what would have been sent. As a safety net the http driver sends nothing in a dry run, and the playwright driver blocks write requests (see the driver references); a fragment must not rely on that net alone.
+- Fragments that write honor `P.dry`: build the request or fill the form, but do not send or save; return what would have been sent. As a safety net the http driver sends nothing in a dry run, and the playwright driver blocks write requests (see the driver references); a fragment must not rely on that net alone. A web fragment that skips a request itself reports it with `H.reportBlocked('<method> <path>')`, so it appears with the step's blocked requests.
+- Read the dry-run flag from `P.dry`; do not add an argument of your own for it (`dry` is reserved).
 - Take expected values from specs or data; when taken from current code, name the source file in the check note.
 - Keep login in one place per surface so a login change touches only it.
 - Edit `.js`, `.mjs`, and `.py` files with an editor tool. Shell or script string replacements corrupt escape sequences such as `\n` and regex backslashes.
-- Never pass passwords or tokens as arguments; take them from `P.account` inside the call.
+- Never pass passwords or tokens as arguments; take them from `P.account` inside the call. An API fragment that needs another account's credentials (e.g. the old and new password of a change request) takes them from `H.account('<key>')`; never read `accounts.local.json` yourself.
 
 ### Web fragments (`playwright`)
 
@@ -115,10 +116,12 @@ Ad-hoc API scripts in `scratch/api/` are run with the surface prefix, e.g. `run 
 | `P.surface`, `P.surfaceConfig` | The surface name and its entry in `env.surfaces` |
 | `P.config` | Every JSON in `.e2e/config/` by file name, e.g. `P.config.routes` |
 | `P.account`, `P.accountKey` | The account for `--account=<key>`; the password stays inside the call and is never logged |
-| `P.out` | Absolute folder the step writes to (the round folder, or `<round>/dry/` in a dry run) |
-| `P.args` | Remaining `--key=value` arguments |
+| `P.out` | Absolute folder the step writes to: the round folder, `<round>/dry/<name>/` in a dry run, or `<round>/rehearse/<name>/` in a rehearsal |
+| `P.args` | Remaining `--key=value` arguments; JSON objects and arrays arrive as objects |
 | `P.dry` | True in a dry run |
 | `H.<name>` | Helpers: the driver's own plus every file in `.e2e/surfaces/<surface>/helpers/` (browser-side for web, Node modules for api) |
+| `H.account(key)` | API fragments only: a copy of another account's entry; its secret fields are redacted wherever they appear, and the account is listed in the report. `account` is a reserved helper name: a project helper of that name is ignored (`check` warns) |
+| `H.reportBlocked(what)` | Web fragments only: add a request the fragment skipped to the step's blocked requests |
 
 ## Writing scenarios
 
@@ -127,8 +130,8 @@ A scenario exports one async function and imports nothing from the skill; shared
 ```js
 export default async (ctx, opts) => {
     Object.assign(ctx.result.task, { title: '<block>', source: '<checklist text>', requester: '<superior>' })
-    const made = await ctx.run('api:actions/order-create', { account: 'clerk', code: 'E2E-01' }, 'order')
-    const res = await ctx.run('web:probes/order-detail', { account: 'admin', id: made.value?.id }, 'detail')
+    const made = await ctx.run('api:actions/order-create', { account: 'clerk', code: 'E2E-01' }, 'order', { expects: [{ action: '<action code>' }] })
+    const res = await ctx.run('web:probes/order-detail', { account: 'approver', id: made.value?.id }, 'detail')
     ctx.check('12-1', '<check>', '<expected>', res.value?.title ?? null, res.ok ? res.value.title === '<expected>' : null, ['values/detail.json'], '', { via: 'web' })
     ctx.result.items = [{ id: '12', title: '<item>', checks: ['12-1'], humanWork: '' }]
     await ctx.run('web:probes/shot', { name: 'final' })
@@ -138,17 +141,18 @@ export default async (ctx, opts) => {
 
 | `ctx` member | Use |
 | --- | --- |
-| `run(ref, args, saveAs)` | Run a fragment through its surface's driver; returns `{ ok, value, error, step }` where `step` has `startedAt`, `endedAt`, `surface` |
-| `check(id, title, expected, actual, pass, evidence, note, opts)` | Record a coded check; `pass = null` when a prerequisite failed, attributed to `run-error` automatically. `opts.via`: `web`, `api`, `db`; `opts.by` overrides the source (e.g. `value` for a read value awaiting the superior's decision); `opts.agent`: the judgment rests on an agent step |
+| `run(ref, args, saveAs, opts)` | Run a fragment through its surface's driver; returns `{ ok, value, error, step }` where `step` has `startedAt`, `endedAt`, `surface`. In a formal run, after a write step (`actions/`) failed, later write steps are skipped and return `{ ok: false, skipped: true }` with a `step` marked `skipped`; `opts.always: true` runs a step anyway (restoring a changed setting must). `opts.expects`: the audit rows the step produces, `[{ object, action }]`, for attribution |
+| `check(id, title, expected, actual, pass, evidence, note, opts)` | Record a coded check; `pass = null` when a prerequisite failed, attributed to `run-error` automatically, as is `pass = false` after a skipped write step unless the check is clearly unrelated to it (report-spec "Reruns and corrections"). `opts.via`: `web`, `api`, `db`; `opts.by` overrides the source (e.g. `value` for a read value awaiting the superior's decision); `opts.agent`: the judgment rests on an agent step |
 | `manual(id, title, expected, by, note, evidence, opts)` | Record a `not-run` or `visual` check |
-| `addWrite(write)` | Record a data write; kept across reruns, duplicates skipped, times converted to local, mirrored into `data/manifest.json` |
+| `addWrite(write)` | Record a data write (`what`, `where`, `how`); kept across reruns, duplicates skipped, times converted to local, mirrored into `data/manifest.json`. Missing fields are recorded as `—` with an issue |
 | `finding(f)` | Record a UI finding from the scenario; replaced on rerun |
 | `lint(where, { scope, shot })` | Run the web UI lint probe and record findings as automatic UI findings |
-| `ownerStep(time)` | The step a screen or audit timestamp belongs to, by the same rule the report uses |
+| `ownerStep(time, row)` | The step a screen or audit timestamp belongs to, by the same rule the report uses; pass the audit row to use step `expects` |
+| `same(a, b)` | Deep equality that ignores object key order (arrays keep order); compare objects with it, never as JSON strings |
 | `lastStep()`, `inStep(time, step)`, `toMs(time)`, `toLocal(time)` | Lower-level time helpers |
-| `valueFile(name)`, `writeValue(name, value)` | Read or write `values/<name>.json` (redacted) |
-| `dry` | True when the scenario runs with `--dry`; results go to `<round>/dry/` |
-| `result` | The round's result object; set `task`, `items`, `limits` here |
-| `finish(summary)` | Compute the overall verdict; the report renders the counts |
+| `valueFile(name)`, `writeValue(name, value)` | Read or write `values/<name>.json` (redacted; an older file of the same name is kept). A dry run uses its own folder |
+| `name`, `dry` | The scenario name (its file name; its side folders use the same name with spaces and file-system characters replaced); true with `--dry` (results go to `<round>/dry/<name>/`) |
+| `result` | This scenario's view of the round: set `task`, `items`, `limits` here. It starts without entries of its own; entries of other scenarios and manual additions are kept when it saves |
+| `finish(summary)` | Compute this scenario's verdict; the round's verdict follows all checks, and the report renders the counts |
 
-Use `ownerStep` or `step` time windows to match records, never "the latest row". Define `result.items` so the report can map checks to checklist items. A scenario that writes runs once with `--dry` first, then once for real.
+Use `ownerStep` or `step` time windows to match records, never "the latest row". Define `result.items` so the report can map checks to checklist items; item titles need not repeat the id. A scenario that writes runs once with `--dry` first, then once for real; save the values its checks rest on, so a wrong check can later be recomputed from them by a scratch script and corrected with `amend`.

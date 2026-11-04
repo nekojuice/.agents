@@ -50,3 +50,10 @@ export function projectSkillVersion(assets) {
     if (!p || !existsSync(p)) return null
     return readFileSync(p, 'utf8').match(/Verified skill version:\s*`?([\w.-]+)`?/i)?.[1] ?? null
 }
+
+// PROJECT.md may name the report language on a line "Report language: <locale>" (zh-TW, en); default zh-TW.
+export function projectReportLocale(assets) {
+    const p = assets && join(assets, 'PROJECT.md')
+    if (!p || !existsSync(p)) return 'zh-TW'
+    return readFileSync(p, 'utf8').match(/Report language:\s*`?([\w-]+)`?/i)?.[1] ?? 'zh-TW'
+}

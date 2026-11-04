@@ -1,3 +1,3 @@
 {
-  "admin": { "userId": "<user id>", "password": "<test password>", "note": "<role and purpose>" }
+  "clerk": { "userId": "<user id>", "password": "<test password>", "note": "<role and purpose; every string field except userId and note is treated as a secret>" }
 }

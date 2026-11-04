@@ -110,6 +110,6 @@ Store the run conclusion, answered questions, proposed cases, human decisions, p
 | Manager runs (`_runs/**`) | Read/write | Write only assigned artifact paths in its run | Read only, optional; clues only |
 | Product repositories | Read only | Read only within assignment | Owned by factory workflow |
 | Non-product managed object | Write under the Non-product route | Read only within assignment | Not involved |
-| `.factory/**` | Read only for status review and handoff files; create approved handoff runs, plus `.factory/.gitignore` when absent; peer files of a delegation it started; delivered `handoff-factory-<topic>.md`; `_review-queue.md` and `_issue-backlog.md` when needed | No access | Owned after the factory session starts |
+| `.factory/**` | Read only for status review and handoff files; create approved handoff runs, plus `.factory/.gitignore` when absent; peer files of a delegation it started; delivered `handoff-factory-<topic>.md`; `_review-queue.md` and `_issue-backlog.md` when needed, including deleting entries it picks up; read `archive/`, never write it | No access | Owned after the factory session starts |
 
 The factory returns to the manager only through `handoff-manager-<topic>.md` at its run root, optionally announced over peer. The PM reads it on the human's instruction or a peer notice, and drafts canonical updates into `staging/`.

@@ -1,0 +1,2 @@
+# Fixed line endings for every text file, so PROJECT.md and scripts do not mix them.
+* text=auto eol=lf

@@ -12,8 +12,8 @@ description: >-
 disable-model-invocation: true
 metadata:
   author: Codex GPT-5.6-Sol, Claude Code Opus 4.8, Claude Code Opus 5.5
-  version: "1.5"
-  last_updated: "2026-11-03T17:21:42"
+  version: "1.6"
+  last_updated: "2026-11-04T16:19:25"
 extends: pm-status-review, pm-intake-triage, pm-factory-handoff, pm-investigation-worker, peer-agent-coordination
 ---
 
@@ -27,7 +27,7 @@ This skill runs only after explicit invocation. Do not auto-enter PM mode from o
 
 1. **Human authority wins.** Treat explicit human conclusions, approvals, and acceptance as higher authority than PM inference.
 2. **One active PM session.** Assume only one PM session is active at a time. A later session may replace it by reading durable `.manager` state; no permanent agent identity is required.
-3. **Own only the PM control plane.** Write only inside `.manager/**`, with these exceptions: a factory handoff the human explicitly approves through `pm-factory-handoff`, a handoff file the PM delivers into a factory run and the peer files of a delegation it started ([Delegation](#delegation)), updates to `.factory/_review-queue.md` or `.factory/_issue-backlog.md` when needed, and text edits to a non-product managed object under the [Non-product route](#non-product-route). Peer messages are a channel, not document writes.
+3. **Own only the PM control plane.** Write only inside `.manager/**`, with these exceptions: a factory handoff the human explicitly approves through `pm-factory-handoff`, a handoff file the PM delivers into a factory run and the peer files of a delegation it started ([Delegation](#delegation)), updates to `.factory/_review-queue.md` or `.factory/_issue-backlog.md` when needed (including deleting entries it picks up), and text edits to a non-product managed object under the [Non-product route](#non-product-route). Peer messages are a channel, not document writes.
 4. **No product implementation.** Do not edit product source, project specifications, repositories, or deployment state. This does not cover text edits to a non-product managed object under the Non-product route; code or configuration outside that object stays off-limits. Investigation is read-only outside the current manager run.
 5. **Stay at project level.** Manage direction, scope, scheduling, and status. Leave research, design, and implementation questions at factory granularity to the factory; do not dig into them, decide them, or edit a factory run's working files.
 6. **Workers stay run-local.** Every worker receives one exact `run_dir` and one or more exact artifact paths inside it. Workers may not update manager root state, the library, product files, or `.factory`.
@@ -89,6 +89,7 @@ All hard rules still apply; rules 3 and 4 carry the exceptions above. Items on t
 | Hand off / delegate / establish a candidate to the factory (交接/派工/委派, or equivalent wording) | Load and follow `pm-factory-handoff` |
 | Ask to implement, apply, or execute product changes | Explain the PM/factory checkpoint and prepare or identify the approved factory handoff; do not implement. When the managed object falls under the [Non-product route](#non-product-route), follow that route instead |
 | Run several approved candidates through the factory as one batch (自動化/批次施工, or equivalent wording) | Follow [Automation](#automation) |
+| Pick up long-standing entries from `.factory/_review-queue.md` or `.factory/_issue-backlog.md` (on the user's request, or proposed during a status review) | Draft them into `staging/` for `_backlog.md`; after the user checks the draft, apply it, delete the picked-up entries from the factory files, and record the pickup in the run. The factory never hands these entries over on its own |
 | Process a handoff file a factory left for the manager, on the human's instruction or a peer notice | Read `handoff-manager-*.md`; route progress, status, and canonical manager corrections through `pm-status-review` into `staging/`, and only new questions or candidates through `pm-intake-triage`; record the processing in the PM's own run |
 
 ## Coordinate investigations
@@ -129,9 +130,9 @@ Run a batch of factory work under a plan the user approves. The PM may propose a
 4. **Design pass** — the factory takes every run through discussion, propose, and change-doc review first. Decisions the records do not settle are listed per run.
 5. **Batch change review** — the user reviews all changes and each run's pending decisions in one gate. Building starts only after the user confirms (all runs or a subset).
 6. **Build pass** — the factory applies, checks, runs agent E2E review, commits, and hands off each confirmed run in dependency order. On each run's handoff, draft into `staging/` (rule 8). A stopped run pauses only the runs that depend on it.
-7. When the whole scope is done, have the factory consolidate `_review-queue.md`; the user runs E2E once on what remains, and sync/archive follows. Archive clears the queue and hands open `_issue-backlog.md` entries to the manager; process them like any manager handoff.
+7. When the whole scope is done, have the factory consolidate `_review-queue.md`; the user runs E2E once on what remains, and sync/archive follows. Closing archives finished items into `.factory/archive/`; unfinished queue items and open backlog entries stay in the factory.
 
-The plan pre-authorizes only two things: after the batch change review, dispatching each confirmed run in order — its apply, Check, and E2E workers, with the E2E write permission the plan names — without a separate dispatch confirmation; and one commit per factory run by default, which the user may change or turn off. Human E2E acceptance, sync/archive, and push are never pre-authorized; push needs the user's separate explicit authorization.
+The plan pre-authorizes only two things: after the batch change review, dispatching each confirmed run in order — its apply, Check, and E2E workers, with the E2E test-data write permission (`data_write`) the plan names — without a separate dispatch confirmation; and one commit per factory run by default, which the user may change or turn off. Human E2E acceptance, sync/archive, and push are never pre-authorized; push needs the user's separate explicit authorization.
 
 ## Maintain durable state
 

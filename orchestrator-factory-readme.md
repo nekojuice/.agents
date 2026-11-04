@@ -49,6 +49,7 @@
 ├── .gitignore              # 單行：_runs/，建立第一個 run 時初始化
 ├── _review-queue.md        # 跨 run 的驗收彙總，偏高抽象，最終驗收時給使用者看
 ├── _issue-backlog.md       # 跨 run 尚未處理的問題，作為下一輪 change 的指標
+├── archive/                # 收尾時移出的已完成項目，每天每類一檔
 └── _runs/<YYYY-MM-DD>-<slug>/
     ├── _intake.md              # PM 交接建立的冷啟動起始檔，與 _status.md、_memory.md 一併建立（選用）
     ├── _status.md              # 階段、分支、工作者、Blockers／Decisions needed／Reminders、修訂輪次與最新產物指標
@@ -68,14 +69,14 @@
 ```
 
 - `slug` 只用小寫英數與連字號；同一天不同主題須用不同 slug，路徑須唯一。
-- 只有總指揮建立 run 目錄；工作者不得另建，也不得寫入 `.factory/` 根目錄的兩份檔；兩份檔由總指揮寫，manager 必要時可更新。冷啟動交接的 run 由 PM 交接建立。
+- 只有總指揮建立 run 目錄；工作者不得另建，也不得寫入 `.factory/` 根目錄的兩份檔與 `archive/`；這些由總指揮寫，manager 必要時可更新兩份檔。冷啟動交接的 run 由 PM 交接建立。
 - 底線開頭的檔由總指揮寫；工作者只有在派工指示允許時才可追加。peer 協作檔依 `peer-agent-coordination` 的規則。
-- `.factory/` 根目錄只放 `.gitignore`、`_review-queue.md`、`_issue-backlog.md` 與 `_runs/`。run 是討論與編排的工作區，內容繁雜不進版控，收斂結果由 opsx 管理。
+- `.factory/` 根目錄只放 `.gitignore`、`_review-queue.md`、`_issue-backlog.md`、`archive/` 與 `_runs/`。run 是討論與編排的工作區，內容繁雜不進版控，收斂結果由 opsx 管理。
 - `_handoff-<worker>.md` 只用於工廠內部；與其他對象的交接用 `handoff-<recipient>-<topic>.md`。manager 與工廠之間的交接檔一律放工廠 run 根目錄：工廠的 `handoff-manager-<topic>.md` 放自己的 run，manager 的 `handoff-factory-<topic>.md` 放收件的工廠 run，檔頭三行為 `Source run:`、`Recipient:`、`Date:`；收件方不改交接檔，處理紀錄記在自己的 run。
 - 給 manager 的交接檔一次完工寫一份，不再追加；之後的修正輪另寫新檔，檔名不沿用舊的。內容寬鬆，由 manager 篩選：影響方向或範圍的使用者決定、範圍變動、進度與證據指標、範圍外發現與新候選、阻擋事項、`.manager` 過時訂正。規格內容只寫 change id，實作與驗證細節留在 run。
-- `_review-queue.md` 保持簡潔：agent 驗證可信的項目打勾並附報告路徑，證據留在 run；最後只留人類才能處理的項目。
-- `_issue-backlog.md` 是待交接區：範圍外發現（例如版面歪掉）、E2E 驗出的實作失敗、潛在錯誤都可放，每項寫狀態、現象與證據路徑。
-- 兩份檔的清理屬於歸檔動作：queue 已勾項移回負責的 run；issue 未處理項經交接移給 manager。使用者要求保留時才留下並 commit。
+- `_review-queue.md` 保持簡潔：agent 驗證可信的項目打勾並附報告路徑，證據留在 run；未勾項目自帶原因與解除條件，不只指回 run 內檔案；最後只留人類才能處理的項目。
+- `_issue-backlog.md` 是跨 run 問題暫存區：範圍外發現（例如版面歪掉）、E2E 驗出的實作失敗、潛在錯誤都可放，每項寫狀態、現象與證據路徑。
+- 收尾（sync／archive）時，queue 中本次工作已完成的項目（已勾、使用者確認結案）與 backlog 中已結的條目（不修、已開 change）移入 `archive/<YYYY-MM-DD>-review-queue.md`、`archive/<YYYY-MM-DD>-issue-backlog.md`：同一天同類同一檔，每次收尾加一節 `## <HH:mm> <做收尾的 run slug>`，只追加；檔首一行說明日期、類別與條目格式；每筆保留原文並加一行收尾時間、該項目的來源 run 與結果；歸檔檔只新增節、不改既有節。未完成、未處理的留在根目錄兩份檔；長期未處理的由 manager 自行發動撿走並自根檔刪除，工廠不主動交出。沒有 sync／archive 的非專案路線在其最後一步歸檔。`archive/` 預設進版控，收尾後若有 commit 就一併納入；兩份根檔使用者要求才 commit。
 - `_status.md`、`_memory.md`、`_dispatch-plan.md`、`_review-checklist.md` 與根目錄兩份檔以編輯工具原地更新；確實需要追加時先檢查有無重複內容。
 - 這裡放編排狀態與工作者產物，**不放**產品原始碼，也**不**取代 `openspec/**` 的規格與 change 套件。
 
@@ -101,7 +102,7 @@ flowchart TD
   EV -- 可信的產品失敗 --> FX[修正並複查<br/>下一輪 E2E 指向上一輪]
   FX --> EE
   EV -- 執行失敗或無法判定 --> EE
-  EV -- 完成 --> HO[精簡 _review-checklist.md，問題寫入 _issue-backlog.md<br/>寫給 manager 的交接檔]
+  EV -- 完成 --> HO[結束本輪：清單已勾附報告、未勾附原因<br/>問題寫入 _issue-backlog.md，寫給 manager 的交接檔]
   HO --> G3[人閘：人工 E2E<br/>呈現剩下事項，更新 _review-queue.md]
   G3 -- 修正 --> RC[修正後複查<br/>修正前記錄快照 ref 或檔案清單，只查該修正]
   RC --> G3
@@ -111,13 +112,14 @@ flowchart TD
   AR -- 總指揮發起 --> G1
   G3 --> G4[人閘：核可同步歸檔]
   G4 --> SY[同步歸檔 openspec-sync-specs + openspec-archive-change<br/>僅限 main/master]
-  SY --> CM[commit 建議 commit-message-suggestion<br/>明確要求時代為 commit]
+  SY --> AA[兩份根檔的已完成項目移入 archive/]
+  AA --> CM[commit 建議 commit-message-suggestion<br/>明確要求時代為 commit]
   CM --> CL[change log]
 ```
 
 ### 其他規則
 
-- **agent E2E 驗證**：預設執行，在 Check 之後、人工 E2E 之前，依 `e2e-review` 派專責 E2E 工作者。小型 run（例如單一 debug）可在確認派工時剔除 Check 或 E2E，跳過記入 `_status.md`；自動化計畫在核可時一併授權。工具操控可靠度有限，執行失敗由總指揮判斷重派或交人工，不當成產品失敗。E2E 階段可寫專案的 `.e2e/`，不算改產品；寫入範圍依派工時的授權，`.e2e/` 由總指揮依規則 6 一併 commit。專案還沒有 `.e2e/` 時，初始化提案要經使用者核可。
+- **agent E2E 驗證**：預設執行，在 Check 之後、人工 E2E 之前，依 `e2e-review` 派專責 E2E 工作者。小型 run（例如單一 debug）可在確認派工時剔除 Check 或 E2E，跳過記入 `_status.md`；自動化計畫在核可時一併授權。工具操控可靠度有限，執行失敗由總指揮判斷重派或交人工，不當成產品失敗。E2E 階段一律可寫專案的 `.e2e/` 與輪次資料夾，不算改產品；測試資料寫入範圍依派工時的 `data_write`，回傳的 `assets_changed` 列出 `.e2e/` 變更，`.e2e/` 由總指揮依規則 6 一併 commit。缺測試資料時可先派 prep 輪；試跑及其登入、登出、開頁、查詢紀錄屬預期副作用，不需另外授權。總指揮不得以自身推論把 worker 未標 `verified` 的項目當成已驗證。專案還沒有 `.e2e/` 時，初始化提案要經使用者核可。
 - **討論期間不改專案檔**：討論、協助部署或撰寫文件時，總指揮不修改專案檔、設定檔或進入點程式；需要改程式時說明原因並詢問是否開 propose。使用者口頭授權的修改例外，有 run 時記入 `_memory.md` 的 User decisions 區。
 - **文件同步**：預設只同步受這次工作影響的 README。使用者提到其他文件，例如 docs 資料夾、`.manager` 檔、巢狀 README、說明文件、交接檔時，先列出會同步的文件清單等使用者確認，不得擅自更新；`.manager` 仍只透過交接檔處理。各類文件依對應的 doc 系列技能撰寫。
 - **需使用者釐清的項目**：提案審查或 Check 回報需釐清的項目時，總指揮先依資訊來源優先序自行判斷並排除，真的無法判斷的才交給使用者，並彙整成一份決策清單，不逐條轉述。

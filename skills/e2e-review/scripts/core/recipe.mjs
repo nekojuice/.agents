@@ -92,17 +92,29 @@ export function resolveRecipe(name, project) {
     return hit
 }
 
+// Argument names the tool itself uses; fragment arguments must use other names (references/tools.md).
+export const RESERVED_ARGS = ['account', 'save', 'out', 'dry', 'rehearse', 'expects', 'recipe']
+
 export function loadRecipe(file) {
     const text = readFileSync(file, 'utf8').replace(/\r\n/g, '\n')
     const fm = text.match(/^---\n([\s\S]*?)\n---/)
     const meta = fm ? parseYaml(fm[1]) : {}
     const steps = [...text.matchAll(/```ya?ml\n([\s\S]*?)```/g)].map((m) => parseYaml(m[1]))
     for (const s of steps) {
-        if (!s.id) throw new Error(`${file}: a step block has no id`)
+        if (s.id == null || s.id === '') throw new Error(`${file}: a step block has no id`)
         if (s.kind !== 'script' && s.kind !== 'agent') throw new Error(`${file}#${s.id}: kind must be script or agent`)
         if (s.kind === 'script' && !s.run) throw new Error(`${file}#${s.id}: script steps need run`)
         if (s.args != null && (typeof s.args !== 'object' || Array.isArray(s.args))) throw new Error(`${file}#${s.id}: args must be a map`)
+        // account is how a step names its account; the other reserved names are set by the tool.
+        const reserved = Object.keys(s.args ?? {}).filter((k) => k !== 'account' && RESERVED_ARGS.includes(k))
+        if (reserved.length) throw new Error(`${file}#${s.id}: args use reserved names: ${reserved.join(', ')}`)
         if (!s.surface) throw new Error(`${file}#${s.id}: every step needs surface`)
+        // expects (script steps): audit rows the step produces, a list of maps such as [{action: <code>}] or one map.
+        if (s.expects != null) {
+            if (s.kind !== 'script') throw new Error(`${file}#${s.id}: expects is for script steps`)
+            s.expects = Array.isArray(s.expects) ? s.expects : [s.expects]
+            if (!s.expects.every((e) => e && typeof e === 'object' && !Array.isArray(e))) throw new Error(`${file}#${s.id}: expects must be a map or a list of maps`)
+        }
         // run without a surface prefix uses the step's surface; a different prefix is an error.
         if (s.kind === 'script') {
             const m = String(s.run).match(/^([a-z][\w-]*):(?![\\/])/i)

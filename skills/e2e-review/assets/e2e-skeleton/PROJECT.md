@@ -2,6 +2,8 @@
 
 Verified skill version: `{{SKILL_VERSION}}`
 
+Report language: `zh-TW`
+
 Read this file before every review task. It holds everything project-specific; the e2e-review skill holds none of it.
 
 ## System under test
@@ -31,15 +33,25 @@ Registered in `config/env.json` `surfaces`. Keep only the surfaces this project 
 - Writable data: <data scope the worker may write, and what needs superior approval>
 - Untouchable data: <data the worker must never write or log in to>
 - External services: <none unless the user approves a scope>
+- Dry runs: `dryAllow` lets login and logout pass (<paths>); `dryBlock` stops requests with side effects whatever their method (<paths, e.g. an export that writes an audit row, or none>)
+- Test data identification: <naming prefix, dedicated accounts, notes field; data left in the test environment is expected>
 - Pending confirmation: <items the superior or user must decide>
 
 ## Accounts
 
-Keys in `config/accounts.local.json` (local only, never committed). Artifacts record keys, never passwords.
+Keys in `config/accounts.local.json` (local only, never committed). Artifacts record keys, never passwords. Workers use accounts created for E2E, each by its role; name here which E2E account to use when a check needs an administrator role. Existing accounts (people's own and existing administrator accounts) are not given to workers unless listed below as protected accounts. Put descriptive text only in `note`; every other string field of an entry is a secret.
 
-| Key | User | Role and purpose |
-| --- | --- | --- |
-| <key> | <user id> | <role, what it is used for> |
+| Key | User | Role and purpose | Dedicated to E2E |
+| --- | --- | --- | --- |
+| <key> | <user id> | <role, what it is used for> | <yes, or protected> |
+
+### Protected accounts
+
+Accounts the worker may use only because no dedicated account can do the job (e.g. the only role allowed to approve). Leave the table empty when there are none.
+
+| Key | May be used for | Never | Check before and after |
+| --- | --- | --- | --- |
+| <key> | <operations allowed> | <operations forbidden, e.g. changing its own roles> | <what to snapshot and compare, how to restore> |
 
 ## Audit trail
 

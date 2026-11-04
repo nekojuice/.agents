@@ -51,12 +51,13 @@ evidence:
 
 | Field | Steps | Meaning |
 | --- | --- | --- |
-| `id` | all | Unique within the recipe; used in commands and the step log |
+| `id` | all | Unique within the recipe (`0` is allowed); used in commands and the step log |
 | `surface` | all | The surface the step operates; required |
 | `kind` | all | `script` or `agent` |
 | `run` | script | Fragment path on the step's surface; a `<surface>:` prefix is allowed but must match `surface` |
-| `args` | script | Fragment arguments as a map (flow map `{a: 1}` or JSON) |
+| `args` | script | Fragment arguments as a map (flow map `{a: 1}` or JSON); `account` names the account; other reserved names (`save`, `out`, `dry`, `rehearse`, `expects`, `recipe`) are refused |
 | `save` | script | Value file name; default `<recipe>-<id>` |
+| `expects` | script | Audit rows the step produces, a map or a list of maps such as `[{action: <code>}]`; used for attribution like `--expects` |
 | `do` | agent | What the agent operates and how, specific enough to replay; may be a `|` block |
 | `expect` | all | What must be true after the step |
 | `evidence` | agent | Value files or screenshots the agent must leave |
@@ -70,7 +71,7 @@ The YAML is read as a subset: `key: value` scalars, `|` and `>` block scalars fo
 | script | `step <recipe>#<id> [--dry]` | A normal step of the fragment, with `recipe=<recipe>#<id>` in its arguments |
 | agent | `log start <recipe>#<id>`, operate, `log end <recipe>#<id> [--evidence=a,b] [--note=…] [--fail]` | A step of kind `agent` with its evidence and note, placed on the timeline by its start time |
 
-Both land in the round's `steps.jsonl`, so audit attribution, the report's step table, and write traceability work as for scripts. Record writes an agent step made with `add <round> writes '<json>'`.
+Both land in the round's `steps.jsonl`, so audit attribution, the report's step table, and write traceability work as for scripts. Script steps, `run`, or `api` commands you run between `log start` and `log end` are shown nested under the agent step; audit rows go to the nested step that produced them, and rows of the agent's own operation after a nested step ended go to the agent step. Record writes an agent step made with `add <round> writes '<json>'`.
 
 ## Growing a recipe
 

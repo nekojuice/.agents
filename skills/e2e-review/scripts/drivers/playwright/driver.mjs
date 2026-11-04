@@ -47,27 +47,36 @@ export function available() {
     try { return execSync('playwright-cli --version', { encoding: 'utf8' }).trim() } catch { return null }
 }
 
-// In a dry run the browser itself blocks write requests (POST, PUT, PATCH, DELETE), so fragments that ignore P.dry
-// still cannot save. URLs matching the surface's dryAllow patterns (e.g. the login endpoint) pass; blocked calls are returned.
+// In a dry run the browser itself blocks requests, so fragments that ignore P.dry still cannot save:
+// write methods (POST, PUT, PATCH, DELETE) are aborted unless the URL path contains a dryAllow entry (e.g. login, logout),
+// and any method is aborted when the path contains a dryBlock entry (e.g. a GET export that writes an audit row).
+// Matching uses the URL path without query string or fragment. Blocked calls are returned with the step.
 function dryGuard(cfg) {
-    const allow = JSON.stringify(cfg.dryAllow ?? [])
-    return `const __allow = ${allow}; const __blocked = [];
+    return `const __allow = ${JSON.stringify(cfg.dryAllow ?? [])}; const __block = ${JSON.stringify(cfg.dryBlock ?? [])};
+  const __path = (u) => u.replace(/^[a-z][\\w+.-]*:\\/\\/[^/]*/i, '').split(/[?#]/)[0];
   await page.route('**/*', (r) => {
-    const q = r.request();
-    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(q.method()) && !__allow.some((a) => q.url().includes(a))) { __blocked.push(q.method() + ' ' + q.url()); return r.abort(); }
+    const q = r.request(); const p = __path(q.url());
+    const write = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(q.method());
+    if (__block.some((a) => p.includes(a)) || (write && !__allow.some((a) => p.includes(a)))) { __blocked.push(q.method() + ' ' + q.url()); return r.abort(); }
     return r.continue();
   });`
 }
 
 // P must not carry secrets into logs; the composed file holds them only for the call and is deleted right after.
+// H.reportBlocked(what) lets a fragment that intercepts its own requests (honoring P.dry) add them to the step's blockedWrites.
+// A beforeunload dialog during the fragment is accepted (it guards only unsaved input in the browser; staying would re-trigger it on
+// every later navigation) and fails the step, so an interrupted fragment is never logged as done.
 export function runFragment({ file, P, ctx }) {
     const { session, cwd, project, surface, cfg = {}, dry } = ctx
     const helpers = loadHelpers([join(HERE, 'helpers'), project.assets && join(project.assets, 'surfaces', surface, 'helpers')])
     const body = `(${stripFn(readFileSync(file, 'utf8'))})(page, P, H)`
-    const run = dry
-        ? `${dryGuard(cfg)}\n  try { const value = await ${body}; return { dry: true, blockedWrites: __blocked, value }; } finally { await page.unroute('**/*'); }`
-        : `return await ${body};`
-    const code = `async page => {\n  const P = ${JSON.stringify(P)};\n  const H = {\n${helpers.join(',\n')}\n  };\n  ${run}\n}\n`
+    const run = `const __dialogs = [];
+  const __onDialog = (d) => { if (d.type() === 'beforeunload') { __dialogs.push(d.message() || 'beforeunload'); d.accept().catch(() => {}); } };
+  page.on('dialog', __onDialog);
+  ${dry ? dryGuard(cfg) : ''}
+  try { const value = await ${body}; return { __e2e: 1, value: value === undefined ? null : value, blockedWrites: __blocked, dialogs: __dialogs }; }
+  finally { page.off('dialog', __onDialog);${dry ? " await page.unroute('**/*');" : ''} }`
+    const code = `async page => {\n  const P = ${JSON.stringify(P)};\n  const __blocked = [];\n  const H = {\n${[...helpers, `reportBlocked: (what) => { __blocked.push(String(what)); }`].join(',\n')}\n  };\n  ${run}\n}\n`
     mkdirSync(cwd, { recursive: true })
     // A composed file left behind by a killed run still holds a password; remove stale ones first.
     for (const f of readdirSync(cwd).filter((x) => /^\.run-\d+-\d+\.js$/.test(x))) rmSync(join(cwd, f), { force: true })
@@ -83,12 +92,25 @@ export function runFragment({ file, P, ctx }) {
     }
     const err = section(output, 'Error')
     if (err) return { ok: false, error: err.split('\n').slice(0, 3).join(' ') }
+    // A dialog left open (e.g. beforeunload or confirm) makes run-code return without a result; never log that as success.
+    const modal = section(output, 'Modal state')
     const res = section(output, 'Result')
     let value = null
     try { value = res ? JSON.parse(res) : null } catch { value = res }
-    // Dry runs return the fragment's value unchanged and report the blocked writes beside it.
-    if (dry && value && value.dry === true && 'blockedWrites' in value) return { ok: true, value: value.value ?? null, blockedWrites: value.blockedWrites }
-    return { ok: true, value }
+    if (!(value && value.__e2e === 1)) {
+        if (modal) {
+            // The fragment's listener already accepted a beforeunload dialog, but playwright-cli keeps its own modal flag until a dialog
+            // command clears it (an "already handled" error is expected). Other dialogs are left to the worker.
+            const leave = /beforeunload/i.test(modal)
+            if (leave) { try { cli(session, ['dialog-accept'], cwd) } catch { /* already handled */ } }
+            return { ok: false, error: leave ? `beforeunload dialog interrupted the step; it was accepted (unsaved input on that page was discarded): ${modal.split('\n')[0]}` : `a dialog is open (handle it with playwright-cli dialog-accept or dialog-dismiss): ${modal.split('\n').slice(0, 2).join(' ')}` }
+        }
+        return { ok: false, error: 'run-code returned no fragment result' }
+    }
+    const blocked = value.blockedWrites ?? []
+    if (value.dialogs?.length) return { ok: false, error: `beforeunload dialog interrupted the step; it was accepted: ${value.dialogs.join(' / ')}`, ...(blocked.length ? { blockedWrites: blocked } : {}) }
+    // The fragment's value is returned unchanged; blocked requests are reported beside it.
+    return { ok: true, value: value.value ?? null, ...(dry || blocked.length ? { blockedWrites: blocked } : {}) }
 }
 
 // Condensed accessibility snapshot for exploring a screen: drops generic-only lines and URLs.

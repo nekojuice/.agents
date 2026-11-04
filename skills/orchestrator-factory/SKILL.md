@@ -14,8 +14,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.11"
-  last_updated: "2026-11-04T10:51:56"
+  version: "1.12"
+  last_updated: "2026-11-04T16:32:57"
 ---
 
 # orchestrator-factory
@@ -73,7 +73,7 @@ When a lower source conflicts with a higher one, the higher one wins and the con
 
 Applies when the workspace has `.manager/`.
 
-- **When** — each time a run reaches await-e2e (after apply, Check, and agent E2E review), write one `handoff-manager-<topic>.md`; write another when blocked on a project-level decision, one for stale `.manager` corrections in a run that will not reach await-e2e (§ Information sources), and one at archive for the open `_issue-backlog.md` entries it hands over (§ 7), in the run that archives, or the batch's last run. Announce it over peer when the run has a discussion room.
+- **When** — each time a run reaches await-e2e (after apply, Check, and agent E2E review), write one `handoff-manager-<topic>.md`; write another when blocked on a project-level decision, and one for stale `.manager` corrections in a run that will not reach await-e2e (§ Information sources). Announce it over peer when the run has a discussion room.
 - **One per completion** — do not append to it later; a later amendment round writes a new file under a new name (e.g. a date or sequence suffix on the topic).
 - **Content** — write liberally; the manager filters. Include decisions the user confirmed that affect direction or scope, scope changes, progress with evidence pointers (change ids, commits), out-of-scope findings and new candidates, pointers to new `_issue-backlog.md` entries, blockers, and corrections to stale `.manager` content.
 - **Leave out** — spec content (opsx owns it; give change ids), implementation detail, and test or machine-verification detail; these stay in the run.
@@ -192,6 +192,7 @@ Under factory mode only:
 ├── .gitignore            # single line: _runs/
 ├── _review-queue.md
 ├── _issue-backlog.md
+├── archive/              # closed items, one file per day and kind (§ Archive of cross-run files)
 └── _runs/
     └── <YYYY-MM-DD>-<slug>/
 ```
@@ -199,7 +200,7 @@ Under factory mode only:
 - `slug`: lowercase English letters, digits, hyphens only (`[a-z0-9-]+`). Strip or replace illegal characters; no spaces or CJK in the folder name.
 - Example: `.factory/_runs/2026-07-23-create-login-api/`
 - Only the **orchestrator** creates the run directory. Workers must not create sibling runs under `.factory/_runs/`.
-- The `.factory/` root holds only `.gitignore`, `_review-queue.md`, `_issue-backlog.md`, and `_runs/`. Workers never write the two root files; the orchestrator writes them, and the manager may update them when needed.
+- The `.factory/` root holds only `.gitignore`, `_review-queue.md`, `_issue-backlog.md`, `archive/`, and `_runs/`. Workers never write the two root files or `archive/`; the orchestrator writes them, and the manager may update the two root files when needed.
 
 ### Slug uniqueness (required)
 
@@ -223,18 +224,31 @@ Under factory mode only:
 
 - Group items by feature or business flow; everything to check on one screen sits in one place. Each item links back to its source run; when the same feature changes again, merge into the existing item.
 - An item that agent E2E review verified and the orchestrator checked is ticked, with the report path as its source pointer; evidence stays in the run.
+- Every unticked item states its own reason and what would unblock it: what is missing, who can do it, and how far it got. Never only point back to a file inside a run; readers stop opening the run once it closes.
+- When a run keeps a checklist finer than `_review-checklist.md`, every unticked item of that finer list maps to a queue item.
 - End state: only what a human alone can handle remains unticked. Exclude what automated tests, hard-verify, or checked agent E2E results already cover, and simple logic checks (`need-ask-user-guide`).
 - Under an automation plan, consolidate the runs' checklists here once, when the batch ends.
-- Clearing is part of archive (§ 7): ticked items move back to the run that owns them. Items not finished, or needing long observation, stay only when the user decides, and are then committed; otherwise the queue is empty once the work is done.
+- Closing (§ 7) archives this work's finished items: ticked items and items the user confirmed closed (§ Archive of cross-run files). Unfinished items stay here.
 
 ### Cross-run issue backlog
 
 `.factory/_issue-backlog.md` is a holding area for problems not yet handled: out-of-scope findings such as a broken layout, implementation failures that agent E2E review found, and suspected errors. Anything may go in; the user reviews it to open the next change or run.
 
 - One entry per problem: status (open, change opened, won't fix), symptom, and evidence path.
-- Clearing is part of archive (§ 7): entries still open move to the manager through a manager handoff, then the backlog is emptied; they stay in the factory and are committed only when the user asks. Without `.manager`, the user decides where they go.
+- Closing (§ 7) archives closed entries (won't fix, change opened) (§ Archive of cross-run files). Open entries stay here.
 
 Leave both root files out of run commits unless the user asks to keep them.
+
+### Archive of cross-run files
+
+Closed items leave the two root files for `.factory/archive/` instead of being deleted, so people and agents can still find them.
+
+- Files: `.factory/archive/<YYYY-MM-DD>-review-queue.md` and `.factory/archive/<YYYY-MM-DD>-issue-backlog.md`, dated by the local date of the closing. One file per day and kind; a later closing on the same day adds to the same file.
+- The first line of each file says which day and kind it holds and the item format below. Each closing adds one section headed `## <HH:mm> <closing run slug>`, naming the run that performs the closing (under § Automation, the run that closes the batch); sections are append-only, never rewritten.
+- Each archived item keeps its original text in full, preceded by one line: closing time, the item's source run(s), and result (agent-verified with the report path, passed in the user's E2E, closed on the user's confirmation, won't fix, or change opened with its name).
+- Archive happens only at closing (§ 7), not when an item's status changes. A non-project route without sync/archive archives at its own final step.
+- Items left open in the root files are short-term work that stays with the factory. The manager may pick up long-standing ones on its own initiative: it moves them into its own records and deletes them from the root files. The factory does not hand items to the manager at closing, block the pickup, or write the items back.
+- `archive/` is tracked by default: when a commit follows the closing (rule 6), it includes the archive files. A project may choose to ignore it.
 
 ### File conventions
 
@@ -264,7 +278,7 @@ Handoff files between the manager and a factory always live at the factory run r
 | `_needs-input.md` | On `needs_input`: reason + recommended four-choice menu (and any situational extras); see Repair policy |
 | `_notes.md` | Discussion notes not yet confirmed by the user, and corrections to stale `.manager` content (§ Information sources level 3) |
 
-**Control-file writes** — update `_status.md`, `_memory.md`, `_dispatch-plan.md`, `_review-checklist.md`, `_review-queue.md`, and `_issue-backlog.md` in place with an editing tool. When an append is genuinely needed, first check that the same content is not already there. Never blind-append with shell redirection.
+**Control-file writes** — update `_status.md`, `_memory.md`, `_dispatch-plan.md`, `_review-checklist.md`, `_review-queue.md`, and `_issue-backlog.md` in place with an editing tool. When an append is genuinely needed, first check that the same content is not already there. Never blind-append with shell redirection. Files under `archive/` are the exception to in-place updates: only add a new section, never edit earlier ones.
 
 **Worker artifact examples:**
 
@@ -347,7 +361,7 @@ After changes are created (or when the user asks to apply existing changes), **i
 - Parallelism: <none | W1 ∥ W2 | …>
 - Optional skills named by user: <none | …>
 - Check workers: to be dispatched after apply (code-review; judged against § Information sources)
-- E2E workers: to be dispatched after Check (e2e-review; write permission: <read-only | scope>)
+- E2E workers: to be dispatched after Check (e2e-review; data_write: <none | scope>)
 - Reviewers left out by the user: <none | Check | E2E>, with the reason
 - Reused workers: <none | W1 ← <source run>>
 - run_dir: `.factory/_runs/<YYYY-MM-DD>-<slug>/`
@@ -454,15 +468,21 @@ After the Check findings are handled (fixed and re-checked), or after apply when
 
 The last agent self-check before human E2E. Neither apply workers nor the orchestrator operate the system under test.
 
-1. Dispatch a separate E2E worker with the full `_review-checklist.md` and the inputs `e2e-review` requires (shape below). Write permission comes from the user's dispatch confirmation or the automation authorization; without it the worker is read-only. Only one E2E worker operates a given environment at a time.
-2. Check the returned `E2E_REVIEW_RESULT_V1` against its report and evidence before using it. Mark each item trusted, not trusted, or to rerun; never drop a human item because a worker says it passed.
+- When acceptance needs test data that does not exist yet, dispatch a `prep` round first to create it, then the `review` round.
+- Dry runs, and the login, logout, page-open, and query audit entries they leave, are expected side effects. A worker without test-data write permission may still dry-run; this needs no separate authorization.
+
+1. Dispatch a separate E2E worker with the full `_review-checklist.md` and the inputs `e2e-review` requires (shape below). Test-data write permission (`data_write`) comes from the user's dispatch confirmation or the automation authorization; without it the worker writes no test data. The worker may always write the project's `.e2e/` folder and its round folder. Only one E2E worker operates a given environment at a time.
+2. Check the returned `E2E_REVIEW_RESULT_V1` against its report and evidence before using it. Mark each item trusted, not trusted, or to rerun; never drop a human item because a worker says it passed. Never treat an item as verified on your own inference when the worker did not mark it `verified` (`needs-human`, `run-error`, or the limited part of `verified-with-limits`); an observation that disagrees with the spec goes to Decisions needed.
 3. A trusted `product-fail` goes to a fix round; re-check the fix as in § Re-check after fixes, then dispatch the next E2E round with `--prev` and the fix as its basis.
 4. For `run-error` and `needs-human`, decide whether to send the worker back to operate again or to hand the item to the human. Tool reliability is limited, so allow reruns; stop when the item clearly cannot be done by the agent. For `verified-with-limits`, tick only what was verified and keep the limit as a human item. A `needs-human` item the return marks as resting on an agent step is never re-dispatched; a rerun cannot change it. Every item still unresolved — failed, still `run-error` after reruns, or `needs-human` — goes to the human in one consolidated report at the Human E2E gate, not item by item.
 5. A `needs-input` return is handled like `needs_input` in the Repair policy. A `blocked` return (environment or driver unavailable) hands the remaining items to the human, or stops for the user when the run cannot continue without them.
 6. Out-of-scope findings and implementation failures not fixed in this run go to `.factory/_issue-backlog.md`.
-7. Revise `_review-checklist.md`: tick trusted items with the report path; keep key items and those untested, failed, inconclusive, or that the agent could not run. Then update `.factory/_review-queue.md` (under § Automation, consolidate at the end of the batch instead) and go to the Human E2E gate.
+7. Wrap up the round (this is not the closing of § 7) before dispatching the next one or going to the Human E2E gate:
+   - `_review-checklist.md` (and any finer checklist the run keeps): tick trusted items with the report path; every unticked item also carries the report path and its reason (not run, partly verified, needs human judgment, environment missing, awaiting a decision).
+   - `.factory/_review-queue.md` (under § Automation, consolidate at the end of the batch instead) and `.factory/_issue-backlog.md`, including UI findings.
+   - `_status.md`: the round table, Next, Decisions needed, the tick counts, and any agreed work not yet dispatched.
 
-**`.e2e/` assets** — the E2E stage may write the project's `.e2e/` folder within `e2e-review`'s boundaries; this is not a product edit and needs no propose. List the worker's writes in the run and check them against the granted permission; a write beyond it is a blocker. When the return says `init_needed: yes`, present the proposal at the next human gate; only after the user approves, tell the next E2E dispatch to apply it.
+**`.e2e/` assets** — the E2E stage may write the project's `.e2e/` folder within `e2e-review`'s boundaries; this is not a product edit and needs no propose. Read the return's `assets_changed` and `writes`, list them in the run, and check test-data writes against `data_write`; a write beyond it is a blocker. When the return says `init_needed: yes`, present the proposal at the next human gate; only after the user approves, dispatch an `init` round (`round_kind: init`) with `init_apply` naming the approved proposal.
 
 ### E2E worker prompt (shape)
 
@@ -474,7 +494,8 @@ run_dir: .factory/_runs/<YYYY-MM-DD>-<slug>/
 skills: e2e-review
 checklist: <item numbers and original text from _review-checklist.md>
 report_parent: run_dir
-write_permission: <read-only | test data the user allowed>
+round_kind: <review | prep | init>
+data_write: <none | test data the user allowed>  # .e2e/ and the round folder are always writable
 accounts / environment: <only when .e2e/PROJECT.md does not cover them>
 previous_round: <round folder, or none>
 round_basis: <the fix this round verifies: commit or change id>
@@ -523,9 +544,9 @@ Only after human E2E (and any fixes the user directed) and **explicit** user app
 1. Detect current git branch.
 2. If branch is **not** `main` and **not** `master` → **block** sync/archive, warn that running them on a feature branch can damage main-spec files on `main`/`master`, and stop.
 3. If on `main`/`master` and user approved → follow `openspec-sync-specs` and `openspec-archive-change` as directed.
-4. Clear the cross-run files as part of archive: move this work's ticked `_review-queue.md` items back to the runs that own them, and hand open `_issue-backlog.md` entries to the manager (§ Cross-run issue backlog). Keep and commit either file's entries only when the user asks.
+4. Archive this work's finished queue items and closed backlog entries per § Archive of cross-run files.
 
-If manual verification items remain unchecked, the user's verbal confirmation is enough to archive; record the confirmation and its time in `_status.md`. Never tick an item as human-verified for the user or claim the user verified it; agent-verified ticks carry their report path.
+If manual verification items remain unchecked, the user's verbal confirmation is enough to archive; record the confirmation and its time in `_status.md`. Items the user confirms closed are archived with that result; the rest stay in the queue. Never tick an item as human-verified for the user or claim the user verified it; agent-verified ticks carry their report path.
 
 ## 8. Commit suggestion and change-log
 

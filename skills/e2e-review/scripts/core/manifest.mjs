@@ -1,19 +1,33 @@
 // data/manifest.json: machine-readable record of data this round created or changed.
-// Entries with an id and type are merged; automatic entries come from API write calls.
+// `events` keeps every write in order (automatic entries from API write calls, entries from api.record and ctx.addWrite);
+// `latest` is derived from it: one entry per type + id with its fields merged in event order.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { redact } from './secrets.mjs'
 
+function latestOf(events) {
+    const out = []
+    const idx = new Map()
+    for (const e of events) {
+        if (e.id == null || e.type == null) continue
+        const k = `${e.type}\u0000${e.id}`
+        if (idx.has(k)) out[idx.get(k)] = { ...out[idx.get(k)], ...e }
+        else { idx.set(k, out.length); out.push({ ...e }) }
+    }
+    return out
+}
+
+// A 1.2 manifest ({ entries }) is read as events.
 export function readManifest(dir) {
     const p = join(dir, 'data', 'manifest.json')
-    return existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : { entries: [] }
+    const m = existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : {}
+    const events = m.events ?? m.entries ?? []
+    return { events, latest: latestOf(events) }
 }
 
 export function addManifest(dir, entry) {
     mkdirSync(join(dir, 'data'), { recursive: true })
-    const m = readManifest(dir)
-    const i = entry.id != null ? m.entries.findIndex((e) => e.id === entry.id && e.type === entry.type) : -1
-    if (i >= 0) m.entries[i] = { ...m.entries[i], ...entry }
-    else m.entries.push(entry)
-    writeFileSync(join(dir, 'data', 'manifest.json'), JSON.stringify(redact(m), null, 2))
+    const { events } = readManifest(dir)
+    events.push(entry)
+    writeFileSync(join(dir, 'data', 'manifest.json'), JSON.stringify(redact({ events, latest: latestOf(events) }), null, 2))
 }

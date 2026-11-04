@@ -96,6 +96,7 @@ flowchart TD
   R -- 要求實作 --> K{受管對象}
   K -- 程式 --> X[說明 PM/工廠檢查點，不實作]
   K -- 非程式 --> N[非產品路線]
+  R -- 撿走工廠長期未處理條目 --> P[擬稿到 staging/，使用者檢查後寫入 _backlog.md<br/>再自工廠兩份根目錄檔刪除]
   R -- 處理工廠交接檔 --> F[進度與 manager 訂正：pm-status-review，擬稿到 staging/<br/>新問題或候選：pm-intake-triage]
 ```
 
@@ -149,7 +150,7 @@ flowchart TD
   E --> H[每個 run 到達等待檢查：<br/>交接檔 → PM 擬稿到 staging/]
   H --> E
   H --> F[整批完成：工廠彙整 _review-queue.md]
-  F --> G[人閘：一次人工 E2E 剩下事項，之後 sync/archive<br/>歸檔時清空 queue，未處理 issue 交 manager]
+  F --> G[人閘：一次人工 E2E 剩下事項，之後 sync/archive<br/>完成項目歸檔到 .factory/archive/，未完成留在工廠<br/>長期未處理由 manager 自行撿走]
 ```
 
 計畫只預先授權兩項：使用者一次檢視全部 change 後，依序派工（含 Check 與 agent E2E 驗證）不再逐 run 確認；以及每個 run 預設 commit 一次，使用者可改或關閉。檢視 change、人工 E2E、sync/archive、push 都不能預先授權。某個 run 停下時，只暫停依賴它的 run。

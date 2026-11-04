@@ -1,8 +1,8 @@
 # pm-factory-handoff 元素對照
 
 - 分支：pm
-- 對照版本：`skills/pm-factory-handoff/SKILL.md` version 1.4，last_updated 2026-11-03T17:13:07
-- 讀過的檔案：`SKILL.md`、`agents/openai.yaml`、`references/handoff-contract.md`、`references/context-sanitization.md`、`assets/factory-intake.template.md`、`assets/factory-status.template.md`、`assets/factory-memory.template.md`；交叉引用核對（唯讀）：`orchestrator-pm` 的 § Delegation、§ Automation、§ Stop、`assets/automation.template.md` 與 authority-and-gates § Factory establishment；`orchestrator-factory` 的 § 5b 只核對 E2E 寫入授權的來源
+- 對照版本：`skills/pm-factory-handoff/SKILL.md` version 1.5，last_updated 2026-11-04T15:52:52
+- 讀過的檔案：`SKILL.md`、`agents/openai.yaml`、`references/handoff-contract.md`、`references/context-sanitization.md`、`assets/factory-intake.template.md`、`assets/factory-status.template.md`、`assets/factory-memory.template.md`；交叉引用核對（唯讀）：`orchestrator-pm` 的 § Delegation、§ Automation、§ Stop、`assets/automation.template.md` 與 authority-and-gates § Factory establishment；`orchestrator-factory` 的 § 5b 與 E2E worker prompt 只核對 E2E 測試資料寫入授權（`data_write`）的來源與用詞
 - 狀態：已檢查，2026-11-04 移入 manager 正式文件
 
 ## 1. 摘要
@@ -39,7 +39,7 @@
 | E11 | 邊界條件 | 冷啟動包不是跨方交接檔 | 冷啟動包是新工廠 run 自己的控制檔，不使用跨方交接檔的 `handoff-<recipient>-<topic>.md` 命名（該命名只用於留在工廠 run 根目錄的交接檔） | handoff-contract § Directory |
 | E12 | 流程步驟 | peer 討論室 | PM 發動的委派預設用 peer：依 `peer-agent-coordination` 在工廠 run 建討論室、PM 任 host；在 `_intake.md` 記錄使用者核可委派與討論室路徑（orchestrator-pm `## Delegation`）；只有使用者拒絕 peer 時才不建，此時 `peer_room` 為 none | § Workflow 6 |
 | E13 | 產物格式 | `_intake.md` | 十一項：目標與業務或專案理由、已確認脈絡、範圍內成果、明確排除、限制與已接受決策、證據與相關專案路徑、交由工廠討論的開放問題、預期驗證與人工檢查點、PM 發動的委派時的使用者核可與討論室路徑、自動化計畫下依值寫入的授權（批次流程即一次批次檢視後依序派工、commit 規則且絕不 push、停止條件、與批次內其他 run 的相依、使用者核可原話與日期）、選擇性來源（manager run 與候選編號，標為工廠永遠不需要讀的線索） | handoff-contract § `_intake.md`；§ Workflow 5 |
-| E14 | 產物格式 | intake 範本 | 段落：Goal、Why now、Confirmed context、In scope、Explicit exclusions、Constraints、Evidence and project paths、Open questions for factory discussion、Verification intent、Source (optional)、Human checkpoints、Delegation（PM 發動委派時：User approval、Peer room）、Automation authorization（只在核可的自動化計畫下：Approval、Batch、Dispatch（批次檢視後依序派工不再另行確認，含 Check 與 agent E2E review）、E2E write permission（read-only 或使用者允許的測試資料）與 reviewers left out（none／Check／E2E）、Commit（到達 await-e2e 時一次 commit、其他規則或 none；絕不 push）、Depends on、Stop conditions、Human E2E and sync/archive 在整批之後）；Human checkpoints 預設兩項：派工前審閱工廠討論與提案、最終驗收前做人工 E2E | `assets/factory-intake.template.md` |
+| E14 | 產物格式 | intake 範本 | 段落：Goal、Why now、Confirmed context、In scope、Explicit exclusions、Constraints、Evidence and project paths、Open questions for factory discussion、Verification intent、Source (optional)、Human checkpoints、Delegation（PM 發動委派時：User approval、Peer room）、Automation authorization（只在核可的自動化計畫下：Approval、Batch、Dispatch（批次檢視後依序派工不再另行確認，含 Check 與 agent E2E review）、E2E test-data write permission（`data_write`：none 或使用者允許的測試資料）與 reviewers left out（none／Check／E2E）、Commit（到達 await-e2e 時一次 commit、其他規則或 none；絕不 push）、Depends on、Stop conditions、Human E2E and sync/archive 在整批之後）；Human checkpoints 預設兩項：派工前審閱工廠討論與提案、最終驗收前做人工 E2E | `assets/factory-intake.template.md` |
 | E15 | 產物格式 | `_status.md` | 狀態設為 `await-factory-session`，註明工廠未啟動、須由人另起工廠 session；自動化計畫下，可由 PM 啟動 session，或把批次的工廠 session 移到本 run。範本欄位：Stage、Factory started: no、Intake、Shared memory、Next（人另起工廠 session 並提供本 run 目錄；自動化計畫下 PM 可啟動它或把批次的工廠 session 移來）、Blockers（intake 未解問題只是討論輸入） | handoff-contract § `_status.md`；`assets/factory-status.template.md` |
 | E16 | 產物格式 | `_memory.md` | 只放每個後續工廠 worker 都可能需要的簡短共享事實；範本段落 Confirmed facts、Accepted constraints、Important paths；不複製整份 intake 或 PM 歷史 | handoff-contract § `_memory.md`；`assets/factory-memory.template.md` |
 | E17 | 邊界條件 | 獨立性測試 | 只認識專案工作區與這個工廠 run 的新 session，必須能理解：為何可能需要這項工作、什麼已確認、什麼被排除、還要討論什麼、人核可與未核可什麼。若必須讀 `.manager` 或 PM 對話，交接就不完整 | handoff-contract § Independence test；§ Workflow 8 |
@@ -56,13 +56,13 @@
 - **PM 來源資訊的界線**：Exclude 清單排除 PM 專用術語，但允許「工廠用得上時」保留 PM 來源 metadata，intake 範本也有選擇性的候選編號欄位；兩者的界線依「工廠用得上」判斷，沒有更具體的標準。
 - **「新 session」的用語**：開頭段與 Workflow 5 已改為「在這個 run 開始工作」，但 handoff-contract 開頭仍說讀者是「只認識專案工作區與這個 run 的新 session」，openai `default_prompt` 寫「for a new factory session」。自動化下同一個工廠 session 會被移到下一個 run，不是新 session。Workflow 8 的「新 session」是獨立性測試的條件，審查時刻意保留；handoff-contract 開頭可依同樣意思理解，但沒有寫明。
 - **不處理非產品路線**：本 skill 只建立工廠交接；`pm-intake-triage` 明定非產品路線的候選不呼叫本 skill。
-- **自動化授權的契約與範本不同步**：handoff-contract § `_intake.md` 的自動化授權只列批次流程、commit 規則、停止條件、相依、核可原話；intake 範本另有 E2E write permission 與 reviewers left out，Dispatch 也寫明含 Check 與 agent E2E review。範本的「Human E2E and sync/archive: after the whole batch」契約同樣未列（前版即存在，前版對照未列）。工廠派 E2E worker 時從這份授權取寫入範圍，契約未要求這一欄。
+- **自動化授權的契約與範本不同步**：handoff-contract § `_intake.md` 的自動化授權只列批次流程、commit 規則、停止條件、相依、核可原話；intake 範本另有 E2E test-data write permission（`data_write`）與 reviewers left out，Dispatch 也寫明含 Check 與 agent E2E review。範本的「Human E2E and sync/archive: after the whole batch」契約同樣未列。工廠派 E2E worker 時從這份授權取 `data_write`（orchestrator-factory § 5b），契約未要求這一欄。本輪範本與 orchestrator-pm automation 範本、orchestrator-factory E2E prompt 的用詞已一致，契約仍未同步。
 
 ## 4. 與前版差異
 
-對照前版對照（version 1.3，last_updated 2026-11-02T13:49:21）：
+對照前版對照（version 1.4，last_updated 2026-11-03T17:13:07）：
 
 - SKILL.md 本文、references 與其他範本未變，只更新版本與時間戳。
-- 修改 E14 intake 範本：Automation authorization 的 Dispatch 寫明含 Check 與 agent E2E review，新增 E2E write permission 與 reviewers left out 一行。
-- §3 新增一項：自動化授權的契約與範本不同步；前版四項仍存在，保留。
+- 修改 E14 intake 範本：Automation authorization 的 E2E write permission 改為 E2E test-data write permission（`data_write`），值由 read-only 改為 none 或使用者允許的測試資料。
+- §3「自動化授權的契約與範本不同步」仍存在，用語改為 `data_write`，並註明範本已與 orchestrator-pm automation 範本、orchestrator-factory E2E prompt 用詞一致；其餘四項仍存在，保留；無已解或新增項目。
 - 移除元素：無。元素數維持 23。

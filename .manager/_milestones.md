@@ -14,7 +14,7 @@ Updated: 2026-11-04
 | M3 | 歷次紀錄規則蒐集與下一輪改善 | 分析 | ⬜ | — | 未 |
 | M4 | pm 與 factory 協調、自動化 | 實作 | ✅ | commit 481d881、576d71a；run 2026-11-02-pm-factory-coordination | 2026-11-02（使用者指示沖入後 commit） |
 | M5 | 非產品路線工作流程規範化 | 實作 | ✅ | commit f668f77、ce63c61；run 2026-11-02-non-product-route-workflow | 2026-11-02（使用者指示沖入後 commit） |
-| M6 | factory 插入 agent E2E review | 實作 | 🟡 | commit aecd92e、6bccacb、981f2af、d731431；run 2026-11-03-agent-e2e-review、2026-11-04-e2e-review-surfaces-recipes | 第一階段試用成功（2026-11-04），整體未驗收 |
+| M6 | factory 插入 agent E2E review | 實作 | 🟡 | commit aecd92e、6bccacb、981f2af、d731431；run 2026-11-03-agent-e2e-review、2026-11-04-e2e-review-surfaces-recipes、2026-11-04-skill-feedback-round（已沖入，未 commit） | 第一階段試用成功（2026-11-04），整體未驗收 |
 
 ## Feature progress
 
@@ -25,13 +25,14 @@ Updated: 2026-11-04
 | 文件分支 | ✅ | ✅ | ✅ | ✅ | 新增 doc-tutorial-guide、doc-openapi-guide |
 | pm 與 factory 協調、自動化 | ✅ | ✅ | ✅ | ✅ | 委派預設 peer；自動化兩段流程 |
 | 非產品路線流程 | ✅ | ✅ | ✅ | ✅ | references/non-product-route.md |
-| agent E2E review | ✅ | ✅ | ✅ | 🟡 | 已沖入；1.2 加入 API surface 與 recipes；持續試用 |
+| agent E2E review | ✅ | ✅ | 🟡 | 🟡 | 1.2 加入 API surface 與 recipes；1.3 實用回饋修正與 factory 收尾歸檔已沖入，待 commit |
 
 ## In progress
 
 | Work item | Axis | Target | Stage | Evidence |
 | --- | --- | --- | --- | --- |
 | SK-E | 實作 | M6 | verifying | commit aecd92e、6bccacb、981f2af、d731431 |
+| SK-E2 | 實作 | M6 | verifying | run 2026-11-04-skill-feedback-round；`changes/_index.md`、`reviews/_triage.md` |
 
 ## Backlog / not started
 

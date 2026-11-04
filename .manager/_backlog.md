@@ -8,6 +8,7 @@
 | --- | --- | --- | --- | --- | --- |
 | SK-X2 | initiative | 從歷次工作紀錄抽取通用規則，收納為 skill 元素 | 2026-10-19 交接 | inbox | 另開蒐集輪 |
 | SK-E | initiative | factory 插入 agent E2E review：新增 e2e-review、review queue 與 issue backlog 拆分、人工清單精簡 | 2026-11-03 使用者 | verifying | 已 commit（aecd92e、6bccacb、981f2af、d731431）；第一階段試用成功，持續試用 |
+| SK-E2 | initiative | e2e-review 實用回饋修正：試跑、報告、更正（amend）、預演、測試資料與帳號通用規則、驅動與秘密；factory 每輪收尾、不得自行升級需人工項、跨 run 檔收尾歸檔到 `.factory/archive/`、manager 撿走長期條目 | 2026-11-04 使用者 | verifying | 已沖入；使用者指示時 commit |
 | SK-R2 | debt | 元素對照重拆時發現的殘留不一致：orchestrator-pm、pm-factory-handoff、pm-status-review、orchestrator-factory、commit-message-suggestion、peer-agent-coordination 與兩份 readme（正文在各對照 §3） | 2026-11-02 元素對照 | inbox | 下一輪修改 skill 時併入 |
 
 ## Deferred

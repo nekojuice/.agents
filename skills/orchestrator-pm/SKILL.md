@@ -12,8 +12,8 @@ description: >-
 disable-model-invocation: true
 metadata:
   author: Codex GPT-5.6-Sol, Claude Code Opus 4.8, Claude Code Opus 5.5
-  version: "1.4"
-  last_updated: "2026-11-02T13:49:21"
+  version: "1.5"
+  last_updated: "2026-11-03T17:21:42"
 extends: pm-status-review, pm-intake-triage, pm-factory-handoff, pm-investigation-worker, peer-agent-coordination
 ---
 
@@ -27,9 +27,9 @@ This skill runs only after explicit invocation. Do not auto-enter PM mode from o
 
 1. **Human authority wins.** Treat explicit human conclusions, approvals, and acceptance as higher authority than PM inference.
 2. **One active PM session.** Assume only one PM session is active at a time. A later session may replace it by reading durable `.manager` state; no permanent agent identity is required.
-3. **Own only the PM control plane.** Write only inside `.manager/**`, with these exceptions: a factory handoff the human explicitly approves through `pm-factory-handoff`, a handoff file the PM delivers into a factory run and the peer files of a delegation it started ([Delegation](#delegation)), and text edits to a non-product managed object under the [Non-product route](#non-product-route). Peer messages are a channel, not document writes.
+3. **Own only the PM control plane.** Write only inside `.manager/**`, with these exceptions: a factory handoff the human explicitly approves through `pm-factory-handoff`, a handoff file the PM delivers into a factory run and the peer files of a delegation it started ([Delegation](#delegation)), updates to `.factory/_review-queue.md` or `.factory/_issue-backlog.md` when needed, and text edits to a non-product managed object under the [Non-product route](#non-product-route). Peer messages are a channel, not document writes.
 4. **No product implementation.** Do not edit product source, project specifications, repositories, or deployment state. This does not cover text edits to a non-product managed object under the Non-product route; code or configuration outside that object stays off-limits. Investigation is read-only outside the current manager run.
-5. **Stay at project level.** Manage direction, scope, scheduling, and status. Leave research, design, and implementation questions at factory granularity to the factory; do not dig into them, decide them, or edit the factory's working files.
+5. **Stay at project level.** Manage direction, scope, scheduling, and status. Leave research, design, and implementation questions at factory granularity to the factory; do not dig into them, decide them, or edit a factory run's working files.
 6. **Workers stay run-local.** Every worker receives one exact `run_dir` and one or more exact artifact paths inside it. Workers may not update manager root state, the library, product files, or `.factory`.
 7. **No silent factory start.** Propose a factory candidate, wait for an explicit human instruction to establish it, create the handoff, then stop. The human starts the factory session. An approved [Automation](#automation) plan follows that section instead.
 8. **Return through handoff files.** Factory sessions never write `.manager`. A factory returns through `handoff-manager-<topic>.md` at its run root, optionally announced over peer. Read it on the human's instruction or a peer notice; draft canonical updates into the run's `staging/` and apply them only after the user checks the draft. Record the processing in the PM's own run and never edit the handoff file.
@@ -128,10 +128,10 @@ Run a batch of factory work under a plan the user approves. The PM may propose a
 3. The batch has one PM session and one factory session. The user starts the factory session by default; the PM may start it where the platform allows. The PM moves the same factory session between runs over peer.
 4. **Design pass** — the factory takes every run through discussion, propose, and change-doc review first. Decisions the records do not settle are listed per run.
 5. **Batch change review** — the user reviews all changes and each run's pending decisions in one gate. Building starts only after the user confirms (all runs or a subset).
-6. **Build pass** — the factory applies, checks, commits, and hands off each confirmed run in dependency order. On each run's handoff, draft into `staging/` (rule 8). A stopped run pauses only the runs that depend on it.
-7. When the whole scope is done, have the factory consolidate `_review-backlog.md`; the user runs E2E once, and sync/archive follows.
+6. **Build pass** — the factory applies, checks, runs agent E2E review, commits, and hands off each confirmed run in dependency order. On each run's handoff, draft into `staging/` (rule 8). A stopped run pauses only the runs that depend on it.
+7. When the whole scope is done, have the factory consolidate `_review-queue.md`; the user runs E2E once on what remains, and sync/archive follows. Archive clears the queue and hands open `_issue-backlog.md` entries to the manager; process them like any manager handoff.
 
-The plan pre-authorizes only two things: after the batch change review, dispatching each confirmed run in order without a separate dispatch confirmation; and one commit per factory run by default, which the user may change or turn off. Human E2E acceptance, sync/archive, and push are never pre-authorized; push needs the user's separate explicit authorization.
+The plan pre-authorizes only two things: after the batch change review, dispatching each confirmed run in order — its apply, Check, and E2E workers, with the E2E write permission the plan names — without a separate dispatch confirmation; and one commit per factory run by default, which the user may change or turn off. Human E2E acceptance, sync/archive, and push are never pre-authorized; push needs the user's separate explicit authorization.
 
 ## Maintain durable state
 
@@ -151,7 +151,7 @@ Stop for the human when:
 - A PM-assessed completion conflicts with human acceptance.
 - A candidate is ready to become a factory handoff.
 - An automation plan needs approval.
-- A write outside `.manager/**` would be required, except edits to a non-product managed object under the Non-product route, which need the user's instruction before editing and the user's git diff review or an equivalent before/after diff after it.
+- A write outside `.manager/**` would be required, except as Hard rule 3 allows. Edits to a non-product managed object under the Non-product route need the user's instruction before editing and the user's git diff review or an equivalent before/after diff after it.
 - Investigation would require mutating a product repository or external system.
 
 ## PM status rollup

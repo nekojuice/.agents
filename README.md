@@ -105,8 +105,12 @@ flowchart TD
   F --> J{人閘 檢查 review 結果}
   J -- 需修改 --> K[依人工判斷修改實作]
   K --> F
-  J -- 通過 --> G{人閘 人工驗收 累積驗收清單}
-  G -- 不通過 --> K
+  J -- 通過 --> AE[agent E2E review 實際操作驗證 可多輪]
+  AE -- 需修改 --> AF[修正並複查 再交 agent E2E]
+  AF --> AE
+  AE -- 精簡清單 --> G{人閘 人工驗收 剩下事項}
+  G -- 不通過 --> K2[依人工回報修改 只複查修正處]
+  K2 --> G
   G -- 通過 --> H[人閘 核可同步與歸檔]
   H --> I[commit 與 change log]
 ```
@@ -167,7 +171,7 @@ flowchart TD
 
 | 順序 | Skill | 作者 | 自動啟用 | 簡述 |
 | --- | --- | --- | --- | --- |
-| 1 | `orchestrator-factory` | 自製 | 是 | 工廠模式總指揮：排程、派工、人閘、審查結果判斷與累積驗收清單 |
+| 1 | `orchestrator-factory` | 自製 | 是 | 工廠模式總指揮：排程、派工、人閘、審查結果判斷、agent E2E 覆核與跨 run 驗收清單 |
 | 2 | `discuss-first` | 自製 | 是 | 只討論不改檔的開場，只答所問 |
 | 3 | `openspec-propose` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 一次產出 change 的提案、設計與任務清單 |
 | 4 | `opsx-propose-guide` | 自製 | 是 | 提案規範：切分、命名、依賴、驗證骨架安全與修訂標註 |
@@ -176,10 +180,11 @@ flowchart TD
 | 7 | `opsx-apply-guide` | 自製 | 是 | 實作規範：逐項勾選、測試調整紀律、修訂輪與人工驗證清單 |
 | 8 | `hard-verify` | 自製 | 是 | 執行編譯、建置、靜態檢查與單元測試等硬閘 |
 | 9 | `code-review` | 改寫自 [Matt Pocock](https://github.com/mattpocock/skills) | 是 | 規範與規格雙軸審查，依資訊來源優先序判斷並標註問題分類 |
-| 10 | `openspec-sync-specs` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 將變更規格同步進主規格 |
-| 11 | `openspec-archive-change` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 完成後歸檔 change |
-| 12 | `commit-message-suggestion` | 自製 | 是 | 產生 commit 訊息建議，使用者明確要求或核可的自動化計畫指定時可代為提交，不含 push |
-| 13 | `change-log` | 自製 | 是 | 產出改動清單，向使用者與開發者說明變更 |
+| 10 | `e2e-review` | 自製 | 是 | 人工驗收前的 agent 自檢：依清單實際操作系統、取證並交報告，腳本累積在專案的 `.e2e/` |
+| 11 | `openspec-sync-specs` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 將變更規格同步進主規格 |
+| 12 | `openspec-archive-change` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 完成後歸檔 change |
+| 13 | `commit-message-suggestion` | 自製 | 是 | 產生 commit 訊息建議，使用者明確要求或核可的自動化計畫指定時可代為提交，不含 push |
+| 14 | `change-log` | 自製 | 是 | 產出改動清單，向使用者與開發者說明變更 |
 | 選配 | `change-review-request` | 自製 | 是 | 撰寫提案審查邀請，列出決策脈絡來源 |
 | 選配 | `change-review-response` | 自製 | 是 | 回覆提案審查，寫出結論、疑慮分類與下一步 |
 

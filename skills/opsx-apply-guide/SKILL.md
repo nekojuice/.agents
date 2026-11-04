@@ -1,11 +1,11 @@
 ---
 name: opsx-apply-guide
-description: Implementation discipline for the session applying an opsx (OpenSpec) change. Use when you are working through the tasks of a change package during the opsx apply flow. Covers ticking the checklist as each task is done and reconciling it per section, test-first with unit tests as the bar, test-change discipline (anti-cheat) including amendment rounds, treating end-to-end verification as human-only, producing a developer verification list, reporting completion honestly, surfacing out-of-scope discoveries, and recording deviations. Works alongside openspec-apply-change (mechanical steps) and the test-first skill.
+description: Implementation discipline for the session applying an opsx (OpenSpec) change. Use when you are working through the tasks of a change package during the opsx apply flow. Covers ticking the checklist as each task is done and reconciling it per section, test-first with unit tests as the bar, test-change discipline (anti-cheat) including amendment rounds, leaving end-to-end verification out of the applying session, producing a developer verification list, reporting completion honestly, surfacing out-of-scope discoveries, and recording deviations. Works alongside openspec-apply-change (mechanical steps) and the test-first skill.
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.3"
-  last_updated: "2026-11-02T11:47:29"
+  version: "1.4"
+  last_updated: "2026-11-03T17:19:31"
 extends: openspec-apply-change, test-first
 ---
 
@@ -55,9 +55,9 @@ An amendment round revises a change after apply and before archive. When to amen
 - **Large-scale amendments**: an amendment is large-scale when it replaces most of a feature's behavior, or when the old tests can no longer map one-to-one onto the new behavior. When the amendment is marked large-scale — by the orchestrator in factory mode, otherwise by the commanding agent that wrote it — list every rewritten or deleted test with its old behavior one by one, so the reviewer (in factory mode, the Check worker) can verify each. If it is unmarked but meets that criterion, list them the same way; over-record rather than under-record.
 - This mapping is separate from deviations (section 7).
 
-## 3. End-to-end verification is human-only
+## 3. End-to-end verification is not the applying session's job
 
-Within the opsx apply flow, **do not drive browsers or UI automation tools (Playwright, built-in browser-operation tools, etc.) to perform end-to-end verification.** Agent-driven UI clicking is slow and its precision and edge-case coverage fall far short of a developer doing it by hand. Treat E2E as a **human-only** activity: instead of running it, write the E2E steps out for the developer (see section 4).
+Within the opsx apply flow, **do not drive browsers or UI automation tools (Playwright, built-in browser-operation tools, etc.) to perform end-to-end verification.** Write the E2E steps out instead (see section 4). A coordinating workflow may hand them first to a dedicated E2E reviewer (e.g. `e2e-review` under orchestrator-factory) and then to the developer for what remains; without one, they go to the developer. The coordinator does not operate E2E itself either.
 
 This restriction is scoped to opsx apply verification only. It does **not** govern the user's own separate, deliberate use of browser tools outside this flow — do not police that.
 
@@ -65,7 +65,7 @@ This restriction is scoped to opsx apply verification only. It does **not** gove
 
 When you finish the change, produce the list of things a developer should verify. Because the real implementation can differ from what the proposal foresaw, **you (the applying session) own the final list** that the user confirms.
 
-- If the work had tests, list what the developer should test — including any **E2E steps to run by hand** (section 3).
+- If the work had tests, list what the developer should test — including any **E2E steps** (section 3). When a coordinator runs an E2E reviewer first, the same list is that reviewer's input; filtering it by the reviewer's results belongs to the coordinator.
 - If the work needs no testing, only checking, list **what should be checked** instead.
 
 **Abstraction level** — this is the canonical rule; `opsx-propose-guide` and coordinating workflows reference it:
@@ -80,7 +80,7 @@ When you finish the change, produce the list of things a developer should verify
   - Too fine for broad: "Click `<control>`; message `<text>` appears."
   - Broad: "On `<screen>`, complete one `<flow>` and confirm the result."
   - Focused: "Cause: `<cause>`. Enter an invalid `<field>` on `<screen>`; `<field>` is highlighted and `<message>` appears."
-- **Safety boundary** — the same as in `opsx-propose-guide` section 5: no step may run a command that prints secret values; to check that a secret exists, list only the file name. No step may call a paid external service. If verification genuinely needs a real paid service, mark it human-only and note the cost and side effects.
+- **Safety boundary** — the same as in `opsx-propose-guide` section 5: no step may run a command that prints secret values; to check that a secret exists, list only the file name. No step may call a paid external service. If verification genuinely needs a real paid service, mark it human-only and note the cost and side effects; an E2E reviewer does not run it either.
 
 Deliver this list on **both** tracks:
 

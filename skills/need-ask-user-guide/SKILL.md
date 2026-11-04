@@ -10,8 +10,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Codex GPT-6, Claude Code Opus 5.5
-  version: "1.1"
-  last_updated: "2026-10-20T13:40:41"
+  version: "1.2"
+  last_updated: "2026-11-03T17:13:07"
 ---
 
 # need-ask-user-guide
@@ -154,7 +154,8 @@ Split each checkpoint report into two zones, plus one rule for recorded blockers
 
 A list asking the user to perform manual verification or review is also an
 interruption. List only items that need human judgment; exclude items already
-covered by automated tests or hard checks, and simple logic checks.
+covered by automated tests or hard checks, items an agent E2E review verified
+with evidence the coordinator checked, and simple logic checks.
 
 ## Examples
 

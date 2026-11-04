@@ -54,7 +54,8 @@
 
 - Approval: <user's quoted approval and date>
 - Batch: <this run's order among the batch's runs>; the user reviews all changes of the batch in one gate before building
-- Dispatch: after that review, confirmed runs are dispatched in order without a separate confirmation
+- Dispatch: after that review, confirmed runs are dispatched in order without a separate confirmation, including Check and agent E2E review
+- E2E write permission: <read-only | test data the user allows>; reviewers left out: <none | Check | E2E>
 - Commit: <one commit when this run reaches await-e2e | other rule | none>; never push
 - Depends on: <earlier runs in the batch, or none>
 - Stop conditions: <beyond the factory's own, or none>

@@ -20,7 +20,8 @@ Status: proposed | approved | design | change-review | build | ended
 
 - Design pass: every run goes through discussion, propose, and change-doc review; unsettled decisions are listed per run.
 - Batch change review: the user reviews all changes and each run's pending decisions in one gate.
-- Build pass: confirmed runs are dispatched in dependency order without a separate dispatch confirmation.
+- Build pass: confirmed runs are dispatched in dependency order without a separate dispatch confirmation, including Check and agent E2E review.
+- E2E write permission: <read-only | test data the user allows>; reviewers left out: <none | Check | E2E>.
 
 ## Commit
 
@@ -38,4 +39,5 @@ Status: proposed | approved | design | change-review | build | ended
 
 ## End of batch
 
-- Factory consolidates `.factory/_review-backlog.md`; the user runs E2E once; sync/archive follows.
+- Factory consolidates `.factory/_review-queue.md`; the user runs E2E once on what remains; sync/archive follows.
+- Archive clears the queue and hands open `.factory/_issue-backlog.md` entries to the manager.

@@ -145,14 +145,14 @@ flowchart TD
   B --> C[為每個任務建立工廠 run<br/>授權依值寫進 _intake.md]
   C --> D[設計段：每個 run 討論、提案、提案審查<br/>PM 經 peer 指派下一個 run]
   D --> R[人閘：一次檢視全部 change<br/>與各 run 的待決事項]
-  R --> E[施工段：依相依順序實作、Check、commit]
+  R --> E[施工段：依相依順序實作、Check、agent E2E 驗證、commit]
   E --> H[每個 run 到達等待檢查：<br/>交接檔 → PM 擬稿到 staging/]
   H --> E
-  H --> F[整批完成：工廠彙整 _review-backlog.md]
-  F --> G[人閘：一次人工 E2E，之後 sync/archive]
+  H --> F[整批完成：工廠彙整 _review-queue.md]
+  F --> G[人閘：一次人工 E2E 剩下事項，之後 sync/archive<br/>歸檔時清空 queue，未處理 issue 交 manager]
 ```
 
-計畫只預先授權兩項：使用者一次檢視全部 change 後，依序派工不再逐 run 確認；以及每個 run 預設 commit 一次，使用者可改或關閉。檢視 change、人工 E2E、sync/archive、push 都不能預先授權。某個 run 停下時，只暫停依賴它的 run。
+計畫只預先授權兩項：使用者一次檢視全部 change 後，依序派工（含 Check 與 agent E2E 驗證）不再逐 run 確認；以及每個 run 預設 commit 一次，使用者可改或關閉。檢視 change、人工 E2E、sync/archive、push 都不能預先授權。某個 run 停下時，只暫停依賴它的 run。
 
 ## 關鍵參數
 

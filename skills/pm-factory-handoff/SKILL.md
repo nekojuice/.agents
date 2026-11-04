@@ -12,8 +12,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Codex GPT-5.6-Sol, Claude Code Opus 5.5
-  version: "1.3"
-  last_updated: "2026-11-02T13:49:21"
+  version: "1.4"
+  last_updated: "2026-11-03T17:13:07"
 extends: orchestrator-pm
 ---
 

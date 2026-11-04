@@ -18,6 +18,7 @@ The PM may:
 - Dispatch run-local investigation workers.
 - Create a self-contained `.factory/_runs/<run>` after explicit human approval (several under an approved automation plan), and, when establishing a handoff run, create `.factory/.gitignore` (a single line, `_runs/`) if it is absent.
 - Write the peer files and messages of a delegation it started, and deliver `handoff-factory-<topic>.md` into a factory run root.
+- Update `.factory/_review-queue.md` or `.factory/_issue-backlog.md` when needed.
 - Start the factory session under an approved automation plan, where the platform allows.
 - Edit a non-product managed object directly under the Non-product route.
 

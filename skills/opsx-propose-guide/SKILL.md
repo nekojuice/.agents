@@ -4,8 +4,8 @@ description: Authoring discipline for the commanding agent who runs the opsx (Op
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.5"
-  last_updated: "2026-11-02T13:38:09"
+  version: "1.6"
+  last_updated: "2026-11-03T17:13:07"
 extends: openspec-propose
 ---
 
@@ -96,9 +96,9 @@ Lay down, in `tasks.md`, a skeleton of how the change should be verified so the 
 
 - For work that warrants tests, state the **unit-test intent** (test-first): what behavior should be covered.
 - For work that only needs checking rather than testing, state **what should be checked**.
-- Mark any end-to-end / browser-driven verification as **human-only** — it is for a developer to run by hand, never something the implementing session drives itself.
-- Write human-only items at the level `opsx-apply-guide` section 4 sets, grouped by screen, and only where human judgment is needed — not what unit tests or hard checks already cover (`need-ask-user-guide`). That section is the canonical rule and holds the placeholder contrast.
-- **Safety boundary** — no step may run a command that prints secret values; to check that a secret exists, list only the file name. No step may call a paid external service. If verification genuinely needs a real paid service, mark it human-only and note the cost and side effects.
+- Mark any end-to-end / browser-driven verification as **E2E** — never something the implementing session drives itself. A coordinating workflow may send it to a dedicated E2E reviewer first (`opsx-apply-guide` section 3); what remains goes to the developer.
+- Write E2E items at the level `opsx-apply-guide` section 4 sets, grouped by screen, and only where human judgment is needed — not what unit tests or hard checks already cover (`need-ask-user-guide`). That section is the canonical rule and holds the placeholder contrast.
+- **Safety boundary** — no step may run a command that prints secret values; to check that a secret exists, list only the file name. No step may call a paid external service. If verification genuinely needs a real paid service, mark it human-only and note the cost and side effects; an E2E reviewer does not run it either.
 
 This is only a skeleton. The final, concrete verification list is produced by the implementing session (it may differ from what was foreseen here) and confirmed with the user then. Do not turn the skeleton into a rigid script.
 
@@ -116,7 +116,7 @@ Because the package will be implemented by a session with **no access to this co
 - **Assumptions** — every agent-made boundary for **this** change is in the fixed document section *and* reported to the user (section 4); no full-worksheet paste; no unsettled TBD as instructions; cross-change reuse is by reference.
 - **Self-containment** — an implementer with no prior context can act on the package without asking what was meant.
 - **Acceptance** — success criteria are concrete enough that the implementer can tell when the change is done.
-- **Verification skeleton** — `tasks.md` states unit-test intent or check items, with any E2E marked human-only; human-only items are at the level `opsx-apply-guide` section 4 sets; no step prints secrets or calls a paid external service (section 5).
+- **Verification skeleton** — `tasks.md` states unit-test intent or check items, with any E2E marked as such and never driven by the implementing session; E2E items are at the level `opsx-apply-guide` section 4 sets; no step prints secrets or calls a paid external service (section 5).
 - **Cross-repo contracts** — when values are shared across repositories, `design.md` names the single source and the verification method (section 3).
 - **Example identifiers** — examples in requested docs use only anonymous fictional names or placeholders.
 - **Amendments** — an amendment states the behavior it supersedes and is annotated per Amendments.

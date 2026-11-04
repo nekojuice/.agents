@@ -2,6 +2,8 @@
 
 Beyond the checklist, judge whether the UI behaves unreasonably. Findings go to the report's UI findings section and never affect verdicts.
 
+These checks apply to web surfaces. Rounds that only use API surfaces skip them; obviously wrong API behavior outside the checklist (wrong status codes, leaked fields) goes under observations.
+
 ## Categories
 
 | Type | Look for |
@@ -14,13 +16,13 @@ Beyond the checklist, judge whether the UI behaves unreasonably. Findings go to 
 
 ## Method
 
-1. Run the automatic lint first: `ctx.lint(where, { scope })` in scenarios, or `run probes/ui-lint --scope=<selector> --shot=<name>`.
+1. Run the automatic lint first: `ctx.lint(where, { scope })` in scenarios, or `run web:probes/ui-lint --scope=<selector> --shot=<name>`.
 2. Review visually what lint cannot catch: take viewport screenshots, scan a contact sheet (`sheet <round> --prefix=<prefix>`), then open originals or scroll where something looks off.
 3. A visual check you find yourself repeating every round becomes a lint rule.
 
 ## Automatic rules
 
-Generic rules ship with the skill in `scripts/playwright/helpers/uiLint.js`:
+Generic rules ship with the skill in `scripts/drivers/playwright/helpers/uiLint.js`:
 
 | Rule | Detects |
 | --- | --- |
@@ -30,7 +32,7 @@ Generic rules ship with the skill in `scripts/playwright/helpers/uiLint.js`:
 | `readonly-counter` | Read-only field still showing a character counter |
 | `overflow-x` | Horizontal page scrollbar (whole-page scope only) |
 
-Project-specific rules, such as those tied to a component library's class names, go in `.e2e/helpers/uiLintExtra.js`: a function `async (page, scope) => findings` returning the same shape `{ type, rule, what, samples }`. The `ui-lint` probe merges both.
+Project-specific rules, such as those tied to a component library's class names, go in `.e2e/surfaces/<web surface>/helpers/uiLintExtra.js`: a function `async (page, scope) => findings` returning the same shape `{ type, rule, what, samples }`. The `ui-lint` probe merges both.
 
 ## Adding or changing a rule
 

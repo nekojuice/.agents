@@ -1,3 +1,4 @@
+// @driver playwright
 // Run generic UI lint (H.uiLint) plus the project's extra rules (H.uiLintExtra, optional) on the current screen.
 // Args: --scope=<CSS selector>, --shot=<name>. Returns { findings, shot }.
 async (page, P, H) => {

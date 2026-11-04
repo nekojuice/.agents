@@ -1,6 +1,6 @@
 interface:
   display_name: "E2E Review"
-  short_description: "Operate the system against a checklist and report with evidence"
+  short_description: "Operate the system's screens or API against a checklist and report with evidence"
   default_prompt: "Use $e2e-review to verify the assigned checklist items and write the report to the given parent folder."
 
 policy:

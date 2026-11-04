@@ -9,11 +9,20 @@ Read this file before every review task. It holds everything project-specific; t
 | Item | Value |
 | --- | --- |
 | Site | <name and purpose> |
-| URL | see `config/env.json` (`baseUrl`) |
 | Checklist source | <where acceptance checklists live> |
 | Navigation and routes | <file that defines menus or routes> |
 | Permission model | <where roles and permission nodes are defined> |
+| API contract | <where endpoints are defined: controllers, OpenAPI, or "recorded from screens"> |
 | Tested version | <how to tell: repos listed in `config/env.json` `repos`> |
+
+## Surfaces
+
+Registered in `config/env.json` `surfaces`. Keep only the surfaces this project actually has.
+
+| Surface | Driver | Base URL | Login | Use |
+| --- | --- | --- | --- | --- |
+| web | playwright | see `env.json` | `surfaces/web/actions/login` | <screens under test> |
+| api | http | see `env.json` | `surfaces/api/helpers/auth.mjs` | <API checks, test data preparation> |
 
 ## Operating limits
 
@@ -40,24 +49,48 @@ Keys in `config/accounts.local.json` (local only, never committed). Artifacts re
 | Adapter | `audit/fetch.mjs` |
 | Action codes | <code → meaning> |
 
+## Test data
+
+| Item | Value |
+| --- | --- |
+| Templates | `data/templates/`: <template → recorded from which screen request, date> |
+| Builders | `data/builders/`: <builder → what it fills> |
+| Sets | `data/sets/`: <set → purpose> |
+| Created in this environment | `state/data-<env>.json` (not committed); <how to read it, naming prefix of test data> |
+
 ## Scripts
 
 Update this section whenever a script is promoted, changed, or deleted.
 
-### actions
+### web: actions
 
 | Script | Args | Returns |
 | --- | --- | --- |
 
-### probes
+### web: probes
+
+| Script | Args | Returns |
+| --- | --- | --- |
+
+### api: actions
+
+| Script | Args | Returns |
+| --- | --- | --- |
+
+### api: probes
 
 | Script | Args | Returns |
 | --- | --- | --- |
 
 ### scenarios
 
-| Scenario | Checklist items | Writes |
-| --- | --- | --- |
+| Scenario | Checklist items | Surfaces | Writes |
+| --- | --- | --- | --- |
+
+### recipes
+
+| Recipe | Purpose | Surfaces | Agent steps left |
+| --- | --- | --- | --- |
 
 ## Known pitfalls
 

@@ -1,3 +1,4 @@
+// @driver playwright
 // Viewport screenshot to shots/<--name>.png (default final). Use --full=1 for a full-page shot; fixed layouts may repeat headers mid-image.
 async (page, P, H) => {
     if (!P.out) throw new Error('shot needs a task folder')

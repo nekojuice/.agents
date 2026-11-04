@@ -1,5 +1,5 @@
 // Generic UI lint within `scope` (CSS selector, default whole page). Returns [{ type, rule, what, samples }].
-// Rules depending on a specific component library belong to the project (.e2e/helpers/uiLintExtra.js).
+// Rules depending on a specific component library belong to the project (.e2e/surfaces/<web surface>/helpers/uiLintExtra.js).
 async (page, scope) => {
     await page.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => null))))
     return await page.evaluate((scopeSel) => {

@@ -1,11 +1,15 @@
 // Playwright driver: every call to playwright-cli goes through this module.
 // Fragments are single functions `async (page, P, H) => {}` composed with injected params and browser-side helpers.
+// Fragment lookup lives in core/drivers.mjs; this module only executes.
 import { execSync } from 'node:child_process'
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
-import { dirname, join, resolve } from 'node:path'
+import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
+
+export const name = 'playwright'
+export const extensions = ['.js']
 
 // playwright-cli writes snapshots and logs to <cwd>/.playwright-cli; keep cwd inside the execution workspace.
 function cli(session, args, cwd) {
@@ -39,20 +43,34 @@ function loadHelpers(dirs) {
     return parts
 }
 
-// Resolve a fragment: explicit path → project .e2e/<path> → skill generic probes.
-export function resolveFragment(script, assets) {
-    const withExt = script.endsWith('.js') ? script : `${script}.js`
-    const candidates = [resolve(withExt), assets && join(assets, withExt), join(HERE, withExt)].filter(Boolean)
-    const hit = candidates.find((p) => existsSync(p))
-    if (!hit) throw new Error(`fragment not found: ${script}`)
-    return hit
+export function available() {
+    try { return execSync('playwright-cli --version', { encoding: 'utf8' }).trim() } catch { return null }
+}
+
+// In a dry run the browser itself blocks write requests (POST, PUT, PATCH, DELETE), so fragments that ignore P.dry
+// still cannot save. URLs matching the surface's dryAllow patterns (e.g. the login endpoint) pass; blocked calls are returned.
+function dryGuard(cfg) {
+    const allow = JSON.stringify(cfg.dryAllow ?? [])
+    return `const __allow = ${allow}; const __blocked = [];
+  await page.route('**/*', (r) => {
+    const q = r.request();
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(q.method()) && !__allow.some((a) => q.url().includes(a))) { __blocked.push(q.method() + ' ' + q.url()); return r.abort(); }
+    return r.continue();
+  });`
 }
 
 // P must not carry secrets into logs; the composed file holds them only for the call and is deleted right after.
-export function runFragment({ session, file, P, assets, cwd }) {
-    const helpers = loadHelpers([join(HERE, 'helpers'), assets && join(assets, 'helpers')])
-    const code = `async page => {\n  const P = ${JSON.stringify(P)};\n  const H = {\n${helpers.join(',\n')}\n  };\n  return await (${stripFn(readFileSync(file, 'utf8'))})(page, P, H);\n}\n`
+export function runFragment({ file, P, ctx }) {
+    const { session, cwd, project, surface, cfg = {}, dry } = ctx
+    const helpers = loadHelpers([join(HERE, 'helpers'), project.assets && join(project.assets, 'surfaces', surface, 'helpers')])
+    const body = `(${stripFn(readFileSync(file, 'utf8'))})(page, P, H)`
+    const run = dry
+        ? `${dryGuard(cfg)}\n  try { const value = await ${body}; return { dry: true, blockedWrites: __blocked, value }; } finally { await page.unroute('**/*'); }`
+        : `return await ${body};`
+    const code = `async page => {\n  const P = ${JSON.stringify(P)};\n  const H = {\n${helpers.join(',\n')}\n  };\n  ${run}\n}\n`
     mkdirSync(cwd, { recursive: true })
+    // A composed file left behind by a killed run still holds a password; remove stale ones first.
+    for (const f of readdirSync(cwd).filter((x) => /^\.run-\d+-\d+\.js$/.test(x))) rmSync(join(cwd, f), { force: true })
     const tmp = join(cwd, `.run-${process.pid}-${Date.now()}.js`)
     writeFileSync(tmp, code)
     let output
@@ -68,6 +86,8 @@ export function runFragment({ session, file, P, assets, cwd }) {
     const res = section(output, 'Result')
     let value = null
     try { value = res ? JSON.parse(res) : null } catch { value = res }
+    // Dry runs return the fragment's value unchanged and report the blocked writes beside it.
+    if (dry && value && value.dry === true && 'blockedWrites' in value) return { ok: true, value: value.value ?? null, blockedWrites: value.blockedWrites }
     return { ok: true, value }
 }
 

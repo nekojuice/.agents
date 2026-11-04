@@ -1,3 +1,4 @@
+// @driver playwright
 // Called by `e2e.mjs sheet`: screenshot the generated contact-sheet HTML pages (local file:// only) for visual layout review.
 async (page, P) => {
     const out = []

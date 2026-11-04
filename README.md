@@ -180,7 +180,7 @@ flowchart TD
 | 7 | `opsx-apply-guide` | 自製 | 是 | 實作規範：逐項勾選、測試調整紀律、修訂輪與人工驗證清單 |
 | 8 | `hard-verify` | 自製 | 是 | 執行編譯、建置、靜態檢查與單元測試等硬閘 |
 | 9 | `code-review` | 改寫自 [Matt Pocock](https://github.com/mattpocock/skills) | 是 | 規範與規格雙軸審查，依資訊來源優先序判斷並標註問題分類 |
-| 10 | `e2e-review` | 自製 | 是 | 人工驗收前的 agent 自檢：依清單實際操作系統、取證並交報告，腳本累積在專案的 `.e2e/` |
+| 10 | `e2e-review` | 自製 | 是 | 人工驗收前的 agent 自檢：依清單操作系統畫面或 API、準備測試資料、取證並交報告，腳本與 recipes 累積在專案的 `.e2e/` |
 | 11 | `openspec-sync-specs` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 將變更規格同步進主規格 |
 | 12 | `openspec-archive-change` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 完成後歸檔 change |
 | 13 | `commit-message-suggestion` | 自製 | 是 | 產生 commit 訊息建議，使用者明確要求或核可的自動化計畫指定時可代為提交，不含 push |

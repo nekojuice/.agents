@@ -4,8 +4,8 @@ description: Implementation discipline for the session applying an opsx (OpenSpe
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.4"
-  last_updated: "2026-11-03T17:19:31"
+  version: "1.5"
+  last_updated: "2026-11-04T10:24:00"
 extends: openspec-apply-change, test-first
 ---
 
@@ -80,7 +80,7 @@ When you finish the change, produce the list of things a developer should verify
   - Too fine for broad: "Click `<control>`; message `<text>` appears."
   - Broad: "On `<screen>`, complete one `<flow>` and confirm the result."
   - Focused: "Cause: `<cause>`. Enter an invalid `<field>` on `<screen>`; `<field>` is highlighted and `<message>` appears."
-- **Safety boundary** — the same as in `opsx-propose-guide` section 5: no step may run a command that prints secret values; to check that a secret exists, list only the file name. No step may call a paid external service. If verification genuinely needs a real paid service, mark it human-only and note the cost and side effects; an E2E reviewer does not run it either.
+- **Safety boundary** — the same as in `opsx-propose-guide` section 5: no step may run a command that prints secret values; to check that a secret exists, list only the file name. No step may call a paid external service. If verification genuinely needs a real paid service, mark it as such and note the cost and side effects; an E2E reviewer runs it only within a scope the user approves, otherwise it stays human-only.
 
 Deliver this list on **both** tracks:
 

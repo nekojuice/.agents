@@ -14,8 +14,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.10"
-  last_updated: "2026-11-03T17:21:42"
+  version: "1.11"
+  last_updated: "2026-11-04T10:51:56"
 ---
 
 # orchestrator-factory
@@ -457,7 +457,7 @@ The last agent self-check before human E2E. Neither apply workers nor the orches
 1. Dispatch a separate E2E worker with the full `_review-checklist.md` and the inputs `e2e-review` requires (shape below). Write permission comes from the user's dispatch confirmation or the automation authorization; without it the worker is read-only. Only one E2E worker operates a given environment at a time.
 2. Check the returned `E2E_REVIEW_RESULT_V1` against its report and evidence before using it. Mark each item trusted, not trusted, or to rerun; never drop a human item because a worker says it passed.
 3. A trusted `product-fail` goes to a fix round; re-check the fix as in § Re-check after fixes, then dispatch the next E2E round with `--prev` and the fix as its basis.
-4. For `run-error` and `needs-human`, decide whether to send the worker back to operate again or to hand the item to the human. Tool reliability is limited, so allow reruns; stop when the item clearly cannot be done by the agent. For `verified-with-limits`, tick only what was verified and keep the limit as a human item.
+4. For `run-error` and `needs-human`, decide whether to send the worker back to operate again or to hand the item to the human. Tool reliability is limited, so allow reruns; stop when the item clearly cannot be done by the agent. For `verified-with-limits`, tick only what was verified and keep the limit as a human item. A `needs-human` item the return marks as resting on an agent step is never re-dispatched; a rerun cannot change it. Every item still unresolved — failed, still `run-error` after reruns, or `needs-human` — goes to the human in one consolidated report at the Human E2E gate, not item by item.
 5. A `needs-input` return is handled like `needs_input` in the Repair policy. A `blocked` return (environment or driver unavailable) hands the remaining items to the human, or stops for the user when the run cannot continue without them.
 6. Out-of-scope findings and implementation failures not fixed in this run go to `.factory/_issue-backlog.md`.
 7. Revise `_review-checklist.md`: tick trusted items with the report path; keep key items and those untested, failed, inconclusive, or that the agent could not run. Then update `.factory/_review-queue.md` (under § Automation, consolidate at the end of the batch instead) and go to the Human E2E gate.

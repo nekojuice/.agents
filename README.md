@@ -94,7 +94,8 @@ flowchart TB
 
 ```mermaid
 flowchart TD
-  A[討論 只討論不改檔] --> B[提案 產出 change]
+  A[討論 只討論不改檔，自主記錄 run 筆記] --> A2[人閘 收斂 確認行動前的決策]
+  A2 --> B[提案 產出 change]
   B --> R[change review 檢查 change 設計是否合理]
   R --> C{人閘 檢查 change 設計是否合理}
   C -- 需更正 --> X[依人工更正修改 change]
@@ -204,6 +205,7 @@ flowchart TD
 | --- | --- | --- | --- |
 | `need-ask-user-guide` | 自製 | 是 | 委派工作中判斷是否詢問使用者，規範檢查點的待決與提醒呈現 |
 | `peer-agent-coordination` | 自製 | 是 | 多 agent 共用工作區的協調協定；不主動啟用，使用者提及、協作討論需要，或使用者核可的流程（如 manager 委派）指定時才用，沒有即時通道時由使用者人工轉送 |
+| `orchestrator-helper` | 自製 | 是 | 輔助指揮者：依工作當下的契約接手任何工作，持有自己的簡單脈絡；使用者，或經授權的 manager、factory 可發動 |
 | `decision-support` | 自製 | 是 | 把糾纏的決策拆成獨立節點，逐節點權衡與推薦 |
 | `explain` | 自製 | 是 | 把目標拆成摘要與元素清單 |
 

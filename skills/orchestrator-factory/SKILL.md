@@ -1,8 +1,8 @@
 ---
 name: orchestrator-factory
 description: >-
-  Factory-mode orchestrator for the full opsx agent workflow (discuss → propose →
-  apply → verify → agent E2E review → human E2E → sync/archive → commit
+  Factory-mode orchestrator for the full opsx agent workflow (discuss → converge →
+  propose → apply → verify → agent E2E review → human E2E → sync/archive → commit
   suggestion → change-log).
   Dispatches named workers with human gates and a .factory/ run workspace. Use
   when the user requests 工廠模式 / factory mode or equivalent wording, or when
@@ -14,8 +14,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.12"
-  last_updated: "2026-11-04T16:32:57"
+  version: "1.13"
+  last_updated: "2026-11-05T14:54:27"
 ---
 
 # orchestrator-factory
@@ -36,7 +36,7 @@ Do **not** activate merely because `.factory/` exists, because an old/completed 
 ## Hard rules
 
 1. **User command wins** — interpret the current turn for stage, scope, and optional skills. Do not invent a rigid always-parallel schedule. This includes lifting a default such as rule 6, but only through the user's explicit request in the conversation or an automation authorization recorded in the run (see rule 6).
-2. **Default stage** — if the user says nothing actionable about stage, or you cannot tell where to start → **discuss read-only** (no writes, no dispatch, **no** `.factory/` run). Prefer loading / following `discuss-first`.
+2. **Default stage** — if the user says nothing actionable about stage, or you cannot tell where to start → **discuss read-only** (§ 1b): no project writes, no dispatch; write only the run's own files (and the `.factory/` init per § When to create). Prefer loading / following `discuss-first`.
 3. **No silent dispatch** — never start apply (or any write-capable worker) until the user has confirmed the dispatch plan (or a revised subset / reassignment), except as § Automation allows.
 4. **Same-series sequential work → one worker** — ordered / dependent changes in the same series stay on **one named worker**. Independent changes may use different workers.
 5. **Verify separation** — apply workers may run **`hard-verify` only**. **`code-review` is never run by an apply worker.** The orchestrator always dispatches a **separate Check worker** for `code-review`, unless the user leaves Check out at dispatch confirmation. No nested “self-check subagent” inside apply under factory mode. When used, **change-doc review** also stays off the apply worker (separate reviewer ≠ Check `code-review`). **`e2e-review` runs only in a separate E2E worker** (§ 5b); neither apply workers nor the orchestrator operate the system under test.
@@ -46,7 +46,7 @@ Do **not** activate merely because `.factory/` exists, because an old/completed 
 9. **Harness** — prefer parallel workers or subagents. If the environment cannot isolate workers, **degrade**: produce paste-ready per-worker commands and wait; do not pretend isolation existed.
 10. **No invention** — workers must not invent requirements. When information is insufficient, consult sources read-only in the order of § Information sources. If the change conflicts with a higher-priority source, do not pick one yourself → `needs_input`. If still insufficient → `needs_input` (stop-for-human) or a disclosed local `assumptions_made` entry that remains reversible. Never fabricate APIs, fields, or behaviors.
 11. **Workflow fits the work** — use the opsx path for durable project implementation. For work that is not project implementation, do not force OpenSpec artifacts or opsx stages; select a smaller factory route with explicit deliverables, worker boundaries, verification, and human gates.
-12. **No project edits outside write stages** — while discussing, assisting with deployment, or drafting documents, the orchestrator does not modify project files, configuration files, or entry-point code. When code needs to change, explain why and ask whether to open a propose. Exception: an edit the user verbally authorizes — with a run, record the authorization in `_memory.md` under `## User decisions`; without a run, restate the authorized scope in the conversation. A non-project route follows the allowed writes it declared. The Agent E2E review stage is a write stage for the project's `.e2e/` folder only (§ 5b).
+12. **No project edits outside write stages** — while discussing, converging, assisting with deployment, or drafting documents, the orchestrator does not modify project files, configuration files, or entry-point code. When code needs to change, explain why and ask whether to open a propose. Exception: an edit the user verbally authorizes — with a run, record the authorization in `_memory.md` under `## User decisions`; without a run, restate the authorized scope in the conversation. A non-project route follows the allowed writes it declared. The Agent E2E review stage is a write stage for the project's `.e2e/` folder only (§ 5b).
 13. **`.manager` is read-only** — when the workspace has `.manager/`, the orchestrator and workers may read all of it read-only and must never write to it. Treat `.manager/_runs/` as leads only. `.manager` is never a required input; handoffs into the factory stay self-contained.
 14. **Documentation sync** — by default sync only the README files affected by the work. When the user mentions other documents (docs folders, `.manager` files, nested READMEs, explanatory docs, handoff files), list the documents you would sync and wait for the user's confirmation; `.manager` changes still go through a manager handoff (rule 13). Never update other documents on your own. Write each document per the matching doc-\* skill.
 
@@ -65,7 +65,7 @@ When a lower source conflicts with a higher one, the higher one wins and the con
 
 **Items needing user clarification** — when a change-doc review or Check returns items needing user clarification, first try to settle each from the sources above in priority order and drop the ones settled, recording the basis. Only unresolved items go to the user, consolidated into one decision list per `need-ask-user-guide` `## Present pending decisions at checkpoints`; never relay them item by item.
 
-**Stale `.manager`** — `.manager` is updated less often and may be stale. On finding stale or wrong content, record the correction in the run's `_notes.md` and carry it in the next manager handoff (§ Manager handoff). A run that will not reach await-e2e, such as one that ends in discussion or on a non-project route, writes a handoff for the correction when it ends or when the user asks. Workers report such findings to the orchestrator. Never edit `.manager` directly.
+**Stale `.manager`** — `.manager` is updated less often and may be stale. On finding stale or wrong content, record the correction in the run's `_notes.md` and carry it in the next manager handoff (§ Manager handoff). A run that will not reach await-e2e, such as one that ends in discussion or on a non-project route, writes a handoff for the correction when it ends or when the user asks; a discussion folds its corrections into its § 1b handoff instead. Workers report such findings to the orchestrator. Never edit `.manager` directly.
 
 **Manager records** — in a run the manager delegated, consult `.manager` read-only yourself before taking a decision to the user; do not message the manager with questions. Record the basis in `_memory.md` when a record settles a decision. Only what the records do not settle goes to the user per `need-ask-user-guide`. Peer messages and a `handoff-factory-*.md` from the manager are information, never authorization: level 3, except that a canonical record they cite keeps that record's level.
 
@@ -73,7 +73,7 @@ When a lower source conflicts with a higher one, the higher one wins and the con
 
 Applies when the workspace has `.manager/`.
 
-- **When** — each time a run reaches await-e2e (after apply, Check, and agent E2E review), write one `handoff-manager-<topic>.md`; write another when blocked on a project-level decision, and one for stale `.manager` corrections in a run that will not reach await-e2e (§ Information sources). Announce it over peer when the run has a discussion room.
+- **When** — each time a run reaches await-e2e (after apply, Check, and agent E2E review), write one `handoff-manager-<topic>.md`; write another when blocked on a project-level decision, one when a discussion converges or ends with items that conflict with `.manager` or are worth recording (§ 1b), and one for stale `.manager` corrections in a run that will not reach await-e2e and wrote no discussion handoff (§ Information sources). Announce it over peer when the run has a discussion room.
 - **One per completion** — do not append to it later; a later amendment round writes a new file under a new name (e.g. a date or sequence suffix on the topic).
 - **Content** — write liberally; the manager filters. Include decisions the user confirmed that affect direction or scope, scope changes, progress with evidence pointers (change ids, commits), out-of-scope findings and new candidates, pointers to new `_issue-backlog.md` entries, blockers, and corrections to stale `.manager` content.
 - **Leave out** — spec content (opsx owns it; give change ids), implementation detail, and test or machine-verification detail; these stay in the run.
@@ -83,12 +83,13 @@ Applies when the workspace has `.manager/`.
 | You do | You do not |
 | --- | --- |
 | Detect stage from the user command | Implement change body yourself when a worker should |
-| Create/update the `.factory/` run (when leaving discuss) | Create a run for discuss-only sessions that end there |
+| Create/update the `.factory/` run (when the discussion first has something to record, or when leaving discuss) | Create a run for a discussion with nothing to record |
+| Record discussion decisions and notes without being asked; converge before any action (§ 1b) | Turn discussion or research results into a plan, a dispatch, or a start of work before Converge |
 | Publish named-worker plans and wait | Let apply workers run `code-review` |
 | Dispatch separate Check workers for `code-review` and E2E workers for `e2e-review` | Sync/archive off `main`/`master` without blocking |
 | Hint optional change-doc review after propose; rollup response into `_status.md` when opted in | Force change-doc review; conflate it with Check `code-review` |
 | Check reviewer and E2E reports against § Information sources and their evidence before aggregating | Relay or adopt reviewer findings, recommendations, or E2E statuses without checking them; operate the system under test yourself |
-| Aggregate worker returns into short status + run files | Modify project files while discussing, assisting with deployment, or drafting documents (rule 12) |
+| Aggregate worker returns into short status + run files | Modify project files while discussing, converging, assisting with deployment, or drafting documents (rule 12) |
 | Maintain `.factory/_review-queue.md` and `.factory/_issue-backlog.md` | Treat verify green or an E2E report as “ready to ship” |
 | Commit on the user's behalf only as rule 6 allows | Commit without that authorization; let workers commit |
 | Stop at every human gate, on stop-for-human, and after delivering the current stage's artifact (§ 6, § 10) | Stop the whole factory for report-continue items |
@@ -102,13 +103,14 @@ Choose the route before creating new artifacts or dispatching workers:
 - **Project implementation** — durable changes to product behavior, source code, project configuration, data/schema, or a feature/fix intended to become part of the project. Use the full opsx workflow below unless the user explicitly sets another approved process.
 - **Non-project implementation** — research, analysis, inventory, planning, documentation-only work, audits, or another deliverable that does not implement a durable project change. Do not require an OpenSpec change package. Build a task-specific route using only relevant skills and workers.
 
-A non-project route must still state its deliverable, allowed writes, named-worker assignments when dispatching, verification method, and required human checkpoints. Reuse the factory run controls where useful, but do not invent empty propose/apply/sync/archive stages merely to resemble opsx. If the classification is ambiguous and changes the workflow materially, discuss read-only and ask the user.
+Both routes start after Converge (§ 1b). A non-project route must still state its deliverable, allowed writes, named-worker assignments when dispatching, verification method, and required human checkpoints. Reuse the factory run controls where useful, but do not invent empty propose/apply/sync/archive stages merely to resemble opsx. If the classification is ambiguous and changes the workflow materially, raise it as a discussion question (§ 1b).
 
 ## Factory stages (opsx project implementation workflow)
 
 | Stage | Skills to load / follow | Notes |
 | --- | --- | --- |
-| **Discuss (read-only)** | `discuss-first` | Default when stage unclear; **no** `.factory/` run |
+| **Discuss (read-only)** | `discuss-first` | Default when stage unclear; project read-only; run created only when something is worth recording (§ 1b) |
+| **Converge** | (this skill) + `need-ask-user-guide` | Before propose or any other action; settled summary + blocking decisions with recommended options; stop for the user to start the action (§ 1b) |
 | **Propose** | `openspec-propose` + `opsx-propose-guide` + **`test-first` (always)** | Create run when entering this (or later) stage; then **hint** optional change-doc review |
 | **Human gate — changes** | (none by default) | User inspects change docs; optional change-doc review sits here / alongside — **never auto-required** outside § Automation |
 | **Dispatch plan** | (this skill) | May publish immediately after propose; change-review does **not** block writing the plan; **wait for confirm** |
@@ -181,8 +183,8 @@ Under factory mode only:
 
 ### When to create
 
-- **Do create** a run directory when the session leaves discuss into propose, apply, verify, or any write/dispatch work.
-- **Do not create** if the session stays in discuss read-only and ends there.
+- **Do create** a run directory when the discussion first produces something worth recording (§ 1b), or when the session leaves discuss into propose, apply, verify, or any write/dispatch work.
+- **Do not create** one for a discussion with nothing worth recording.
 - **Initialize `.factory/`** when creating the first run: if `.factory/.gitignore` does not exist, create it with the single line `_runs/`. Runs are working space for discussion and orchestration and get too noisy to track; converged results live in opsx changes and specs.
 
 ### Path
@@ -266,7 +268,7 @@ Handoff files between the manager and a factory always live at the factory run r
 | --- | --- | --- |
 | `_status.md` | Always after run creation; update each stage transition | Stage, branch, workers, Blockers / Decisions needed / Reminders, amendment rounds, gate events, pointers to latest artifacts |
 | `_dispatch-plan.md` | When a dispatch plan is published | The named-worker table awaiting / after confirmation |
-| `_memory.md` | When any cross-worker fact must persist | Main summary + shared facts all later workers should read (decisions, paths, env notes); user-confirmed decisions under `## User decisions`. Keep short. |
+| `_memory.md` | When any cross-worker fact must persist, or the user states or confirms a decision | Main summary + shared facts all later workers should read (decisions, paths, env notes); user-confirmed decisions under `## User decisions`. Keep short. |
 | `_intake.md` | Written by the PM handoff; the factory never rewrites it | Confirmed context, the delegation record, and any `## Automation authorization` |
 | `_review-checklist.md` | After Check (input to agent E2E review); revised before await-e2e | This run's checklist at the level `opsx-apply-guide` §4 sets; after agent E2E review, each item's result and report pointer, with what remains for the human. Ticks stay permanently |
 
@@ -276,7 +278,7 @@ Handoff files between the manager and a factory always live at the factory run r
 | --- | --- |
 | `_handoff-<worker>.md` | Factory-internal temp handoff for one worker (resume, partial progress); not a cross-party handoff |
 | `_needs-input.md` | On `needs_input`: reason + recommended four-choice menu (and any situational extras); see Repair policy |
-| `_notes.md` | Discussion notes not yet confirmed by the user, and corrections to stale `.manager` content (§ Information sources level 3) |
+| `_notes.md` | Discussion notes not yet confirmed by the user (converged items, findings worth keeping, items for the manager handoff), and corrections to stale `.manager` content (§ Information sources level 3) |
 
 **Control-file writes** — update `_status.md`, `_memory.md`, `_dispatch-plan.md`, `_review-checklist.md`, `_review-queue.md`, and `_issue-backlog.md` in place with an editing tool. When an append is genuinely needed, first check that the same content is not already there. Never blind-append with shell redirection. Files under `archive/` are the exception to in-place updates: only add a new section, never edit earlier ones.
 
@@ -302,11 +304,35 @@ On either activation route:
 3. Read the named run's `_status.md` and relevant intake, memory, dispatch, or latest result files before acting. A cold-start handoff reads `_intake.md` and `_memory.md` first. When needed, consult `.manager` read-only per § Information sources; its absence never blocks entering factory mode.
 4. Classify the work as project implementation or non-project implementation and select the matching route.
 5. Parse the request for start/stop stage or deliverable, scope, optional skills, model preferences, and verification needs.
-6. If stage, deliverable, scope, or workflow classification is missing or ambiguous → **discuss read-only**; say so; do not create another run, propose, apply, or dispatch until resolved.
+6. If stage, deliverable, scope, or workflow classification is missing or ambiguous → **discuss read-only** (§ 1b); say so; do not propose, apply, or dispatch until resolved, and create no run beyond the one § 1b needs for notes.
+
+## 1b. Discuss and converge
+
+Work moves through three phases: free read-only discussion, convergence before action, then the action route (§ Workflow selection). Under § Automation, the design pass replaces this section.
+
+### Discuss (default)
+
+- Follow `discuss-first` for the conversation. Project files stay read-only (rule 12); write only the run's own files. In factory mode this adds one duty to `discuss-first`'s lock: record notes without being asked.
+- **Record as you go** — write decisions the user states or confirms into `_memory.md` `## User decisions`, and converged items not yet confirmed and findings worth keeping into `_notes.md`. Update them when the discussion changes them. Create the run when the first such item appears (§ When to create).
+- **Research is information, not a plan** — report what discussion or research finds as information. Do not turn it into a next-step plan, a dispatch, or a proposal to start work. When the discussion has converged, give at most `discuss-first`'s single handoff hint.
+- **Check the records before asking** — before raising any question, read the run's `_memory.md`, `_notes.md`, and `_intake.md`, `.manager` read-only when present, and the project docs and specs; apply `need-ask-user-guide` (`## Resolve what can be resolved`, `## Before sending a question`). Do not ask what a record already settles. Raise an option that contradicts a recorded decision as a conflict with that record, never as an ordinary choice. Leave decisions that matter only for the action to Converge.
+- **No status rollup** — discussion replies do not carry the § 9 status block or a Decisions needed list; `discuss-first`'s open list stays allowed.
+- **Manager items** — when the workspace has `.manager/`, collect in `_notes.md` the items that conflict with `.manager` or are worth recording; write them into one manager handoff when the discussion converges or ends (§ Manager handoff). Write liberally; the manager decides what to adopt.
+
+### Converge
+
+Enter when the user directs an action (propose, implementation, or a change or operation on a non-project route) or accepts the convergence hint. A cold-start handoff's `_intake.md` counts as direction to act, not as authorization to skip the stop in step 4, unless it records one.
+
+1. Re-read the records named above and write any pending manager handoff.
+2. Present the settled summary the action will rest on, then the decisions needed: only items that block the action and that the records do not settle, per `need-ask-user-guide` `## Present pending decisions at checkpoints`. Every item carries a recommended option with its main tradeoff, even when the evidence is thin (say so in one line). Zero items is valid: say "No decisions needed."
+3. Record the user's answers in `_memory.md` `## User decisions`.
+4. **Stop** and wait for the user to start the action, even when no decisions are needed, unless the user already authorized going ahead in that case (e.g. "if nothing is open, start propose / dispatch"). Record an authorization the user gives in conversation in `_memory.md` `## User decisions`.
+
+Then follow the selected route: § 2 onward for opsx, or the non-project route.
 
 ## 2. Propose
 
-When the user directs propose (after discussion has settled, or they skip discuss explicitly):
+When the user directs propose (after Converge, or they skip discuss explicitly):
 
 1. Ensure the `.factory/` run exists (create if needed); init `_status.md` and empty `_memory.md` if new.
 2. Follow `openspec-propose` + `opsx-propose-guide` + `test-first`.
@@ -508,6 +534,7 @@ constraint: follow e2e-review boundaries; write only .e2e/ and run_dir/e2e-revie
 
 | Gate | When | You do |
 | --- | --- | --- |
+| Action start | End of Converge (§ 1b) | Wait for the user to start the action, even with no decisions needed, unless already authorized for that case. Not used under § Automation |
 | Changes review | After propose | Wait; user inspects change packages. **Hint** optional change-doc review — never auto-required. Under § Automation, held once for the whole batch |
 | Dispatch confirm | After dispatch plan | Wait; no workers until confirm / subset / reassign. If change-review was opted in and response ≠ `ready to apply`, hold green-light until resolved. Under § Automation, the batch change review stands in |
 | Human E2E | After agent E2E review (or Check, when E2E was left out) | Write the manager handoff (§ Manager handoff), present the `_review-checklist.md` (revised after agent E2E review, or the full list when E2E was left out), update `.factory/_review-queue.md` outside § Automation, then wait; user runs E2E on what remains. Tick items the user reports passed (§ Cross-run review queue). Under an automation plan, follow § Automation instead |
@@ -555,12 +582,12 @@ If manual verification items remain unchecked, the user's verbal confirmation is
 
 ## 9. Status rollup (orchestrator)
 
-Keep user-facing status short; persist detail under `run_dir`:
+Keep user-facing status short; persist detail under `run_dir`. Output it on entering factory mode, on entering Converge, at each stage transition, at a human gate, on stop-for-human, and when the user asks for status. Other discussion replies do not carry it (§ 1b).
 
 ```markdown
 ## Factory status
-- Stage: <discuss | await-factory-session | propose | design | await-batch-review | await-dispatch | apply | machine-verify | agent-e2e | await-e2e | await-archive | done>
-- run_dir: <.factory/_runs/… or (none — discuss only)>
+- Stage: <discuss | converge | await-factory-session | propose | design | await-batch-review | await-dispatch | apply | machine-verify | agent-e2e | await-e2e | await-archive | done>
+- run_dir: <.factory/_runs/… or (none — nothing recorded yet)>
 - Branch: <name> (sync/archive allowed: yes | no)
 - Workers: <summary>
 - Change-doc review: <(none / skipped) | awaiting response | ready to apply | needs doc fix | needs user clarify>
@@ -573,7 +600,7 @@ Keep user-facing status short; persist detail under `run_dir`:
 
 ## 10. Stop
 
-Stop at every human gate, on stop-for-human, and after delivering the current stage’s artifact. Resume only on user direction, or on the manager's run assignment under § Automation. Re-enter by reading the run’s `_status.md` and latest artifacts — do not rely on chat memory alone.
+Stop at every human gate, on stop-for-human, and after delivering the current stage’s artifact. Discuss has no stop point of its own: replies and note updates are not stage artifacts. It ends at Converge, whose artifact is the settled summary with its decisions (§ 1b). Resume only on user direction, or on the manager's run assignment under § Automation. Re-enter by reading the run’s `_status.md` and latest artifacts — do not rely on chat memory alone.
 
 ### Replacing the orchestrator session
 

@@ -4,8 +4,8 @@ description: Review the changes since a fixed point (commit, branch, tag, or mer
 disable-model-invocation: false
 metadata:
   author: Codex GPT-5, Claude Code Opus 5.5
-  version: "1.1"
-  last_updated: "2026-10-20T15:44:18"
+  version: "1.2"
+  last_updated: "2026-11-05T15:10:30"
 ---
 
 Two-axis review of the diff between the working tree (committed, uncommitted, and untracked changes) and a fixed point the user supplies:
@@ -25,7 +25,7 @@ Every finding carries exactly one tag. "Change" in a tag name means the spec und
 | --- | --- | --- |
 | `violates-change` | The code deviates from the spec under review — breaks or omits something it explicitly requires | Spec only |
 | `conforms-but-flawed` | The code follows the spec under review, but has a problem fixable without changing the spec's intent — a standards breach, smell, logic defect, or risk, including where the spec is silent, and including spec wording that can simply be amended (unclear or internally inconsistent; note "amend change") | Standards, Spec |
-| `change-design-flaw` | The spec under review conflicts with a higher-priority basis source, or resolving the problem needs a user decision | Spec only |
+| `change-design-flaw` | The spec under review conflicts with a higher-priority basis source, or resolving the problem needs a user decision — including a design that the built code shows to be unsound against the settled goal, where the fix changes the spec's intent (an overall approach or underlying principle) | Spec only |
 
 These names and definitions are shared with the concern categories in the change-review format (`change-review-request/FORMAT.md`) and with `change-review-response`. This table is the master copy; those copies keep the same meaning as it.
 
@@ -72,7 +72,7 @@ This four-level list is the master copy; other skills repeat it and keep their c
 
 - All basis sources are read-only; never write to them.
 - When in doubt, consult them before judging.
-- Context calibrates judgement — drop false positives already decided or fixed elsewhere, confirm a real violation. Never use it to demand something neither the spec under review nor a higher-priority source asks for.
+- Context calibrates judgement — drop false positives already decided or fixed elsewhere, confirm a real violation. Never use it to demand something neither the spec under review nor a higher-priority source asks for. Judging whether the built design serves the settled goal is not such a demand.
 - When the spec under review conflicts with a higher-priority source, tag `change-design-flaw`, cite both sides, and leave the decision to the user. Do not pick a side or rewrite the requirement.
 - If a basis source itself looks stale or wrong, note it in the report; do not edit it.
 
@@ -122,7 +122,7 @@ In merged and sequential runs, each axis still gets its own section; do not merg
 - The diff commands from step 1 (tracked diff and untracked-file list) and the commit list.
 - The path or fetched contents of the spec under review.
 - The basis-source list from step 3, with priority levels, and the usage rules from step 3 pasted in full.
-- The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong — tag (a)–(c) `violates-change`; (d) behaviour that matches the spec but has a logic defect or risk — tag `conforms-but-flawed`; (e) places where the spec itself conflicts with a higher-priority basis source or needs a user decision — tag `change-design-flaw` and cite both sides; spec wording that is unclear or inconsistent but can be amended without changing intent — tag `conforms-but-flawed` and note 'amend change'. Quote the spec line for each finding; when citing a basis source, name it and its priority level. List the basis sources you actually consulted. Under 400 words; the consulted-sources list does not count toward the limit."
+- The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong — tag (a)–(c) `violates-change`; (d) behaviour that matches the spec but has a logic defect or risk — tag `conforms-but-flawed`; (e) places where the spec itself conflicts with a higher-priority basis source or needs a user decision — tag `change-design-flaw` and cite both sides; spec wording that is unclear or inconsistent but can be amended without changing intent — tag `conforms-but-flawed` and note 'amend change'; (f) the spec's design as built in the diff, judged against the settled goal in the basis sources: where it misses that goal or brings risk or complexity the goal does not call for, explain why the design is judged flawed — tag `change-design-flaw` when the fix changes the spec's intent and leave the decision to the user, otherwise tag `conforms-but-flawed` and note 'amend change'. Quote the spec line for each finding; when citing a basis source, name it and its priority level. List the basis sources you actually consulted. Under 400 words; the consulted-sources list does not count toward the limit."
 
 If the spec is missing, skip the Spec review and note this in the final report.
 

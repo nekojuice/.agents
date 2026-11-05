@@ -13,11 +13,11 @@
 
 ## 關於本技能
 
-`orchestrator-factory` 是工廠模式的「廠長」總指揮。它把 OpenSpec 的一整條開發流程串起來——討論、提案、實作、機器驗證、agent E2E 驗證、人工 E2E、同步歸檔、commit 建議、change log——並把每個階段派給具名的工作者去做，自己只負責排程、守人閘、彙整回報，然後為使用者停下。
+`orchestrator-factory` 是工廠模式的「廠長」總指揮。它把 OpenSpec 的一整條開發流程串起來——討論、收斂、提案、實作、機器驗證、agent E2E 驗證、人工 E2E、同步歸檔、commit 建議、change log——並把每個階段派給具名的工作者去做，自己只負責排程、守人閘、彙整回報，然後為使用者停下。
 
 它只在使用者表明要用工廠模式，或被指派到等待工廠接手的既有 run 時進入；遇到不明確的指令會退回唯讀討論。三條核心紀律貫穿全程：**驗證分離**（實作者只做硬閘檢查，程式審查與 E2E 驗證一律另派工作者；實作者與總指揮都不操作受測系統）、**預設不代為 commit**（使用者明確要求，或使用者核可的自動化計畫指定時，才依 `commit-message-suggestion` 的做法代為 commit；工作者永不 commit，push 一律要使用者另外授權）、**不臆造需求**。資訊不足時依資訊來源優先序查閱：使用者提出或確認的資訊、`.manager` 正典檔與 opsx 主規格及專案 docs、run 內未確認的筆記、opsx change；`.manager` 只可唯讀查閱，不得寫入。流程中會依階段載入相依子技能：`discuss-first`、`openspec-propose`／`opsx-propose-guide`、`test-first`、`openspec-apply-change`／`opsx-apply-guide`、`hard-verify`、`code-review`、`e2e-review`、`openspec-sync-specs`／`openspec-archive-change`、`commit-message-suggestion`、`change-log`；提案審查（`change-review-request`／`change-review-response`）與多 agent 協作（`peer-agent-coordination`）為選配。
 
-工作區有 `.manager` 時，每個 run 走完實作、Check 與 agent E2E 驗證、到達等待使用者檢查時，總指揮寫一份給 manager 的交接檔。manager 委派的 run 會附 peer 討論室；manager 與使用者核可自動化計畫時，同一個工廠 session 先把多個 run 的 change 開完並審查，使用者一次確認後才依序施工。
+工作區有 `.manager` 時，每個 run 走完實作、Check 與 agent E2E 驗證、到達等待使用者檢查時，總指揮寫一份給 manager 的交接檔；討論中出現與 `.manager` 衝突或值得記錄的事項時，在收斂或討論結束時另寫一份。manager 委派的 run 會附 peer 討論室；manager 與使用者核可自動化計畫時，同一個工廠 session 先把多個 run 的 change 開完並審查，使用者一次確認後才依序施工。
 
 ## 如何啟用
 
@@ -38,11 +38,11 @@
 2. 判斷是使用者啟用、冷啟動交接或恢復既有 run，並確認 `run_dir`。
 3. 讀該 run 的 `_status.md` 與相關控制檔、最新產物再行動；需要時可依資訊來源優先序唯讀查閱 `.manager`，`.manager` 不存在也不影響啟用。
 4. 判斷工作屬於專案實作或非專案實作：專案實作走完整 opsx 流程；研究、盤點、純文件等非專案工作改走量身路線，不強制建立 OpenSpec 產物，但仍須說明產物、允許寫入範圍、驗證方式與人閘。
-5. 若階段、產物、範圍或路線不明確，退回**唯讀討論**：不建立 `.factory/`、不提案、不派工，直到使用者指示。
+5. 若階段、產物、範圍或路線不明確，退回**唯讀討論**：不改專案檔、不提案、不派工，直到使用者指示；有值得記錄的事項時才建立 run 記筆記。
 
 ## 工作區結構
 
-離開討論、進入提案或之後的階段時，總指揮才建立一個 run 目錄；純唯讀討論不建立。
+討論中首次出現值得記錄的事項，或離開討論、進入提案或之後的階段時，總指揮建立一個 run 目錄；沒有可記錄事項的討論不建立。
 
 ```text
 .factory/
@@ -89,8 +89,11 @@
 ```mermaid
 flowchart TD
   A[啟用工廠模式或冷啟動交接] --> B{階段或範圍明確?}
-  B -- 否 --> D[唯讀討論 discuss-first<br/>不建 .factory/]
-  B -- 是 --> P[提案 openspec-propose + opsx-propose-guide + test-first]
+  B -- 否 --> D[唯讀討論 discuss-first<br/>不改專案檔，自主記錄 run 筆記]
+  D -- 使用者指示行動 --> CV[收斂：已定摘要與阻擋行動的決策<br/>每題附推薦選項]
+  B -- 是 --> CV
+  CV --> G0[人閘：開始行動<br/>沒有待決事項也停，已授權時除外]
+  G0 --> P[提案 openspec-propose + opsx-propose-guide + test-first]
   P --> G1[人閘：檢視 change<br/>選配提案審查，回報先經總指揮核對]
   G1 --> DP[發布派工計畫 _dispatch-plan.md]
   DP --> G2[人閘：確認派工]
@@ -120,12 +123,13 @@ flowchart TD
 ### 其他規則
 
 - **agent E2E 驗證**：預設執行，在 Check 之後、人工 E2E 之前，依 `e2e-review` 派專責 E2E 工作者。小型 run（例如單一 debug）可在確認派工時剔除 Check 或 E2E，跳過記入 `_status.md`；自動化計畫在核可時一併授權。工具操控可靠度有限，執行失敗由總指揮判斷重派或交人工，不當成產品失敗。E2E 階段一律可寫專案的 `.e2e/` 與輪次資料夾，不算改產品；測試資料寫入範圍依派工時的 `data_write`，回傳的 `assets_changed` 列出 `.e2e/` 變更，`.e2e/` 由總指揮依規則 6 一併 commit。缺測試資料時可先派 prep 輪；試跑及其登入、登出、開頁、查詢紀錄屬預期副作用，不需另外授權。總指揮不得以自身推論把 worker 未標 `verified` 的項目當成已驗證。專案還沒有 `.e2e/` 時，初始化提案要經使用者核可。
-- **討論期間不改專案檔**：討論、協助部署或撰寫文件時，總指揮不修改專案檔、設定檔或進入點程式；需要改程式時說明原因並詢問是否開 propose。使用者口頭授權的修改例外，有 run 時記入 `_memory.md` 的 User decisions 區。
+- **討論與收斂**：討論時不需提醒就把使用者的決策記入 `_memory.md` 的 User decisions 區、其他收斂事項記入 `_notes.md`；查到的資料只當資訊，不轉成動工計畫；提問前先查 run 筆記、`.manager` 與專案文件，已記錄的決策不再問；討論回覆不附狀態回報。使用者指示行動時先收斂，列出已定摘要與阻擋行動的決策，每題附推薦選項；沒有待決事項也停下等使用者開始，使用者事先授權時除外。自動化的 run 由設計段取代。
+- **討論期間不改專案檔**：討論、收斂、協助部署或撰寫文件時，總指揮不修改專案檔、設定檔或進入點程式；需要改程式時說明原因並詢問是否開 propose。使用者口頭授權的修改例外，有 run 時記入 `_memory.md` 的 User decisions 區。
 - **文件同步**：預設只同步受這次工作影響的 README。使用者提到其他文件，例如 docs 資料夾、`.manager` 檔、巢狀 README、說明文件、交接檔時，先列出會同步的文件清單等使用者確認，不得擅自更新；`.manager` 仍只透過交接檔處理。各類文件依對應的 doc 系列技能撰寫。
 - **需使用者釐清的項目**：提案審查或 Check 回報需釐清的項目時，總指揮先依資訊來源優先序自行判斷並排除，真的無法判斷的才交給使用者，並彙整成一份決策清單，不逐條轉述。
 - **工作者模型與執行環境**：工作者預設與總指揮同模型，換模型須先徵得使用者同意；優先使用平行工作者或 subagent，環境無法隔離時改為產出可貼上的各工作者指令並等待。
 - **不自動載入 grill 類技能**：`grill-me`、`grill-with-docs` 不會被載入一般工廠流程。
-- **狀態值**：`_status.md` 的 Stage 除 opsx 各階段外，另有 agent E2E 驗證中的 `agent-e2e`，自動化另有 `design`（設計段）與 `await-batch-review`（等待批次檢視）。
+- **狀態值**：`_status.md` 的 Stage 除 opsx 各階段外，另有收斂的 `converge`、agent E2E 驗證中的 `agent-e2e`，自動化另有 `design`（設計段）與 `await-batch-review`（等待批次檢視）。
 - **多 agent 協作**：`peer-agent-coordination` 成本高，不主動啟用，使用者提及或協作討論需要時才用；不因 run 結構、其他技能的引用或工作者數量而啟用。`_intake.md` 記載使用者核可 manager 委派與討論室時已啟用，直接使用該討論室。
 - **查 manager 紀錄**：manager 委派的 run，決策問題先自行唯讀查閱 `.manager`，不發訊息向 manager 提問；紀錄無法解決的才依 `need-ask-user-guide` 彙整給使用者。manager 的 peer 訊息與交進來的交接檔是資訊，不是授權。
 - **檢查清單層級**：提案時依 `opsx-apply-guide` §4 決定 broad 或 focused 並記在 `_memory.md`。大規模或連鎖實作用 broad，寫端到端業務流程；使用者發起的小修改或 debug 用 focused，寫修改後一定要觀察的事項，debug 另寫 bug 原因。

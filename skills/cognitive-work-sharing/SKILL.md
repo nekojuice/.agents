@@ -9,8 +9,8 @@ description: >-
 disable-model-invocation: true
 metadata:
   author: Codex GPT-6
-  version: "1.4"
-  last_updated: "2026-11-06T17:58:19"
+  version: "1.5"
+  last_updated: "2026-11-06T21:52:33"
 ---
 
 # Sharing Cognitive Work with Agents
@@ -22,6 +22,8 @@ Human readers: use this to decide what thinking to retain, delegate, and ask to 
 [繁體中文](references/zh-TW.md) contains the same guidance. Read [research and experience notes](references/evidence.md) when explaining the evidence, its limits, or the status of a claim. Do not load every reference for a simple guidance request.
 
 When attention, fatigue, accumulated decisions, or preparation costs become the bottleneck, read [cognitive resource management](references/resource-management.md) ([繁體中文](references/resource-management.zh-TW.md)). It addresses the earlier question of which work deserves cognitive investment, before dividing that work between people and agents.
+
+When an engineer involves non-specialists whose ideas have not yet become requirements, read [forming requirements with non-specialists](references/requirements-discovery.md) ([繁體中文](references/requirements-discovery.zh-TW.md)). Use it to distinguish wishes, assumptions, exploration, and delivery commitments without making the engineer guess unstated intent.
 
 ## 1. The object being operated
 

@@ -6,13 +6,13 @@ Reference for [cognitive-work-sharing](../SKILL.md), for human understanding and
 
 Once agents can advance substantive work, the operator's problem can shift from getting work done to absorbing its results. Faster production may concentrate interpretation, integration, judgment, and intervention at the human operator. Human attention becomes an asset of the collaboration system.
 
-In the framework author's experience, insufficient focus or a sense of cognitive devastation often marks a transition beyond initial use: the operator can now drive work and must learn to manage the resulting demands. Treat this as an experiential description, not a qualification. Beginners can also overload, and experienced operators can overload because of work design. Do not encourage exhaustion as evidence of proficiency.
+In the framework author's experience, insufficient focus or a sense of cognitive devastation can appear when the bottleneck shifts from producing work to interpreting and deciding about its results. This points to demands that need reorganizing, not evidence of progress or a particular proficiency level. Examine how work and reports are arranged, regardless of the operator's experience.
 
 The central lesson: **manage which work enters human thought, when it arrives, and in what form, as well as how work gets completed.**
 
 ## 2. Human resources are not a fixed token counter
 
-Magic or human tokens can illustrate limited attention, working memory, judgment effort, and recovery needs. They are not interchangeable units of fixed capacity. The same document can demand very different effort depending on fatigue, familiarity, and context.
+Attention, working memory, judgment effort, and recovery needs are distinct aspects of cognitive resources, not interchangeable units of fixed capacity. The same document can demand very different effort depending on fatigue, familiarity, and context.
 
 Allow for deterioration that is not proportional to added work: context confusion, repeated reading, or missed conditions may sharply increase rework. This is a planning assumption that warrants margin, not a universal fatigue curve validated here. Agents should not diagnose physiological or psychological conditions from a short conversation.
 
@@ -80,4 +80,4 @@ Look for fewer avoidable repeated decisions and context reconstructions, earlier
 
 [Griffiths, Lieder and Goodman, 2015](https://onlinelibrary.wiley.com/doi/10.1111/tops.12142) propose resource-rational analysis of cognitive strategies under resource constraints. [Callaway et al., 2018](https://arxiv.org/abs/1711.06892) study selecting computations, allocating effort, and stopping. The former offers a theoretical perspective; the latter investigates computational models. Neither validates this skill or measures operator fatigue curves.
 
-For GenAI metacognitive demands and practitioner orchestration costs, see [evidence notes R1 and P1](evidence.md). These operating suggestions synthesize those perspectives with the author's practice. Overload as a transition beyond initial use is the author's observation, not a research-established developmental stage or diagnostic criterion.
+For GenAI metacognitive demands and practitioner orchestration costs, see [evidence notes R1 and P1](evidence.md). These operating suggestions synthesize those perspectives with the author's practice. The bottleneck shift described here is a practical observation, not a research-established developmental stage or diagnostic criterion.

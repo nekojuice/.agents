@@ -1,20 +1,21 @@
 ---
 name: cognitive-work-sharing
 description: >-
-  Help humans and agents allocate reasoning, evidence gathering, and decisions in
-  agent-assisted engineering. Use when a user is overwhelmed by agent questions,
-  needs help steering or evaluating agent work, or wants to understand this
-  collaboration model. Do not turn ordinary development into a philosophy lesson.
+  Provides explicitly requested guidance on allocating reasoning, evidence
+  gathering, decisions, and cognitive resources in agent-assisted engineering.
+  Covers understanding the collaboration model, steering and evaluating agent
+  work, and handling accumulated questions or cognitive overload. Explicit
+  invocation only; do not activate automatically.
 disable-model-invocation: true
 metadata:
   author: Codex GPT-6
-  version: "1.2"
-  last_updated: "2026-11-06T17:53:57"
+  version: "1.4"
+  last_updated: "2026-11-06T17:58:19"
 ---
 
 # Sharing Cognitive Work with Agents
 
-A human-facing and agent-readable guide to the philosophy of cognitive work sharing, complemented by references on resource management. Invoke explicitly as $cognitive-work-sharing or by asking to use this skill; agents must not activate it automatically. This is not a complete framework operation manual.
+A human-facing and agent-readable guide to the philosophy of cognitive work sharing, complemented by references on resource management. Invoke explicitly with `$cognitive-work-sharing` in Codex, `/cognitive-work-sharing` in Claude Code, or a direct request to use this skill. Agents must not activate it automatically. This is not a complete framework operation manual.
 
 Human readers: use this to decide what thinking to retain, delegate, and ask to have explained. Agents: use it to help the operator form a workable allocation of that thinking.
 
@@ -35,8 +36,6 @@ This level can organize different artifacts: code, images, models, animation, or
 Using an agent can move effort from producing an artifact to specifying intent, tracking context, assessing evidence, resolving ambiguity, and revising the work. More generated output or more agent sessions does not establish more usable delivery.
 
 Do not diagnose an overwhelmed operator as lacking intelligence, diligence, or an innate capacity for abstraction. Examine the work presented to them: repeated questions, missing evidence, stale context, unnecessary interruptions, conflicting reports, or an unresolved substantive decision.
-
-The story of a powerful magical device needing high pressure is a metaphor for the operator's output and load-bearing demands. In that story the agent is the device. The metaphor is not a measurement scale, a claim of unlimited real-world capability, or a ranking of people.
 
 ## 3. Separate authority from preparatory thinking
 

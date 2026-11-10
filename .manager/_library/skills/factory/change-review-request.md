@@ -1,9 +1,9 @@
 # change-review-request 元素對照
 
 - 分支：factory
-- 對照版本：`skills/change-review-request/SKILL.md` version 1.1，last_updated 2026-10-20T15:44:18
+- 對照版本：`skills/change-review-request/SKILL.md` version 1.2，last_updated 2026-11-10T17:16:31
 - 讀過的檔案：`SKILL.md`、`FORMAT.md`、`agents/openai.yaml`（僅 `allow_implicit_invocation: true`）；交叉引用核對（唯讀）：`change-review-response/SKILL.md`、`code-review/SKILL.md` step 3 與 Finding tags、`orchestrator-factory` 的 change-doc review 段落
-- 狀態：已檢查，2026-10-20 移入 manager 正式文件
+- 狀態：已檢查，2026-11-10 移入 manager 正式文件
 
 ## 1. 摘要
 
@@ -50,6 +50,8 @@ change-review-request 由 brief 撰寫者（orchestrator／請求方）使用：
 | E26 | 判斷規則 | gap 與 `change-design-flaw` 的分界 | 已定案需求清楚、只修 change 即可解決 → gap（→ `needs doc fix`／`amend change`）；只修 change 即可解決的疑慮 → `conforms-but-flawed`；需要使用者決定（已定案需求本身看似不健全、brief 以外的更高層來源與 change 衝突、更高層來源彼此衝突）→ `change-design-flaw`（→ `needs user clarify`／`needs_input`） | FORMAT Concern categories 末段 |
 | E27 | 完成條件 | 停止點 | 簡報存在於 `run_dir/change-review-request-NN.md`，指向 change package 與預期 response 後停止；除非使用者要求，不寫 response | §Completion |
 | E28 | metadata | extends | frontmatter 最外層 `extends: change-review-response`（response 端反向 `extends: change-review-request`） | frontmatter |
+| E30 | 共用格式 | 審查對象 | OpenSpec change 套件，或 factory 計畫路線的 run 計畫（`run_dir/_plan.md`）；審查計畫時 FORMAT 中的「change」讀作「計畫」、「apply」讀作「執行」，判定值、下一步、分類名稱不變；Meta 以 Plan path 取代 Change id 與 Change path，Purpose 為計畫是否涵蓋已定需求、執行前無疏漏；參考路徑列計畫與其列出的輸入；計畫同屬第 4 級；SKILL 開頭與 Step 1 同步，Done when 含 plan path | FORMAT § Review object；開頭段；§1 |
+| E31 | 判斷規則 | 計畫的 checklist 範圍 | 審查計畫時，checklist 也涵蓋 `orchestrator-factory` § Plan route 第 1 步要求的各項 | §3 |
 
 ## 3. 其他
 
@@ -59,6 +61,8 @@ change-review-request 由 brief 撰寫者（orchestrator／請求方）使用：
 - 雙向 extends：request 與 response 互相 `extends`（兩者都在 frontmatter 最外層）。僅記錄，不判定是否構成循環依賴。
 
 ## 4. 與前版差異
+
+- 1.2（2026-11-10）：審查對象擴充為 factory 計畫路線的 run 計畫（來源：manager run 2026-11-04-next-skill-evolution `changes/02`）。新增：E30 審查對象、E31 計畫的 checklist 範圍。E1、E2、E8 的說明同步適用計畫（description、開頭段、Step 1）。
 
 對照 run `2026-10-19-skill-improvement` 的 `staging/_baseline-2026-10-19/factory/change-review-request.md`（前版 E1–E20，version 1.0）：
 

@@ -21,6 +21,7 @@
 | factory | opsx-apply-guide | factory/opsx-apply-guide.md |
 | factory | opsx-propose-guide | factory/opsx-propose-guide.md |
 | factory | orchestrator-factory | factory/orchestrator-factory.md |
+| factory | orchestrator-helper | factory/orchestrator-helper.md |
 | factory | peer-agent-coordination | factory/peer-agent-coordination.md |
 | pm | orchestrator-pm | pm/orchestrator-pm.md |
 | pm | pm-factory-handoff | pm/pm-factory-handoff.md |

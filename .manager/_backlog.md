@@ -8,7 +8,11 @@
 | --- | --- | --- | --- | --- | --- |
 | SK-X2 | initiative | 從歷次工作紀錄抽取通用規則，收納為 skill 元素 | 2026-10-19 交接 | inbox | 另開蒐集輪 |
 | SK-E | initiative | factory 插入 agent E2E review：新增 e2e-review、review queue 與 issue backlog 拆分、人工清單精簡 | 2026-11-03 使用者 | verifying | 已 commit（aecd92e、6bccacb、981f2af、d731431）；第一階段試用成功，持續試用 |
-| SK-E2 | initiative | e2e-review 實用回饋修正：試跑、報告、更正（amend）、預演、測試資料與帳號通用規則、驅動與秘密；factory 每輪收尾、不得自行升級需人工項、跨 run 檔收尾歸檔到 `.factory/archive/`、manager 撿走長期條目 | 2026-11-04 使用者 | verifying | 已沖入；使用者指示時 commit |
+| SK-E2 | initiative | e2e-review 實用回饋修正：試跑、報告、更正（amend）、預演、測試資料與帳號通用規則、驅動與秘密；factory 每輪收尾、不得自行升級需人工項、跨 run 檔收尾歸檔到 `.factory/archive/`、manager 撿走長期條目 | 2026-11-04 使用者 | verifying | 已 commit（0210cc7、9ebb2e1）；持續試用 |
+| SK-H | initiative | 新增 `orchestrator-helper`：獨立的輔助指揮者，契約依工作當下由發動者指定，持有自己的簡單脈絡，授權下 manager 與 factory 可指揮 | 2026-11-04 使用者 | verifying | 已 commit（82af4c8）並沖入；試用 |
+| SK-DC | initiative | factory 討論與收斂：討論不當成動工計畫、自主記筆記與 manager 交接、提問前查紀錄；行動前收斂，決策每題必附推薦，零題也停下 | 2026-11-05 使用者 | verifying | 已 commit（82af4c8）並沖入；試用 |
+| SK-CR | initiative | code-review 規格軸加入成品設計檢查：apply 後依已定目標判斷做成的設計，與 apply 前的 change 文件審查分工 | 2026-11-05 使用者 | verifying | 已 commit（82af4c8）並沖入；試用 |
+| SK-PR | initiative | factory 非實作工作的選用計畫路線：計畫 → 計畫審查（沿用 change review，可多輪）→ 執行；產物審查需使用者授權 | 2026-11-10 使用者 | verifying | 已 commit（e8232a9）並沖入；試用 |
 | SK-R2 | debt | 元素對照重拆時發現的殘留不一致：orchestrator-pm、pm-factory-handoff、pm-status-review、orchestrator-factory、commit-message-suggestion、peer-agent-coordination 與兩份 readme（正文在各對照 §3） | 2026-11-02 元素對照 | inbox | 下一輪修改 skill 時併入 |
 
 ## Deferred

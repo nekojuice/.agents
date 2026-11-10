@@ -17,10 +17,13 @@
 | 自動化授權契約 | accepted | PM 與工廠 | manager run 管批次施工；設計段開完 change，使用者一次檢視後依序施工；只預先授權逐 run 派工確認（含 Check 與 agent E2E）與每 run commit | decisions/automation-authorization.md |
 | agent E2E review 階段 | accepted | 工廠與 E2E | Check 後、人工前由專責 E2E worker 實際操作；覆核後精簡人工清單；orchestrator 不自行升級需人工項；每輪收尾 | decisions/agent-e2e-review.md |
 | 跨 run 檔收尾歸檔 | accepted | 工廠與 PM | 收尾時 queue 與 backlog 的已完成項目移入 `.factory/archive/<日期>-<類別>.md`；未完成留 factory；長期未處理由 manager 撿走 | decisions/factory-cross-run-archive.md |
+| factory 討論與收斂 | accepted | 工廠 | 自由唯讀討論 → 行動前收斂與可選決策提問 → 行動流程；討論自主記筆記、可寫 manager 交接；收斂每題必附推薦，零題也停下，除非已授權 | decisions/factory-discuss-converge.md |
+| factory 非實作計畫路線 | accepted | 工廠與審查 | 非實作工作要派工時推薦寫計畫 → 計畫審查 → 執行；審查沿用 change review、自動多輪；產物審查需使用者授權 | decisions/factory-plan-route.md |
+| orchestrator-helper 定位 | accepted | 輔助指揮者 | 獨立的彈性幫手；契約依工作當下由發動者指定；持有自己的簡單脈絡；授權下 manager 與 factory 可指揮 | decisions/orchestrator-helper.md |
 | manager 停在專案層級 | accepted | PM 系列 | 只管方向、範圍、排程與狀態；factory 自查 .manager 不提問；正式檔先擬稿 | decisions/manager-project-level.md |
-| 待決事項呈現 | accepted | 委派工作回報 | 只列阻擋且未記錄的決策；已記錄仍阻擋者列阻擋項 | decisions/pending-decisions-presentation.md |
+| 待決事項呈現 | accepted | 委派工作回報 | 只列阻擋且未記錄的決策；已記錄仍阻擋者列阻擋項；factory 只在收斂階段提問且必附推薦 | decisions/pending-decisions-presentation.md |
 | 討論模式例外提醒 | accepted | 討論模式 | 只答所問；四類嚴重風險可一行提醒 | decisions/discussion-exception-reminders.md |
-| 審查分類標記 | accepted | 審查類 | 三個共用分類與判定界線 | decisions/review-finding-tags.md |
+| 審查分類標記 | accepted | 審查類 | 三個共用分類與判定界線；apply 前審 change 設計，apply 後審成品設計 | decisions/review-finding-tags.md |
 | 文件 skill 繼承架構與類型路由 | accepted | 文件 skill | 父層路由，子 skill 繼承並以覆寫表宣告衝突 | decisions/doc-skill-family.md |
 | 規則正本歸屬 | accepted | 全部 skill | 一條規則一個正本，其他引用 | decisions/rule-ownership.md |
 | skill 檔頭的 extends 位置 | accepted | 全部 skill | extends 放 frontmatter 最外層 | decisions/skill-frontmatter-extends.md |

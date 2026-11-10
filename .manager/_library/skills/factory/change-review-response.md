@@ -1,9 +1,9 @@
 # change-review-response 元素對照
 
 - 分支：factory
-- 對照版本：`skills/change-review-response/SKILL.md` version 1.1，last_updated 2026-10-20T15:44:18
+- 對照版本：`skills/change-review-response/SKILL.md` version 1.2，last_updated 2026-11-10T17:16:31
 - 讀過的檔案：`SKILL.md`、`agents/openai.yaml`（僅 `allow_implicit_invocation: true`）、`../change-review-request/FORMAT.md`（本 skill 的格式來源）；交叉引用核對（唯讀）：`change-review-request/SKILL.md`、`code-review/SKILL.md` step 3 與 Finding tags、`orchestrator-factory` 的 change-doc review 段落
-- 狀態：已檢查，2026-10-20 移入 manager 正式文件
+- 狀態：已檢查，2026-11-10 移入 manager 正式文件
 
 ## 1. 摘要
 
@@ -45,6 +45,7 @@ change-review-response 由 reviewer 使用：讀取 `change-review-request-NN.md
 | E20 | 產物格式 | Context consulted | 列出每個實際查閱的決策脈絡來源、其層級、它校準了哪個判斷；brief 未列者標 "not in brief"；沒查任何來源時寫 `none` | §2、FORMAT Response document |
 | E21 | 產物格式 | 建議下一步 | 恰一個：`confirm dispatch`／`amend change`（指明要改的 change 檔與最小修正）／`needs_input`（只列使用者才能回答的問題）；verdict 底線與 `needs user clarify` → `needs_input` 依 FORMAT 的 verdict 規則 | §3、FORMAT Response document、FORMAT Verdict rules |
 | E22 | 完成條件 | 停止點 | response 存在於 request 指定的路徑；checklist 全覆蓋；Reviewer concerns 與 Context consulted 已寫；next action 已寫明；停止，不開始 apply、不修改 change | §Completion |
+| E25 | 判斷規則 | 審查計畫 | 審查對象也可為 factory 計畫路線的 run 計畫，用語依 FORMAT § Review object；Step 1 的 Done when 含 plan path；Step 2 讀計畫檔與其列出的輸入 | 開頭段；§1；§2 |
 
 ## 3. 其他
 
@@ -56,6 +57,8 @@ change-review-response 由 reviewer 使用：讀取 `change-review-request-NN.md
 - 雙向 extends：與 `change-review-request` 互相 `extends`（兩者都在 frontmatter 最外層）。僅記錄，不判定。
 
 ## 4. 與前版差異
+
+- 1.2（2026-11-10）：審查對象可為 factory 計畫路線的 run 計畫（來源：manager run 2026-11-04-next-skill-evolution `changes/02`）。新增：E25。E1、E3、E13、E14 的說明同步適用計畫（description、開頭段、Step 1、Step 2）。
 
 對照 run `2026-10-19-skill-improvement` 的 `staging/_baseline-2026-10-19/factory/change-review-response.md`（前版 E1–E20，version 1.0）：
 

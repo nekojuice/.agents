@@ -37,7 +37,7 @@
 1. 宣告工廠模式已開啟。
 2. 判斷是使用者啟用、冷啟動交接或恢復既有 run，並確認 `run_dir`。
 3. 讀該 run 的 `_status.md` 與相關控制檔、最新產物再行動；需要時可依資訊來源優先序唯讀查閱 `.manager`，`.manager` 不存在也不影響啟用。
-4. 判斷工作屬於專案實作或非專案實作：專案實作走完整 opsx 流程；研究、盤點、純文件等非專案工作改走量身路線，不強制建立 OpenSpec 產物，但仍須說明產物、允許寫入範圍、驗證方式與人閘。
+4. 判斷工作屬於專案實作或非專案實作：專案實作走完整 opsx 流程；研究、盤點、純文件等非專案工作改走量身路線，不強制建立 OpenSpec 產物，但仍須說明產物、允許寫入範圍、驗證方式與人閘；需要派工時可採用選用的計畫路線（寫計畫 → 計畫審查 → 執行）。
 5. 若階段、產物、範圍或路線不明確，退回**唯讀討論**：不改專案檔、不提案、不派工，直到使用者指示；有值得記錄的事項時才建立 run 記筆記。
 
 ## 工作區結構
@@ -55,6 +55,7 @@
     ├── _status.md              # 階段、分支、工作者、Blockers／Decisions needed／Reminders、修訂輪次與最新產物指標
     ├── _dispatch-plan.md       # 具名工作者派工表，等待或已確認
     ├── _memory.md              # 跨工作者共享事實：決策、路徑、fixed_point；使用者定案放 User decisions 區
+    ├── _plan.md                # 計畫路線的計畫（選用）
     ├── _notes.md               # 未經使用者確認的討論筆記與 .manager 訂正（選用）
     ├── _review-checklist.md    # 本 run 的逐項清單：Check 後交 E2E 工作者，覆核後標出結果與剩給人的項目，打勾永久保留
     ├── _needs-input.md         # 遇 needs_input 時的原因與四選單（選用）
@@ -64,7 +65,7 @@
     ├── hard-verify-w1.md       # 該實作工作者的硬閘檢查證據
     ├── check-<change-id>-code-review.md   # Check 工作者的程式審查報告
     ├── e2e-review/                        # E2E 工作者每輪一個資料夾：報告、結果與證據，不進版控
-    ├── change-review-request-NN.md        # 選配的提案審查邀請
+    ├── change-review-request-NN.md        # 選配的提案或計畫審查邀請
     └── change-review-response-NN.md       # 審查者的裁決，與邀請同一個 NN
 ```
 
@@ -126,10 +127,11 @@ flowchart TD
 - **討論與收斂**：討論時不需提醒就把使用者的決策記入 `_memory.md` 的 User decisions 區、其他收斂事項記入 `_notes.md`；查到的資料只當資訊，不轉成動工計畫；提問前先查 run 筆記、`.manager` 與專案文件，已記錄的決策不再問；討論回覆不附狀態回報。使用者指示行動時先收斂，列出已定摘要與阻擋行動的決策，每題附推薦選項；沒有待決事項也停下等使用者開始，使用者事先授權時除外。自動化的 run 由設計段取代。
 - **討論期間不改專案檔**：討論、收斂、協助部署或撰寫文件時，總指揮不修改專案檔、設定檔或進入點程式；需要改程式時說明原因並詢問是否開 propose。使用者口頭授權的修改例外，有 run 時記入 `_memory.md` 的 User decisions 區。
 - **文件同步**：預設只同步受這次工作影響的 README。使用者提到其他文件，例如 docs 資料夾、`.manager` 檔、巢狀 README、說明文件、交接檔時，先列出會同步的文件清單等使用者確認，不得擅自更新；`.manager` 仍只透過交接檔處理。各類文件依對應的 doc 系列技能撰寫。
+- **計畫路線**：非專案工作需要派工時，總指揮在收斂時推薦，使用者可以不採用。計畫寫在 `_plan.md`，包含目標、範圍、產物與路徑、允許寫入、工作者指派、驗證方式、人閘與要交給後續工作的內容；另派審查者依 `change-review-request`／`change-review-response` 審查計畫，需修改就修改再審，通過即執行。審查判定需使用者釐清，或修改兩輪仍不過時才停下；使用者在收斂時要求先看計畫，則審查通過後停下。執行後的產物審查只在使用者授權時才派。產物可作為之後提案的輸入。
 - **需使用者釐清的項目**：提案審查或 Check 回報需釐清的項目時，總指揮先依資訊來源優先序自行判斷並排除，真的無法判斷的才交給使用者，並彙整成一份決策清單，不逐條轉述。
 - **工作者模型與執行環境**：工作者預設與總指揮同模型，換模型須先徵得使用者同意；優先使用平行工作者或 subagent，環境無法隔離時改為產出可貼上的各工作者指令並等待。
 - **不自動載入 grill 類技能**：`grill-me`、`grill-with-docs` 不會被載入一般工廠流程。
-- **狀態值**：`_status.md` 的 Stage 除 opsx 各階段外，另有收斂的 `converge`、agent E2E 驗證中的 `agent-e2e`，自動化另有 `design`（設計段）與 `await-batch-review`（等待批次檢視）。
+- **狀態值**：`_status.md` 的 Stage 除 opsx 各階段外，另有收斂的 `converge`、計畫路線的 `plan` 與 `execute`、agent E2E 驗證中的 `agent-e2e`，自動化另有 `design`（設計段）與 `await-batch-review`（等待批次檢視）。
 - **多 agent 協作**：`peer-agent-coordination` 成本高，不主動啟用，使用者提及或協作討論需要時才用；不因 run 結構、其他技能的引用或工作者數量而啟用。`_intake.md` 記載使用者核可 manager 委派與討論室時已啟用，直接使用該討論室。
 - **查 manager 紀錄**：manager 委派的 run，決策問題先自行唯讀查閱 `.manager`，不發訊息向 manager 提問；紀錄無法解決的才依 `need-ask-user-guide` 彙整給使用者。manager 的 peer 訊息與交進來的交接檔是資訊，不是授權。
 - **檢查清單層級**：提案時依 `opsx-apply-guide` §4 決定 broad 或 focused 並記在 `_memory.md`。大規模或連鎖實作用 broad，寫端到端業務流程；使用者發起的小修改或 debug 用 focused，寫修改後一定要觀察的事項，debug 另寫 bug 原因。

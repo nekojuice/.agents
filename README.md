@@ -186,8 +186,8 @@ flowchart TD
 | 12 | `openspec-archive-change` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 完成後歸檔 change |
 | 13 | `commit-message-suggestion` | 自製 | 是 | 產生 commit 訊息建議，使用者明確要求或核可的自動化計畫指定時可代為提交，不含 push |
 | 14 | `change-log` | 自製 | 是 | 產出改動清單，向使用者與開發者說明變更 |
-| 選配 | `change-review-request` | 自製 | 是 | 撰寫提案審查邀請，列出決策脈絡來源 |
-| 選配 | `change-review-response` | 自製 | 是 | 回覆提案審查，寫出結論、疑慮分類與下一步 |
+| 選配 | `change-review-request` | 自製 | 是 | 撰寫提案或 factory 計畫的審查邀請，列出決策脈絡來源 |
+| 選配 | `change-review-response` | 自製 | 是 | 回覆提案或 factory 計畫的審查，寫出結論、疑慮分類與下一步 |
 
 ### PM 流程
 

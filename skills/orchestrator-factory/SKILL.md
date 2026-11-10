@@ -14,8 +14,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.13"
-  last_updated: "2026-11-05T14:54:27"
+  version: "1.14"
+  last_updated: "2026-11-10T17:16:31"
 ---
 
 # orchestrator-factory
@@ -37,7 +37,7 @@ Do **not** activate merely because `.factory/` exists, because an old/completed 
 
 1. **User command wins** — interpret the current turn for stage, scope, and optional skills. Do not invent a rigid always-parallel schedule. This includes lifting a default such as rule 6, but only through the user's explicit request in the conversation or an automation authorization recorded in the run (see rule 6).
 2. **Default stage** — if the user says nothing actionable about stage, or you cannot tell where to start → **discuss read-only** (§ 1b): no project writes, no dispatch; write only the run's own files (and the `.factory/` init per § When to create). Prefer loading / following `discuss-first`.
-3. **No silent dispatch** — never start apply (or any write-capable worker) until the user has confirmed the dispatch plan (or a revised subset / reassignment), except as § Automation allows.
+3. **No silent dispatch** — never start apply (or any write-capable worker) until the user has confirmed the dispatch plan (or a revised subset / reassignment), except as § Automation allows. On the plan route, the user starting the action at Converge confirms the workers the reviewed plan lists (§ Plan route).
 4. **Same-series sequential work → one worker** — ordered / dependent changes in the same series stay on **one named worker**. Independent changes may use different workers.
 5. **Verify separation** — apply workers may run **`hard-verify` only**. **`code-review` is never run by an apply worker.** The orchestrator always dispatches a **separate Check worker** for `code-review`, unless the user leaves Check out at dispatch confirmation. No nested “self-check subagent” inside apply under factory mode. When used, **change-doc review** also stays off the apply worker (separate reviewer ≠ Check `code-review`). **`e2e-review` runs only in a separate E2E worker** (§ 5b); neither apply workers nor the orchestrator operate the system under test.
 6. **No commit by default** — run `commit-message-suggestion` and hand the suggestion to the user. The orchestrator commits on the user's behalf only under that skill's `## Committing on request`: the user's explicit request in the conversation, or the commit rule of the run's automation authorization (§ Automation). Record a continuing authorization's scope and expiry in `_memory.md` under `## User decisions` when a run exists. Never infer authorization; never push unless the user separately asks. **Workers never commit.**
@@ -57,7 +57,7 @@ Applies across the factory — the orchestrator and every worker. Higher wins:
 1. **User** — information the user stated or confirmed, including run decisions the user confirmed and that were written as handoff items (e.g. `_memory.md` `## User decisions`, a cold-start handoff's `_intake.md`).
 2. **Canonical references** — `.manager` canonical files and other valid references: opsx main specs, project docs.
 3. **Unconfirmed run notes** — discussion notes in the run that the user has not confirmed (`_notes.md`).
-4. **The opsx change** — a design blueprint that includes generated and agent-decided parts; it may be wrong or unclear.
+4. **The opsx change** (or the plan on § Plan route) — a design blueprint that includes generated and agent-decided parts; it may be wrong or unclear.
 
 Keep this list semantically consistent with the master copy in `code-review` step 3; the worker prompt shapes (§ 4, § 5) restate it because workers do not load this skill.
 
@@ -105,6 +105,17 @@ Choose the route before creating new artifacts or dispatching workers:
 
 Both routes start after Converge (§ 1b). A non-project route must still state its deliverable, allowed writes, named-worker assignments when dispatching, verification method, and required human checkpoints. Reuse the factory run controls where useful, but do not invent empty propose/apply/sync/archive stages merely to resemble opsx. If the classification is ambiguous and changes the workflow materially, raise it as a discussion question (§ 1b).
 
+### Plan route (optional)
+
+For non-project work that dispatches workers, recommend this route at Converge; the user may decline it. The route is: write the plan, review it, then execute.
+
+1. **Plan** (Stage `plan`, through plan review) — write `_plan.md` in the run: goal, scope and what is left out, deliverables and their paths, allowed writes, worker assignments, verification method, human checkpoints, and what later work should take over. It stands in for the § 3 dispatch table.
+2. **Plan review** — follow `change-review-request` and `change-review-response` with the plan as the object under review; a separate reviewer writes the response, never the orchestrator. On `needs doc fix`, amend the plan and review again without stopping. On `ready to apply`, execute.
+3. **When to stop** — stop on `needs user clarify`, or when the plan still needs fixes after two amendment rounds, and give the user the remaining items as one list per `need-ask-user-guide`. When the user asked at Converge to see the plan first, also stop once the review passes.
+4. **Execute** (Stage `execute`) — dispatch per the plan; write deliverables to the paths it names, and confirm completed operations by its verification method.
+5. **Output review (optional)** — when the task shows deliverables a reviewer can judge, you may suggest an output review; dispatch the reviewer only on the user's authorization. Do not suggest it for work without deliverables or with deliverables a reviewer cannot judge.
+6. **Hand-on** — later work, such as a propose, takes the plan's deliverables as inputs. Conclusions the user confirms go to `_memory.md` `## User decisions`; other deliverables are level 3 under § Information sources.
+
 ## Factory stages (opsx project implementation workflow)
 
 | Stage | Skills to load / follow | Notes |
@@ -128,7 +139,7 @@ Both routes start after Converge (§ 1b). A non-project route must still state i
 Load **only** when the user names them in the command (examples: `ponytail`, `karpathy-guidelines`, `opsx-health-check`, `code-to-docs`, `thought-palette-extract`, doc-\* guides, `change-review-request`, `change-review-response`).  
 Exception: **`test-first` is always on for propose** (and as required during apply per `opsx-apply-guide`).
 
-**Change-doc review** — opt-in only (user names the skills or chooses the post-propose hint). **Never auto-required**, except that § Automation always runs it. Primary slot: after Propose / alongside Human gate — changes, before Apply. Response reviewer ≠ apply worker ≠ post-apply Check `code-review`.
+**Change-doc review** — opt-in only (user names the skills or chooses the post-propose hint). **Never auto-required**, except that § Automation always runs it and the plan route uses it once the user accepts that route. Primary slot: after Propose / alongside Human gate — changes, before Apply. Response reviewer ≠ apply worker ≠ post-apply Check `code-review`. On the plan route it reviews the plan (§ Plan route).
 
 **Multi-agent collaboration** — `peer-agent-coordination` exists for peer sessions sharing a run directory. It is costly: do not enable it on your own; enable it when the user mentions it or a collaborative discussion with the user calls for it (see its `## 1. When to enable`), never because of run structure, another skill's reference, or worker count. When the run's `_intake.md` records the user's approval of the manager's delegation and a peer room, it is enabled; use that room. It is distinct from assigning one worker several tasks or several workers one task (§ 3 Assignment rules), which is ordinary subagent dispatch.
 
@@ -278,6 +289,7 @@ Handoff files between the manager and a factory always live at the factory run r
 | --- | --- |
 | `_handoff-<worker>.md` | Factory-internal temp handoff for one worker (resume, partial progress); not a cross-party handoff |
 | `_needs-input.md` | On `needs_input`: reason + recommended four-choice menu (and any situational extras); see Repair policy |
+| `_plan.md` | The plan on the plan route (§ Plan route) |
 | `_notes.md` | Discussion notes not yet confirmed by the user (converged items, findings worth keeping, items for the manager handoff), and corrections to stale `.manager` content (§ Information sources level 3) |
 
 **Control-file writes** — update `_status.md`, `_memory.md`, `_dispatch-plan.md`, `_review-checklist.md`, `_review-queue.md`, and `_issue-backlog.md` in place with an editing tool. When an append is genuinely needed, first check that the same content is not already there. Never blind-append with shell redirection. Files under `archive/` are the exception to in-place updates: only add a new section, never edit earlier ones.
@@ -536,7 +548,7 @@ constraint: follow e2e-review boundaries; write only .e2e/ and run_dir/e2e-revie
 | --- | --- | --- |
 | Action start | End of Converge (§ 1b) | Wait for the user to start the action, even with no decisions needed, unless already authorized for that case. Not used under § Automation |
 | Changes review | After propose | Wait; user inspects change packages. **Hint** optional change-doc review — never auto-required. Under § Automation, held once for the whole batch |
-| Dispatch confirm | After dispatch plan | Wait; no workers until confirm / subset / reassign. If change-review was opted in and response ≠ `ready to apply`, hold green-light until resolved. Under § Automation, the batch change review stands in |
+| Dispatch confirm | After dispatch plan | Wait; no workers until confirm / subset / reassign. If change-review was opted in and response ≠ `ready to apply`, hold green-light until resolved. Under § Automation, the batch change review stands in. On the plan route, Action start at Converge stands in |
 | Human E2E | After agent E2E review (or Check, when E2E was left out) | Write the manager handoff (§ Manager handoff), present the `_review-checklist.md` (revised after agent E2E review, or the full list when E2E was left out), update `.factory/_review-queue.md` outside § Automation, then wait; user runs E2E on what remains. Tick items the user reports passed (§ Cross-run review queue). Under an automation plan, follow § Automation instead |
 | Sync/archive | Before sync+archive | Wait for explicit approval; see §7 |
 
@@ -586,7 +598,7 @@ Keep user-facing status short; persist detail under `run_dir`. Output it on ente
 
 ```markdown
 ## Factory status
-- Stage: <discuss | converge | await-factory-session | propose | design | await-batch-review | await-dispatch | apply | machine-verify | agent-e2e | await-e2e | await-archive | done>
+- Stage: <discuss | converge | plan | execute | await-factory-session | propose | design | await-batch-review | await-dispatch | apply | machine-verify | agent-e2e | await-e2e | await-archive | done>
 - run_dir: <.factory/_runs/… or (none — nothing recorded yet)>
 - Branch: <name> (sync/archive allowed: yes | no)
 - Workers: <summary>

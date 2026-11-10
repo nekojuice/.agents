@@ -2,15 +2,16 @@
 name: change-review-response
 description: >-
   Verdict an experimental OpenSpec change-doc review: read
-  change-review-request-NN.md and the cited change package, then write
-  matching change-review-response-NN.md with checklist judgments, categorized
+  change-review-request-NN.md and the cited change package (or factory run
+  plan), then write matching change-review-response-NN.md with checklist
+  judgments, categorized
   reviewer concerns, and a next action. Use when the user invokes
   change-review-response (or asks to answer that review brief).
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Claude Code Opus 5.5
-  version: "1.1"
-  last_updated: "2026-10-20T15:44:18"
+  version: "1.2"
+  last_updated: "2026-11-10T17:16:31"
 extends: change-review-request
 ---
 
@@ -18,7 +19,7 @@ extends: change-review-request
 
 **Verdict** author (reviewer). Read the brief and the change package; write the paired response.
 
-- The change package is the object under review.
+- The change package is the object under review, or a run plan on the factory plan route; for a plan, read terms per [FORMAT.md](../change-review-request/FORMAT.md) § Review object.
 - The brief's settled user requirements are the level 1 basis.
 - Keep your own judgment: beyond the checklist, raise concerns by category.
 - Keep apply for a later, separate order.
@@ -53,11 +54,11 @@ Keep this list the same in meaning as the master copy in `code-review` step 3.
 
 Open the named `change-review-request-NN.md` (user path, or the latest unmatched request in the active `run_dir`). Take Meta, settled requirements, principles, checklist, and Reference paths — including Decision context sources — as the review scope.
 
-**Done when:** expected response filename, change path, and every checklist row are known.
+**Done when:** expected response filename, change path (or plan path), and every checklist row are known.
 
 ### 2. Read the change package
 
-Read the change package paths the brief lists (proposal, design, tasks, named specs, and only the optional paths needed for a checklist row). Prefer evidence from those files over inventing requirements.
+Read the change package paths the brief lists (proposal, design, tasks, named specs, and only the optional paths needed for a checklist row). Prefer evidence from those files over inventing requirements. For a plan, read the plan and the inputs it names.
 
 When in doubt, consult the brief's decision context sources read-only, highest level first. If they are not enough to judge, you may also consult, read-only, other run records, main OpenSpec specs, project docs, and `.manager/` canonical files; `.manager/_runs/` is a lead only. Record each source you consulted, whether the brief listed it, and which judgment it calibrated.
 

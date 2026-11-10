@@ -3,20 +3,21 @@ name: change-review-request
 description: >-
   Brief an experimental OpenSpec change-doc review: write
   change-review-request-NN.md under the factory run_dir so a reviewer can
-  judge whether the change package matches settled requirements before apply.
+  judge whether the change package matches settled requirements before apply,
+  or whether a run plan on the factory plan route does before execution.
   Use when the user invokes change-review-request (or asks to author that
   review brief).
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Claude Code Opus 5.5
-  version: "1.1"
-  last_updated: "2026-10-20T15:44:18"
+  version: "1.2"
+  last_updated: "2026-11-10T17:16:31"
 extends: change-review-response
 ---
 
 # change-review-request
 
-**Brief** author (orchestrator / requester). Produce a review brief that hands a peer the change package and a checklist — **not** a product-code review, and **not** apply.
+**Brief** author (orchestrator / requester). Produce a review brief that hands a peer the change package and a checklist — **not** a product-code review, and **not** apply. The object under review may instead be a run plan on the factory plan route; for a plan, read terms per [FORMAT.md](FORMAT.md) § Review object.
 
 Document shape: read [FORMAT.md](FORMAT.md) before writing. Pair skill: `change-review-response`.
 
@@ -33,7 +34,7 @@ Document shape: read [FORMAT.md](FORMAT.md) before writing. Pair skill: `change-
 Identify:
 
 - Factory `run_dir`: `.factory/_runs/<date>-<slug>/` (current run; create only if the user already directed a factory run there)
-- Change package: `openspec/changes/<id>/` (proposal, design, tasks, relevant specs)
+- Change package: `openspec/changes/<id>/` (proposal, design, tasks, relevant specs); or, on the factory plan route, the run plan `run_dir/_plan.md` and the inputs it names ([FORMAT.md](FORMAT.md) § Review object)
 - Decision context sources related to this change, by source priority (highest first):
   1. Information the user stated or confirmed, including handoff items and decisions in the run written after the user confirmed them
   2. Management canonical files (under `.manager/` when it exists; read-only), main OpenSpec specs, project docs
@@ -42,7 +43,7 @@ Identify:
   The change package itself is level 4 — the object under review. Keep this list the same in meaning as the master copy in `code-review` step 3. `.manager/_runs/` is a lead only. List these sources whether or not they ground a checklist item.
 - Optional paths the brief must name: sample docs, `AGENTS.md`, archive / schema — only when they ground checklist items
 
-**Done when:** `run_dir` and change id/path are known, and decision context sources are listed or confirmed absent.
+**Done when:** `run_dir` and change id/path (or plan path) are known, and decision context sources are listed or confirmed absent.
 
 ### 2. Choose `NN`
 
@@ -54,7 +55,7 @@ List existing `change-review-request-*.md` in `run_dir`. Use the next two-digit 
 
 Create `run_dir/change-review-request-NN.md` using every section in [FORMAT.md](FORMAT.md) (Meta; Settled user requirements; Design principles for judgment; Review checklist; Reference paths — change package, decision context sources, optional paths).
 
-Meta must set **Expected response** to `change-review-response-NN.md` (same `NN`). Checklist rows must be answerable as **pass** / **gap** / **unclear** from the change docs alone, consulting the listed decision context sources when in doubt. Keep FORMAT's fixed invitation for reviewer concerns in §4; do not remove it.
+Meta must set **Expected response** to `change-review-response-NN.md` (same `NN`). Checklist rows must be answerable as **pass** / **gap** / **unclear** from the change docs alone, consulting the listed decision context sources when in doubt. Keep FORMAT's fixed invitation for reviewer concerns in §4; do not remove it. For a plan, the checklist also covers each item `orchestrator-factory` § Plan route step 1 requires.
 
 **Done when:** the file exists at that path, cites the change package, and names the expected response filename.
 

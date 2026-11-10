@@ -2,6 +2,15 @@
 
 Single source of truth for section headings and pairing. Both `change-review-request` and `change-review-response` follow this file. The concern category names below keep the same meaning as the master copy, the `code-review` finding tags.
 
+## Review object
+
+The object under review is one of:
+
+- an OpenSpec change package (`openspec/changes/<id>/`);
+- a run plan on the factory plan route (`run_dir/_plan.md`).
+
+When the object is a plan, read "change" in this file as "plan" and "apply" as "execute"; verdicts, next actions, and category names stay the same. In the request, Meta gives **Plan path** in place of Change id and Change path, and Purpose judges whether the plan covers the settled requirements without omissions before execution. Reference paths list the plan and the inputs it names in place of the change package. The plan is level 4, as a change package is.
+
 ## Pairing
 
 | Rule | Value |

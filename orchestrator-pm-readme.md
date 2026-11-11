@@ -17,7 +17,7 @@
 
 它只寫 `.manager/**`，例外有三種：人工核可的工廠交接、委派時交進工廠 run 的交接檔與 peer 協作檔，以及非產品路線下對受管對象的文字修改。peer 訊息是溝通管道，不算寫入文件。除此之外不碰產品原始碼、規格或部署狀態。受管對象不是程式（例如 skill 包、文件集）時走非產品路線，由 manager session 直接修改，步驟見下方「非產品路線」。路線由章程或 library 決策宣告，否則由使用者指示並記入 `_run.md`。
 
-PM 與工廠之間保留人工檢查點：PM 只提出候選並準備交接，預設由人另起工廠 session。工廠可選擇性唯讀查閱 `.manager`，但不寫入；回流只經工廠 run 根目錄的 `handoff-manager-<主題>.md`，PM 在人指示或收到 peer 通知時讀取，篩選後擬稿到 run 的 `staging/`，使用者檢查後才沖入正式文件。流程中依主題載入相依子技能：`pm-status-review`（狀態盤點）、`pm-intake-triage`（進件分流）、`pm-investigation-worker`（唯讀調查）、`pm-factory-handoff`（工廠交接）。
+PM 與工廠之間保留人工檢查點：PM 只提出候選並準備交接，預設由人另起工廠 session。工廠可選擇性唯讀查閱 `.manager`，但不寫入；回流只經工廠 run 根目錄的 `handoff-manager-<主題>.md`，PM 在人指示或收到 peer 通知時讀取，篩選後擬稿到 run 的 `staging/`，使用者檢查後才沖入正式文件。流程中依主題載入相依子技能：`pm-status-review`（狀態盤點）、`pm-intake-triage`（進件分流）、`pm-investigation-worker`（唯讀調查）、`pm-factory-handoff`（工廠交接）。工作涉及改 skill、製作 skill 或追蹤 skill 品質時依 `skill-feedback-notes` 記錄；本身在修訂 skill 的 run 直接把筆記併入需求對照，其他 run 在收尾時寫 `handoff-skill-<topic>.md`。
 
 PM 發動的委派預設使用 `peer-agent-coordination`，使用者核可委派即視為啟用；討論室建在工廠 run，預設委派同平台 agent；工廠自行唯讀查閱 `.manager`，不發訊息向 PM 提問。PM 在討論室保持可被喚醒直到使用者結束討論室，是否需要背景接聽依 peer §5。補交事項給進行中的工廠 run 時，自動化時直接用討論室；非自動化時先與使用者討論，交接檔草稿放 manager run 根目錄，確認後才交付到工廠 run。其他情況不主動啟用，使用者提及或協作討論需要時才用。使用者核可自動化計畫時，PM 以一個 manager run 管理一整批工廠 run，同一個工廠 session 先把全部 change 開完並審查，使用者一次確認後才依序施工；人工 E2E、sync/archive 在整批結束後一起做，push 一律要使用者另外授權。
 
@@ -81,46 +81,63 @@ orchestrator-pm/
 
 ## 技能邏輯
 
+實線是主流程，虛線是可選或例外流程，粗箭頭是人閘，必須停下等使用者，綠燈的檢查不等於可以出貨。
+
+```mermaid
+%%{init: {"flowchart": {"rankSpacing": 35, "nodeSpacing": 22}}}%%
+flowchart LR
+  E1([啟用<br/>PM 模式]) --> IN{.manager<br/>存在?}
+  IN -.->|否| INI[初始化<br/>有狀態先 crawl]
+  INI --> RQ
+  IN -->|是| RQ{意圖}
+
+  RQ -->|討論| DI[PM 討論]
+  RQ -->|蒐證| IW[唯讀調查<br/>PM 綜合]
+  RQ -->|進度| SR[狀態盤點]
+  RQ -->|問題、回饋| TR[進件分流]
+  RQ -->|交接、<br/>實作程式| FC
+  RQ -->|批次施工| AU
+  RQ -->|非程式修改、<br/>skill 回饋交接| N1
+  RQ -->|撿走<br/>工廠條目| SG
+  TR -.->|候選| FC
+
+  subgraph G1["工廠交接"]
+    FC[工廠候選] ==>|使用者<br/>核可| FH[建立交接<br/>與討論室]
+    FH --> FW[停下待命]
+  end
+
+  subgraph G2["自動化"]
+    AU[自動化計畫] ==>|使用者<br/>核可| AD[工廠設計段]
+    AD ==>|使用者<br/>批次檢視| AB[工廠施工段]
+  end
+
+  FW -.->|交接檔| FR{內容}
+  AB -.->|交接檔| FR
+  FR -->|進度| SR
+  FR -->|新問題| TR
+
+  subgraph G3["非產品路線"]
+    N1[需求對照] ==>|使用者<br/>逐輪定案| N2[異動決策]
+    N2 ==>|使用者<br/>指示修改| N3[修改]
+    N3 -.->|預設| N4[審查]
+    N4 -.->|修正| N3
+  end
+  SKN([本 run<br/>skill 筆記]) -.-> N1
+  N3 ==>|使用者<br/>git diff| SG
+
+  SR --> SG[擬稿<br/>staging]
+  TR --> SG
+  SG ==>|使用者<br/>檢查| CF[沖入<br/>正式文件]
+  CF --> CL[收尾<br/>commit、outcome<br/>skill 筆記]
+```
+
 ### 請求路由
 
 PM 依使用者意圖決定載入哪個子技能，只有需要長期紀錄或證據時才建立 run。
 
-```mermaid
-flowchart TD
-  U[使用者請求] --> R{意圖}
-  R -- 討論方向或早期想法 --> D[PM 模式討論]
-  R -- 專案進度或是否完成 --> S[pm-status-review]
-  R -- 查看或更新里程碑進度 --> M[維護 _milestones.md<br/>經 pm-status-review 盤點]
-  R -- 提交問題/bug/回饋/多待辦 --> T[pm-intake-triage]
-  R -- 需大量證據蒐集 --> I[pm-investigation-worker 唯讀調查]
-  R -- 交接或委派 --> H[pm-factory-handoff]
-  R -- 批次施工或自動化 --> A[自動化計畫]
-  R -- 要求實作 --> K{受管對象}
-  K -- 程式 --> X[說明 PM/工廠檢查點，不實作]
-  K -- 非程式 --> N[非產品路線]
-  R -- 撿走工廠長期未處理條目 --> P[擬稿到 staging/，使用者檢查後寫入 _backlog.md<br/>再自工廠兩份根目錄檔刪除]
-  R -- 處理工廠交接檔 --> F[進度與 manager 訂正：pm-status-review，擬稿到 staging/<br/>新問題或候選：pm-intake-triage]
-```
-
 ### 非產品路線
 
 受管對象不是程式時，manager 直接修改，步驟詳見 `references/non-product-route.md`。需求對照與審查是預設步驟：單一目標且需求明確時可省略需求對照；使用者說不做或只改措辭時可省略審查。
-
-```mermaid
-flowchart TD
-  A[需求對照<br/>requirements-comparison.md] --> B[使用者逐輪回覆<br/>全部定案]
-  B --> C[異動決策 changes/ 與索引]
-  C --> D[人閘：使用者檢查並指示修改<br/>項目進入 in-delivery]
-  D --> E[直接修改]
-  E --> F[審查：reviewer 報告<br/>PM 判斷誤報與採納，寫 reviews/_triage.md]
-  F -- 需使用者決定 --> G[與使用者討論]
-  G --> H[修正，只複查修正處]
-  F -- 可直接採納 --> H
-  H --> I[人閘：git diff 驗收<br/>項目進入 verifying]
-  I --> J[擬稿到 staging/<br/>含受管對象的拆解紀錄]
-  J --> K[使用者檢查後沖入<br/>pm-status-review 盤點]
-  K --> L[使用者要求時分開 commit<br/>收尾或拆出新 run]
-```
 
 審查中發現原範圍外的必要修改，追加異動決策；被取代的設計在舊異動決策加註，不改寫。已定方向內的低嚴重度措辭修正可不再複查，記在審查彙整。
 
@@ -128,32 +145,9 @@ flowchart TD
 
 PM 提候選、等人核可、建自足交接。PM 發動的委派會在工廠 run 建 peer 討論室。非自動化時建好交接即停下，由人另起工廠 session。工廠在每個 run 到達等待使用者檢查時留下交接檔，PM 在人指示或收到 peer 通知時讀取，交給狀態盤點篩選並擬稿；其中的新問題或候選才進入進件分流。
 
-```mermaid
-flowchart TD
-  A[提出工廠候選] --> B[人閘：明確核可建立]
-  B --> C[建立自足的 .factory 交接<br/>不依賴 .manager；建 peer 討論室]
-  C --> D[停止，在討論室保持可被喚醒<br/>由人另起工廠 session]
-  D -. handoff-manager 交接檔，人指示或 peer 通知 .-> E[pm-status-review 篩選<br/>擬稿到 staging/]
-  E --> G[使用者檢查後沖入正式文件]
-  E -. 新問題或候選 .-> T[pm-intake-triage]
-```
-
 ### 自動化
 
 使用者核可後才執行，PM 不自行啟動。
-
-```mermaid
-flowchart TD
-  A[與使用者確認範圍<br/>寫 _automation.md] --> B[人閘：核可計畫]
-  B --> C[為每個任務建立工廠 run<br/>授權依值寫進 _intake.md]
-  C --> D[設計段：每個 run 討論、提案、提案審查<br/>PM 經 peer 指派下一個 run]
-  D --> R[人閘：一次檢視全部 change<br/>與各 run 的待決事項]
-  R --> E[施工段：依相依順序實作、Check、agent E2E 驗證、commit]
-  E --> H[每個 run 到達等待檢查：<br/>交接檔 → PM 擬稿到 staging/]
-  H --> E
-  H --> F[整批完成：工廠彙整 _review-queue.md]
-  F --> G[人閘：一次人工 E2E 剩下事項，之後 sync/archive<br/>完成項目歸檔到 .factory/archive/，未完成留在工廠<br/>長期未處理由 manager 自行撿走]
-```
 
 計畫只預先授權兩項：使用者一次檢視全部 change 後，依序派工（含 Check 與 agent E2E 驗證）不再逐 run 確認；以及每個 run 預設 commit 一次，使用者可改或關閉。檢視 change、人工 E2E、sync/archive、push 都不能預先授權。某個 run 停下時，只暫停依賴它的 run。
 

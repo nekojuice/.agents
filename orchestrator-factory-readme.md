@@ -84,42 +84,53 @@
 
 ## 技能邏輯
 
-### 完整流程
-
-每個人閘都必須停下等待使用者，綠燈的檢查不等於可以出貨。自動化時人閘的位置依下方「自動化」一節調整。
+實線是主流程，虛線是可選或例外流程，粗箭頭是人閘，必須停下等使用者，綠燈的檢查不等於可以出貨。
 
 ```mermaid
-flowchart TD
-  A[啟用工廠模式或冷啟動交接] --> B{階段或範圍明確?}
-  B -- 否 --> D[唯讀討論 discuss-first<br/>不改專案檔，自主記錄 run 筆記]
-  D -- 使用者指示行動 --> CV[收斂：已定摘要與阻擋行動的決策<br/>每題附推薦選項]
-  B -- 是 --> CV
-  CV --> G0[人閘：開始行動<br/>沒有待決事項也停，已授權時除外]
-  G0 --> P[提案 openspec-propose + opsx-propose-guide + test-first]
-  P --> G1[人閘：檢視 change<br/>選配提案審查，回報先經總指揮核對]
-  G1 --> DP[發布派工計畫 _dispatch-plan.md]
-  DP --> G2[人閘：確認派工]
-  G2 --> AP[實作 apply 工作者<br/>openspec-apply-change + opsx-apply-guide + test-first + hard-verify]
-  AP --> CK[機器驗證 Check 工作者<br/>code-review 唯讀，finding 帶分類標記]
-  CK --> VC[總指揮依資訊來源核對 finding<br/>能自行判斷的需釐清項先排除，其餘彙整成一份決策清單]
-  VC --> EE[agent E2E 驗證 E2E 工作者<br/>依 _review-checklist.md 實際操作、取證、交報告]
-  EE --> EV{總指揮覆核報告}
-  EV -- 可信的產品失敗 --> FX[修正並複查<br/>下一輪 E2E 指向上一輪]
-  FX --> EE
-  EV -- 執行失敗或無法判定 --> EE
-  EV -- 完成 --> HO[結束本輪：清單已勾附報告、未勾附原因<br/>問題寫入 _issue-backlog.md，寫給 manager 的交接檔]
-  HO --> G3[人閘：人工 E2E<br/>呈現剩下事項，更新 _review-queue.md]
-  G3 -- 修正 --> RC[修正後複查<br/>修正前記錄快照 ref 或檔案清單，只查該修正]
-  RC --> G3
-  G3 -- 需求變更或 E2E 發現 --> AR{修訂由誰發起?}
-  AR -- 使用者直接要求 --> AU[修訂輪<br/>記入 User decisions，免回檢視 change 人閘]
-  AU -- 仍需確認派工，使用者指名工作者即視為確認 --> G2
-  AR -- 總指揮發起 --> G1
-  G3 --> G4[人閘：核可同步歸檔]
-  G4 --> SY[同步歸檔 openspec-sync-specs + openspec-archive-change<br/>僅限 main/master]
-  SY --> AA[兩份根檔的已完成項目移入 archive/]
-  AA --> CM[commit 建議 commit-message-suggestion<br/>明確要求時代為 commit]
-  CM --> CL[change log]
+%%{init: {"flowchart": {"rankSpacing": 35, "nodeSpacing": 22}}}%%
+flowchart LR
+  E1([啟用或<br/>冷啟動交接]) --> DS[唯讀討論<br/>自動記筆記]
+  DS ==>|使用者<br/>指示行動| CV[收斂]
+  CV ==>|使用者<br/>開始| RT{工作<br/>類型}
+  RT -->|專案實作| PP
+  RT -.->|計畫路線| PL
+  RT -->|非專案| TL[量身路線]
+
+  subgraph G1["opsx 專案實作"]
+    PP[提案] -.->|選配| CR[提案審查]
+    CR -.->|需修改| PP
+    PP ==>|使用者<br/>檢視 change| DP[派工計畫]
+    DP ==>|使用者<br/>確認派工| AP[實作<br/>硬閘檢查]
+    AP --> CK[Check<br/>程式審查]
+    CK -.->|修正| AP
+    CK --> EE[agent<br/>E2E 驗證]
+    EE -.->|修正| AP
+    EE ==>|使用者<br/>執行| HU[人工 E2E]
+    HU -.->|使用者<br/>要求修訂| DP
+    HU -.->|總指揮<br/>發起修訂| PP
+    HU ==>|使用者核可<br/>僅 main/master| SY[同步歸檔]
+  end
+
+  subgraph G2["計畫路線"]
+    PL[寫計畫] --> PR[計畫審查]
+    PR -.->|需修改| PL
+    PR -->|通過| EX[執行]
+    EX -.->|使用者<br/>授權| OR[產物審查]
+  end
+
+  subgraph G3["自動化"]
+    E3([manager<br/>指派]) --> AD[設計段<br/>逐 run 提案審查]
+    AD -.->|下一個 run| AD
+    AD ==>|使用者<br/>批次檢視| BP[施工段<br/>逐 run 到 commit]
+    BP -.->|下一個 run| BP
+  end
+  BP -->|整批完成| HU
+
+  SY --> FN[收尾<br/>archive、skill 筆記<br/>commit 建議、change log]
+  EX --> FN
+  OR -.-> FN
+  TL --> FN
+  DS -.->|討論結束| FN
 ```
 
 ### 其他規則
@@ -142,25 +153,6 @@ flowchart TD
 
 run 的 `_intake.md` 帶有使用者經 manager 核可的自動化授權時適用；與本技能其他段落不同處，以本節為準。
 
-```mermaid
-flowchart TD
-  P[設計段：每個 run 討論與提案<br/>不為提問停下，待決事項記入 _notes.md] --> R[一定執行提案審查]
-  R -- 需修文件 --> FX[修改 change]
-  FX -- 重審 --> R
-  FX -- 兩輪仍不過 --> L
-  R -- 需使用者釐清 --> L[先依資訊來源排除<br/>其餘記為該 run 的待決事項]
-  R -- ready to apply --> N1{全部 run 都有 change?}
-  L --> N1
-  N1 -- 否，manager 指派下一個 run --> P
-  N1 -- 是 --> G[人閘：一次檢視全部 change<br/>各 run 待決事項彙整成一份決策清單一次問]
-  G --> AP[施工段：依相依順序派工 apply<br/>不再逐 run 確認派工]
-  AP --> CK[Check，採納的 finding 修正並複查]
-  CK --> AE[agent E2E 驗證與覆核]
-  AE --> E[到達等待檢查：<br/>寫檢查清單 → 依授權 commit → manager 交接檔附 hash]
-  E -- 經 peer 回報，manager 指派下一個 run --> AP
-  E -. 整批完成 .-> B[彙整 _review-queue.md<br/>之後照常走人工 E2E 與同步歸檔人閘]
-```
-
 - 設計段不逐題提問：無法依紀錄解決的決策記入該 run 的 `_notes.md`，依 `opsx-propose-guide` 揭露假設後照常提案，到批次檢視時一次問。批次檢視時使用者指示的修改不需再審。
 - 停下條件（施工段）：`needs_input` 或需要使用者介入、self-fix 三輪仍紅、Check 有需要使用者決定的 finding、範圍外發現需開新 change。只有依賴它的 run 會等。
 - 後面 run 的提案把同批較早的 change 當前置，依 `opsx-propose-guide` §3 寫 `Depends on:`。
@@ -169,15 +161,6 @@ flowchart TD
 ### 修復政策
 
 工作者遇到問題時先分類，不是一律標記阻塞。
-
-```mermaid
-flowchart TD
-  X[工作者遇到問題] --> C{分類}
-  C -- 指派範圍內的測試/lint/編譯失敗 --> S[self-fix<br/>修實作並重跑，每個 change 最多 3 輪<br/>測試異動依 opsx-apply-guide 防作弊規則]
-  C -- 範圍外發現/略過項/小偏離 --> R[report-continue<br/>記錄後繼續其餘工作]
-  C -- 需求矛盾/缺密鑰/需開新 change --> H[stop-for-human<br/>寫 run 檔並等待]
-  S -- 三輪仍紅 --> H
-```
 
 ## 關鍵參數
 

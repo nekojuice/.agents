@@ -4,7 +4,7 @@ Updated: 2026-11-05
 
 ## Current milestone
 
-M7 進行中：下一版 skill 進化（run `2026-11-04-next-skill-evolution`）。新增 `orchestrator-helper` 1.0（SK-H），orchestrator-factory 1.13 加入討論與收斂（SK-DC），code-review 1.2 規格軸加入成品設計檢查（SK-CR）；2026-11-10 起 orchestrator-factory 1.14 與 change review 1.2 加入非實作計畫路線（SK-PR）；皆已修改、審查並沖入 manager，skill commit `82af4c8`、`e8232a9`，待試用。
+M7 進行中：下一版 skill 進化（run `2026-11-04-next-skill-evolution`）。新增 `orchestrator-helper` 1.0（SK-H），orchestrator-factory 1.13 加入討論與收斂（SK-DC），code-review 1.2 規格軸加入成品設計檢查（SK-CR）；2026-11-10 起 orchestrator-factory 1.14 與 change review 1.2 加入非實作計畫路線（SK-PR）；皆已修改、審查並沖入 manager，skill commit `82af4c8`、`e8232a9`，待試用。2026-11-11 起新增 `skill-feedback-notes` 1.0，orchestrator-factory 1.15、orchestrator-pm 1.7 引用（SK-FN），已修改、審查並沖入 manager，skill commit `f46066e`，待試用。
 
 M6 進行中：factory 插入 agent E2E review。2026-11-04 起第二輪實用回饋修正（run `2026-11-04-skill-feedback-round`）：e2e-review 1.3、orchestrator-factory 1.12、orchestrator-pm 1.6、pm-factory-handoff 1.5，並新增 `.factory/archive/` 收尾歸檔；已修改、審查（八輪）、沖入 manager 並 commit（`0210cc7`、`9ebb2e1`）。skill 已 commit（`aecd92e`、`6bccacb`），第一階段試用成功。e2e-review 1.2（API surface、測試資料、recipes）在 run `2026-11-04-e2e-review-surfaces-recipes` 修改並經兩輪審查修正，commit `981f2af`；factory 1.11 與 opsx guide 對齊 commit `d731431`。M4、M5 已完成並沖入 manager。
 
@@ -18,6 +18,7 @@ M6 進行中：factory 插入 agent E2E review。2026-11-04 起第二輪實用�
 | SK-DC | initiative | factory 討論與收斂（orchestrator-factory 1.13） | verifying | medium | none | 已 commit（82af4c8）；試用 |
 | SK-CR | initiative | code-review 規格軸加入成品設計檢查（code-review 1.2） | verifying | medium | none | 已 commit（82af4c8）；試用 |
 | SK-PR | initiative | factory 非實作計畫路線（orchestrator-factory 1.14、change review 1.2） | verifying | medium | none | 已 commit（e8232a9）；試用 |
+| SK-FN | initiative | skill 使用後改良的回饋迴圈（skill-feedback-notes 1.0、orchestrator-factory 1.15、orchestrator-pm 1.7） | verifying | medium | none | 已 commit（f46066e）；試用 |
 | SK-R2 | debt | 元素對照重拆時發現的殘留不一致 | inbox | medium | none | 下一輪修改 skill 時併入 |
 | SK-X2 | initiative | 從歷次工作紀錄抽取通用規則 | inbox | medium | none | 使用者決定何時開蒐集輪 |
 
@@ -27,7 +28,7 @@ M6 進行中：factory 插入 agent E2E review。2026-11-04 起第二輪實用�
 - 殘留不一致未修（SK-R2；正文在各元素對照 §3）。
 - agent E2E review 只完成第一階段試用，長期穩定度待觀察。
 - SK-E2 的 e2e-review 修改尚未在實際專案重跑驗證（冒煙測試在暫存專案）。
-- SK-H、SK-DC、SK-CR、SK-PR 尚未試用。
+- SK-H、SK-DC、SK-CR、SK-PR、SK-FN 尚未試用。
 
 ## Decisions needed
 

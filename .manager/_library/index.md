@@ -19,6 +19,7 @@
 | 跨 run 檔收尾歸檔 | accepted | 工廠與 PM | 收尾時 queue 與 backlog 的已完成項目移入 `.factory/archive/<日期>-<類別>.md`；未完成留 factory；長期未處理由 manager 撿走 | decisions/factory-cross-run-archive.md |
 | factory 討論與收斂 | accepted | 工廠 | 自由唯讀討論 → 行動前收斂與可選決策提問 → 行動流程；討論自主記筆記、可寫 manager 交接；收斂每題必附推薦，零題也停下，除非已授權 | decisions/factory-discuss-converge.md |
 | factory 非實作計畫路線 | accepted | 工廠與審查 | 非實作工作要派工時推薦寫計畫 → 計畫審查 → 執行；審查沿用 change review、自動多輪；產物審查需使用者授權 | decisions/factory-plan-route.md |
+| skill 使用後改良的回饋迴圈 | accepted | 工廠與 PM | 涉及改 skill 或追蹤 skill 品質時記回饋筆記，收尾交給 skill repo 的 manager 走非產品路線；驗證只在持有新舊兩版脈絡比較時 | decisions/skill-feedback-loop.md |
 | orchestrator-helper 定位 | accepted | 輔助指揮者 | 獨立的彈性幫手；契約依工作當下由發動者指定；持有自己的簡單脈絡；授權下 manager 與 factory 可指揮 | decisions/orchestrator-helper.md |
 | manager 停在專案層級 | accepted | PM 系列 | 只管方向、範圍、排程與狀態；factory 自查 .manager 不提問；正式檔先擬稿 | decisions/manager-project-level.md |
 | 待決事項呈現 | accepted | 委派工作回報 | 只列阻擋且未記錄的決策；已記錄仍阻擋者列阻擋項；factory 只在收斂階段提問且必附推薦 | decisions/pending-decisions-presentation.md |

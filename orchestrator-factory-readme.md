@@ -57,6 +57,7 @@
     ├── _memory.md              # 跨工作者共享事實：決策、路徑、fixed_point；使用者定案放 User decisions 區
     ├── _plan.md                # 計畫路線的計畫（選用）
     ├── _notes.md               # 未經使用者確認的討論筆記與 .manager 訂正（選用）
+    ├── _skill-notes.md         # skill 回饋筆記（選用）
     ├── _review-checklist.md    # 本 run 的逐項清單：Check 後交 E2E 工作者，覆核後標出結果與剩給人的項目，打勾永久保留
     ├── _needs-input.md         # 遇 needs_input 時的原因與四選單（選用）
     ├── _handoff-<worker>.md    # 工廠內部給單一工作者的暫存交接（選用）
@@ -77,7 +78,7 @@
 - 給 manager 的交接檔一次完工寫一份，不再追加；之後的修正輪另寫新檔，檔名不沿用舊的。內容寬鬆，由 manager 篩選：影響方向或範圍的使用者決定、範圍變動、進度與證據指標、範圍外發現與新候選、阻擋事項、`.manager` 過時訂正。規格內容只寫 change id，實作與驗證細節留在 run。
 - `_review-queue.md` 保持簡潔：agent 驗證可信的項目打勾並附報告路徑，證據留在 run；未勾項目自帶原因與解除條件，不只指回 run 內檔案；最後只留人類才能處理的項目。
 - `_issue-backlog.md` 是跨 run 問題暫存區：範圍外發現（例如版面歪掉）、E2E 驗出的實作失敗、潛在錯誤都可放，每項寫狀態、現象與證據路徑。
-- 收尾（sync／archive）時，queue 中本次工作已完成的項目（已勾、使用者確認結案）與 backlog 中已結的條目（不修、已開 change）移入 `archive/<YYYY-MM-DD>-review-queue.md`、`archive/<YYYY-MM-DD>-issue-backlog.md`：同一天同類同一檔，每次收尾加一節 `## <HH:mm> <做收尾的 run slug>`，只追加；檔首一行說明日期、類別與條目格式；每筆保留原文並加一行收尾時間、該項目的來源 run 與結果；歸檔檔只新增節、不改既有節。未完成、未處理的留在根目錄兩份檔；長期未處理的由 manager 自行發動撿走並自根檔刪除，工廠不主動交出。沒有 sync／archive 的非專案路線在其最後一步歸檔。`archive/` 預設進版控，收尾後若有 commit 就一併納入；兩份根檔使用者要求才 commit。
+- 收尾（sync／archive）時，queue 中本次工作已完成的項目（已勾、使用者確認結案）與 backlog 中已結的條目（不修、已開 change）移入 `archive/<YYYY-MM-DD>-review-queue.md`、`archive/<YYYY-MM-DD>-issue-backlog.md`：同一天同類同一檔，每次收尾加一節 `## <HH:mm> <做收尾的 run slug>`，只追加；檔首一行說明日期、類別與條目格式；每筆保留原文並加一行收尾時間、該項目的來源 run 與結果；歸檔檔只新增節、不改既有節。未完成、未處理的留在根目錄兩份檔；長期未處理的由 manager 自行發動撿走並自根檔刪除，工廠不主動交出。沒有 sync／archive 的非專案路線在其最後一步歸檔。`archive/` 預設進版控，收尾後若有 commit 就一併納入；兩份根檔使用者要求才 commit。有 `_skill-notes.md` 時收尾一併處理，預設寫 `handoff-skill-<topic>.md` 交給 skill repo 的 manager。
 - `_status.md`、`_memory.md`、`_dispatch-plan.md`、`_review-checklist.md` 與根目錄兩份檔以編輯工具原地更新；確實需要追加時先檢查有無重複內容。
 - 這裡放編排狀態與工作者產物，**不放**產品原始碼，也**不**取代 `openspec/**` 的規格與 change 套件。
 

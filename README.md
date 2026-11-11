@@ -206,6 +206,7 @@ flowchart TD
 | `need-ask-user-guide` | 自製 | 是 | 委派工作中判斷是否詢問使用者，規範檢查點的待決與提醒呈現 |
 | `peer-agent-coordination` | 自製 | 是 | 多 agent 共用工作區的協調協定；不主動啟用，使用者提及、協作討論需要，或使用者核可的流程（如 manager 委派）指定時才用，沒有即時通道時由使用者人工轉送 |
 | `orchestrator-helper` | 自製 | 是 | 輔助指揮者：依工作當下的契約接手任何工作，持有自己的簡單脈絡；使用者，或經授權的 manager、factory 可發動 |
+| `skill-feedback-notes` | 自製 | 是 | skill 改良回饋筆記：工作涉及改 skill、製作 skill 或追蹤 skill 品質時記錄指正，收尾交給 skill repo 的 manager |
 | `decision-support` | 自製 | 是 | 把糾纏的決策拆成獨立節點，逐節點權衡與推薦 |
 | `explain` | 自製 | 是 | 把目標拆成摘要與元素清單 |
 

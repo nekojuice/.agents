@@ -14,8 +14,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.14"
-  last_updated: "2026-11-10T17:16:31"
+  version: "1.15"
+  last_updated: "2026-11-11T10:02:59"
 ---
 
 # orchestrator-factory
@@ -145,6 +145,10 @@ Exception: **`test-first` is always on for propose** (and as required during app
 
 Do **not** paste full texts of those skills here — read and follow them when the stage runs.
 
+### Skill feedback notes
+
+When the work involves changing a skill, making a skill, or tracking a skill's quality, record per `skill-feedback-notes` in `_skill-notes.md`. Workers record only when their assignment authorizes it, returning the entries to the orchestrator.
+
 ## Repair policy (N = 3)
 
 Classify every problem; do **not** mark everything `blocked`.
@@ -269,7 +273,7 @@ Closed items leave the two root files for `.factory/archive/` instead of being d
 | --- | --- | --- | --- |
 | Underscore (control / handoff) | `_*.md` | Orchestrator (workers may append only when prompt says so); peer files follow `peer-agent-coordination` | Control-plane and factory-internal temp handoff |
 | Worker artifacts | `<role>-<id>-*.md` (no leading `_`) | That worker | Structured results |
-| Cross-party handoff | `handoff-<recipient>-<topic>.md` in this run's root | Orchestrator, or the manager delivering `handoff-factory-<topic>.md` | Handoff between this run and a party outside it (e.g. `manager`) |
+| Cross-party handoff | `handoff-<recipient>-<topic>.md` in this run's root | Orchestrator, or the manager delivering `handoff-factory-<topic>.md` | Handoff between this run and a party outside it (e.g. `manager`; `skill` for the skill repository's manager, per `skill-feedback-notes`) |
 
 Handoff files between the manager and a factory always live at the factory run root: the factory's `handoff-manager-<topic>.md` in its own run, and the manager's `handoff-factory-<topic>.md` in the receiving factory run. Names use lowercase letters, digits, and hyphens only. The file starts with three header lines: `Source run:`, `Recipient:`, `Date:`. The recipient never edits the file and records its processing in its own run.
 
@@ -290,6 +294,7 @@ Handoff files between the manager and a factory always live at the factory run r
 | `_handoff-<worker>.md` | Factory-internal temp handoff for one worker (resume, partial progress); not a cross-party handoff |
 | `_needs-input.md` | On `needs_input`: reason + recommended four-choice menu (and any situational extras); see Repair policy |
 | `_plan.md` | The plan on the plan route (§ Plan route) |
+| `_skill-notes.md` | Skill feedback notes (`skill-feedback-notes`) |
 | `_notes.md` | Discussion notes not yet confirmed by the user (converged items, findings worth keeping, items for the manager handoff), and corrections to stale `.manager` content (§ Information sources level 3) |
 
 **Control-file writes** — update `_status.md`, `_memory.md`, `_dispatch-plan.md`, `_review-checklist.md`, `_review-queue.md`, and `_issue-backlog.md` in place with an editing tool. When an append is genuinely needed, first check that the same content is not already there. Never blind-append with shell redirection. Files under `archive/` are the exception to in-place updates: only add a new section, never edit earlier ones.
@@ -584,6 +589,7 @@ Only after human E2E (and any fixes the user directed) and **explicit** user app
 2. If branch is **not** `main` and **not** `master` → **block** sync/archive, warn that running them on a feature branch can damage main-spec files on `main`/`master`, and stop.
 3. If on `main`/`master` and user approved → follow `openspec-sync-specs` and `openspec-archive-change` as directed.
 4. Archive this work's finished queue items and closed backlog entries per § Archive of cross-run files.
+5. Handle `_skill-notes.md` per `skill-feedback-notes`. A run that does not reach § 7 (a non-project route, or a discussion that ends) handles it at its own final step or when the discussion ends.
 
 If manual verification items remain unchecked, the user's verbal confirmation is enough to archive; record the confirmation and its time in `_status.md`. Items the user confirms closed are archived with that result; the rest stay in the queue. Never tick an item as human-verified for the user or claim the user verified it; agent-verified ticks carry their report path.
 

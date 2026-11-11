@@ -61,6 +61,8 @@ PM 發動的委派預設使用 `peer-agent-coordination`，使用者核可委派
 │       ├── changes/                      # 非產品路線的異動決策與索引（選用）
 │       ├── reviews/                      # 審查報告與 PM 裁定（選用）
 │       ├── handoff-factory-<topic>.md    # 交付前的交接草稿（選用）
+│       ├── skill-notes.md                # skill 回饋筆記（選用）
+│       ├── handoff-skill-<topic>.md      # skill 回饋交接（選用）
 │       ├── _automation.md                # 自動化計畫（選用）
 │       └── outcome.md                    # run 結論
 └── .gitignore       # 單行：_runs/

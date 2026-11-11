@@ -24,6 +24,8 @@
       |- changes/                          (optional; Non-product route)
       |- reviews/                          (optional; review reports and triage)
       |- handoff-factory-<topic>.md        (optional; draft before delivery)
+      |- skill-notes.md                    (optional; skill feedback notes)
+      |- handoff-skill-<topic>.md          (optional; skill feedback handoff)
       |- _automation.md                    (optional; automation plan)
       `- outcome.md
 ```

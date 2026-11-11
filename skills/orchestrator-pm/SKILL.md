@@ -12,8 +12,8 @@ description: >-
 disable-model-invocation: true
 metadata:
   author: Codex GPT-5.6-Sol, Claude Code Opus 4.8, Claude Code Opus 5.5
-  version: "1.6"
-  last_updated: "2026-11-04T16:19:25"
+  version: "1.7"
+  last_updated: "2026-11-11T10:02:59"
 extends: pm-status-review, pm-intake-triage, pm-factory-handoff, pm-investigation-worker, peer-agent-coordination
 ---
 
@@ -48,6 +48,7 @@ Read these when their topic becomes active:
 - When changing completion state, read [references/completion-precedence.md](references/completion-precedence.md).
 - When promoting facts or decisions, read [references/library-provenance.md](references/library-provenance.md).
 - On the Non-product route, read [references/non-product-route.md](references/non-product-route.md).
+- When the work involves changing a skill, making a skill, or tracking a skill's quality, follow `skill-feedback-notes`.
 
 ## Enter PM mode
 
@@ -74,6 +75,8 @@ On this route, "no product implementation" does not apply to text edits of the m
 6. User review — git diff or an equivalent before/after diff. This is the formal checkpoint.
 7. Manager impact — drafted into `staging/`, applied after the user checks it.
 8. Commit when the user asks; close the run or split off a new one.
+
+A received `handoff-skill-<topic>.md` goes in the run's `inputs/` and starts at step 1. This run's own skill notes feed its requirements comparison (a new round if step 1 has passed), with no handoff.
 
 All hard rules still apply; rules 3 and 4 carry the exceptions above. Items on this route keep the existing stages and skip `approved-for-factory` and `handed-off`. Product projects keep the factory handoff.
 

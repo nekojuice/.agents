@@ -99,9 +99,9 @@ skill 本身：
 
 `orchestrator-pm-readme.md` 與 skill 的不一致：
 
-- README 非產品路線流程圖最後是「擬稿到 staging/」→「使用者檢查後沖入、pm-status-review 盤點」，讀起來像沖入之後才盤點；non-product-route § 7 與 run-lifecycle 是狀態與里程碑提案也經 `pm-status-review` 擬進同一個 `staging/`，使用者檢查一次後沖入。
+- README 非產品路線流程圖最後是「擬稿到 staging/」→「使用者檢查後沖入、pm-status-review 盤點」，讀起來像沖入之後才盤點（已解（README `6b0c419`））：README 流程圖改為單張 LR 圖，狀態盤點與非產品路線都匯入同一個「擬稿 staging」，使用者檢查一次後沖入；non-product-route § 7 與 run-lifecycle 是狀態與里程碑提案也經 `pm-status-review` 擬進同一個 `staging/`，使用者檢查一次後沖入。
 - README 未提到跨方交接檔的格式（開頭三行、收件方不修改、處理紀錄寫在自己的 run）。屬省略，不是矛盾。
-- README 的寫入範圍仍寫「例外有三種」，未列硬規則 3 的 `.factory/_review-queue.md`、`.factory/_issue-backlog.md`，也未列撿走時刪除條目；請求路由流程圖已補撿走分支，自動化流程圖已同步收尾歸檔到 `.factory/archive/`、未完成留在工廠。
+- README 的寫入範圍仍寫「例外有三種」，未列硬規則 3 的 `.factory/_review-queue.md`、`.factory/_issue-backlog.md`，也未列撿走時刪除條目；README 流程圖已合併為單張 LR 圖（`6b0c419`），含撿走分支；自動化的收尾歸檔到 `.factory/archive/`、未完成留在工廠改由文字說明。
 
 ## 4. 與前版差異
 

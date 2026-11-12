@@ -167,7 +167,7 @@ opsx 路線的順序：
 - **工廠模式對 `discuss-first` 的加項**：`discuss-first`（1.2）寫明開場不談寫筆記、不為記錄而建 run 或寫檔；工廠模式的討論階段在其鎖之上要求自主記筆記並在需要時建 run（E94、E95），以工廠條文覆寫，`discuss-first` 本身未改。
 - **README（`orchestrator-factory-readme.md`）與本文仍不一致處**：
   - 1.13 的討論與收斂（已解（1.13））：README 已同步概覽第 5 步、建 run 時機、流程圖的收斂與行動開始閘、討論交接、Stage `converge`，並在其他規則新增「討論與收斂」一條。
-  - 流程圖的 commit 節點仍寫「明確要求時代為 commit」，沒有提到自動化授權；開頭段與自動化流程圖已涵蓋。
+  - 流程圖的 commit 節點仍寫「明確要求時代為 commit」，沒有提到自動化授權（已解（README `6b0c419`））：README 流程圖改為依本文繪製的單張 LR 圖，收尾節點只寫「commit 建議」，代為 commit 的條件留在開頭段文字。
   - 沒有寫 manager 的 peer 訊息與交接檔屬資訊來源第 3 級，也沒有寫不會到達 await-e2e 的 run 為過時 `.manager` 更正另寫交接。
   - 檔案樹把 `_intake.md` 標為選用，本文列在必要控制檔表（見上）。
   - manager 交接內容的列舉沒有「新增 `_issue-backlog.md` 項目的指標」（E69）。

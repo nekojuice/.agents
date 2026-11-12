@@ -86,10 +86,7 @@ orchestrator-pm/
 ```mermaid
 %%{init: {"flowchart": {"rankSpacing": 35, "nodeSpacing": 22}}}%%
 flowchart LR
-  E1([啟用<br/>PM 模式]) --> IN{.manager<br/>存在?}
-  IN -.->|否| INI[初始化<br/>有狀態先 crawl]
-  INI --> RQ
-  IN -->|是| RQ{意圖}
+  E1([啟用<br/>PM 模式]) --> RQ{意圖}
 
   RQ -->|討論| DI[PM 討論]
   RQ -->|蒐證| IW[唯讀調查<br/>PM 綜合]

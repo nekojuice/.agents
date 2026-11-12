@@ -84,7 +84,7 @@
 
 ## 技能邏輯
 
-實線是主流程，虛線是可選或例外流程，粗箭頭是人閘，必須停下等使用者，綠燈的檢查不等於可以出貨。
+實線是主流程，虛線是可選或例外流程，粗箭頭是人閘，必須停下等使用者，綠燈的檢查不等於可以出貨；圓柱是跨 run 累積的清單。
 
 ```mermaid
 %%{init: {"flowchart": {"rankSpacing": 35, "nodeSpacing": 22}}}%%
@@ -95,6 +95,16 @@ flowchart LR
   RT -->|專案實作| PP
   RT -.->|計畫路線| PL
   RT -->|非專案| TL[量身路線]
+
+  subgraph G2["計畫路線"]
+    PL[寫計畫] --> PR[計畫審查]
+    PR -.->|需修改| PL
+    PR -->|通過| EX[執行]
+    EX -.->|使用者<br/>授權| OR[產物審查]
+    EX --> PO([產物])
+    OR -.-> PO
+  end
+  PO -.->|後續工作<br/>輸入| RT
 
   subgraph G1["opsx 專案實作"]
     PP[提案] -.->|選配| CR[提案審查]
@@ -111,26 +121,19 @@ flowchart LR
     HU ==>|使用者核可<br/>僅 main/master| SY[同步歸檔]
   end
 
-  subgraph G2["計畫路線"]
-    PL[寫計畫] --> PR[計畫審查]
-    PR -.->|需修改| PL
-    PR -->|通過| EX[執行]
-    EX -.->|使用者<br/>授權| OR[產物審查]
-  end
+  G1 -.->|範圍外發現<br/>失敗| IB[(issue<br/>backlog)]
+  EE -.->|驗證打勾| RQ[(review<br/>queue)]
+  RQ -.->|只剩人<br/>能測的| HU
 
   subgraph G3["自動化"]
     E3([manager<br/>指派]) --> AD[設計段<br/>逐 run 提案審查]
-    AD -.->|下一個 run| AD
     AD ==>|使用者<br/>批次檢視| BP[施工段<br/>逐 run 到 commit]
-    BP -.->|下一個 run| BP
+    BP ==>|嚴重問題<br/>停下等使用者| BP
   end
   BP -->|整批完成| HU
 
   SY --> FN[收尾<br/>archive、skill 筆記<br/>commit 建議、change log]
-  EX --> FN
-  OR -.-> FN
   TL --> FN
-  DS -.->|討論結束| FN
 ```
 
 ### 其他規則

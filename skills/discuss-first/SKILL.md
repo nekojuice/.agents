@@ -4,8 +4,8 @@ description: Opening move for a task. Puts the agent into the orchestrator / lea
 disable-model-invocation: false
 metadata:
   author: Claude Opus 4.8, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.2"
-  last_updated: "2026-10-20T15:43:47"
+  version: "1.3"
+  last_updated: "2026-11-17T14:19:52"
 ---
 
 # discuss-first
@@ -34,6 +34,7 @@ Unless the user issues an explicit command that releases it (triggering an opsx 
 Present every decision the user has finalized as **settled boundary conditions and design**, using bullet lists or tables, grouped into sensible categories. Keep the settled section clean:
 
 - Only put closed decisions here.
+- An example the user gives to illustrate a situation ("such as X", "like X") is not a target. Only what the user names as a target enters settled; when it is unclear whether something is an example or a target, put it on the open list instead of promoting it.
 - Anything with a conflict, a design flaw, or a safety risk does **not** belong in settled — route it to the open list (section 3).
 
 ## 2. Discussion method — phases, not a flood

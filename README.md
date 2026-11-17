@@ -227,6 +227,7 @@ flowchart TD
 | Skill | 作者 | 自動啟用 | 簡述 |
 | --- | --- | --- | --- |
 | `orchestrator-reverse-spec` | 自製 | 否 | 反寫既有專案為 OpenSpec 主規格的指揮者 |
+| `design-system-extraction` | 自製 | 否 | 從既有前端反推品牌設計規格，重建成分層 design system，並可遷移到 utility CSS |
 | `openspec-explore` | [OpenSpec](https://github.com/Fission-AI/OpenSpec) | 是 | 探索模式：釐清想法，尚未開立 change |
 | `opsx-health-check` | 自製 | 否 | 主規格與程式落差的健康檢查，匯出比對報告 |
 | `impl-verify` | 自製 | 是 | 需求邊界檢查；可獨立使用，非工廠主路徑 |

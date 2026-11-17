@@ -1,0 +1,44 @@
+# forbid-list template
+# The real list lives only in the run (<run>/forbid-list.txt). Never copy it into any skill,
+# and never copy its lines into notes or reports.
+# The orchestrator generates it mechanically before work starts, from:
+#   - site and product names in the source's earlier docs and handbook,
+#   - project-specific words in old component and variant IDs,
+#   - class names from the source project's own style sheets (file-extension-like entries removed),
+#   - regular expressions for source framework and template-engine structures.
+# Workers read it; they never edit it. A collision with a generic utility name is reported to the
+# orchestrator, who decides whether the word moves to [allow].
+#
+# Lines starting with # are comments; blank lines are ignored. One entry per line.
+# All example lines below are neutral placeholders.
+
+[allow]
+# Words always allowed (e.g. the brand-layer name chosen for the produced skill).
+# Masked out of the text BEFORE the other sections are matched.
+# Matching is case-sensitive on purpose: case-insensitive masking hides forbidden words
+# that merely contain an allowed word.
+example-brand-skill-name
+
+[substring]
+# Case-insensitive substrings. Scanned in every text file of the skill: content, file names,
+# SVG text, scripts, generated pages.
+example site name
+exampleproduct
+
+[class]
+# Matched only as a whole class token: in CSS selectors (.name) and in HTML class attributes.
+# Left and right boundaries must not be a word character or a hyphen ([\w-]).
+# Unescape CSS selectors first (e.g. a variant prefix "hover\:" ) so "name" inside an escaped
+# utility is not misread.
+example-panel
+example-card-title
+
+[regex]
+# Python regular expressions, scanned in every text file.
+\bexample-legacy-[a-z]+__[a-z]+\b
+@example-template-directive\b
+
+# Traps when implementing the scan:
+# - A checker script that contains a forbidden word as a literal hits itself; split such literals.
+# - Remove SVG xmlns namespace URIs before checking for external resources.
+# - Keep the allow masking case-sensitive (see [allow]).

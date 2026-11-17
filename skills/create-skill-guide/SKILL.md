@@ -9,8 +9,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.2"
-  last_updated: "2026-10-20T15:44:36"
+  version: "1.3"
+  last_updated: "2026-11-17T14:19:52"
 ---
 
 # create-skill-guide
@@ -71,7 +71,7 @@ Never copy the same boolean across hosts. After any invocation-policy edit, veri
 
 #### Recommendation criteria
 
-Recommend **explicit-only** when the skill changes session-wide persona/output behavior, has unusually broad orchestration or write authority, can create disruptive or very large output, or represents a costly/special workflow without a safe discriminating trigger.
+Recommend **explicit-only** when the skill changes session-wide persona/output behavior, has unusually broad orchestration or write authority, can create disruptive or very large output, or represents a costly/special workflow without a safe discriminating trigger. Also recommend explicit-only while a skill is still experimental or on trial, even when the automatic criteria below would otherwise apply; reconsider automatic invocation once it has stabilized.
 
 Recommend **automatic invocation** when the skill is a narrow and safely applicable discipline, framework/domain guidance, ordinary diagnostic/documentation help, or a worker/helper that another workflow must be able to select. Its `description` must state precise positive triggers and meaningful exclusions.
 

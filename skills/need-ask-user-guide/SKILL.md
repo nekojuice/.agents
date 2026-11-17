@@ -10,8 +10,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Codex GPT-6, Claude Code Opus 5.5
-  version: "1.2"
-  last_updated: "2026-11-03T17:13:07"
+  version: "1.3"
+  last_updated: "2026-11-17T14:19:52"
 ---
 
 # need-ask-user-guide
@@ -168,6 +168,11 @@ with evidence the coordinator checked, and simple logic checks.
   must remain supported; derive implementation details from the answer.
 - **Data deletion:** A backup makes recovery possible but does not supply missing
   authorization. Resolve the target and applicable permission before deleting.
+- **Self-planned verification path:** The agent planned to confirm a value by
+  comparing against a pristine source, but no such source is available. When
+  the gap does not block a material decision, decide from the existing
+  evidence, record it as a known gap or assumption, and do not turn the
+  missing path into a user decision.
 - **Required review:** Prepare the reviewable result and stop at the specified
   checkpoint. Successful checks do not replace the user's acceptance.
 - **Checkpoint report:** One open question is already listed in the run's

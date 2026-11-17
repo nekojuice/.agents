@@ -1,0 +1,17 @@
+/* TEMPLATE: Tailwind v4 entry for <brand> (hand-written). The skill's preview compiles from this file.
+   Projects write their own entry in the same order and point @source at their templates (DESIGN.md § 7.1).
+   - source(none): no automatic source detection; output depends only on the @source lines below.
+   - tokens.css and base.css sit in the base layer so utilities can override them.
+   - theme.css is generated from tokens.json; it resets default namespaces to initial.
+   Delete the word TEMPLATE when filled. */
+@import "tailwindcss" source(none);
+@import "../tokens.css" layer(base);
+@import "./theme.css";
+@import "../base.css" layer(base);
+
+@source "../components/*.md";
+@source "../patterns/*.md";
+@source "../preview/**/*.html";
+
+/* Exclude built-in utilities whose names collide with brand layout names, if any:
+   @source not inline("<utility-name>"); */

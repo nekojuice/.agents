@@ -3,9 +3,9 @@ name: research
 description: Investigate a question against high-trust primary sources and capture the findings as a Markdown file in the repo. Use when the user wants a topic researched, docs or API facts gathered, or reading legwork delegated to a background agent.
 disable-model-invocation: false
 metadata:
-  author: Codex GPT-5
-  version: "1.0"
-  last_updated: "2026-08-20T14:36:57"
+  author: Codex GPT-5, Claude Code Opus 5.5
+  version: "1.1"
+  last_updated: "2026-11-17T14:19:52"
 ---
 
 Spin up a **background agent** to do the research, so you keep working while it reads.
@@ -14,4 +14,5 @@ Its job:
 
 1. Investigate the question against **primary sources** — official docs, source code, specs, first-party APIs — not a secondary write-up of them. Follow every claim back to the source that owns it.
 2. Write the findings to a single Markdown file, citing each claim's source.
+   When the question is whether something conforms to a standard, a spec, or a best practice, label each conclusion by its basis: **primary source, verbatim** (the original read yourself, not via a summary), **partially supported**, or **own design** (the agent's proposal). Never present an own design as the standard.
 3. Save it where the repo already keeps such notes; match the existing convention, and if there is none, put it somewhere sensible and say where.

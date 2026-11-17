@@ -1,0 +1,6 @@
+# TEMPLATE: inverse of SKILL.md disable-model-invocation (true -> false). Quote UI strings; keep keys and booleans unquoted. Delete this comment when filled.
+interface:
+  display_name: "<brand>"
+  short_description: "<brand> web design system (handbook, layered tokens, component specs, assets)"
+policy:
+  allow_implicit_invocation: false

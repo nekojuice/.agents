@@ -10,8 +10,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Claude Code Opus 5.5
-  version: "1.0"
-  last_updated: "2026-11-11T10:02:59"
+  version: "1.1"
+  last_updated: "2026-11-17T14:19:52"
 ---
 
 # skill-feedback-notes
@@ -39,6 +39,8 @@ One entry per item:
 - the user's own words;
 - the reason, only when the user gave one;
 - the skill involved and its version.
+
+When the notes will be used to make or revise a general-purpose skill, write each entry de-identified with placeholders, including the quoted user words (replace identifying names with placeholders and keep the rest verbatim); keep project data in the run's research or verification files, not in the notes.
 
 Prefer the user's corrections, problems that recur, and principles the user states. Leave out ordinary progress. Aim for the important items, but do not hold back an entry for being minor; whoever revises the skill filters the noise.
 

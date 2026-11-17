@@ -1,0 +1,26 @@
+{
+  "slots": {
+    "note": "Invented template syntax, for illustration only. Copy this file into the run, rename the preset and replace each pattern with the real engine's syntax; keys left out keep the plain-html value (stack_scan.py --help lists every key).",
+    "comment_patterns": ["\\{!.*?!\\}", "<!--.*?-->"],
+    "layout_assign": ":layout\\s+(none|\"([^\"]+)\")",
+    "layout_null": "none",
+    "layout_defaults_file": "_defaults",
+    "skip_basenames": ["_defaults"],
+    "section_open": ":slot\\s+(\\w+)\\s*\\{",
+    "slot_output": ":yield\\s+(\\w+)",
+    "body_output": ":yield-body",
+    "condition_open": ":if\\s*\\((.*?)\\)\\s*\\{",
+    "condition_var": "scope",
+    "root_alias": "$root/",
+    "include_calls": [":include\\s+\"([^\"]+)\""],
+    "shared_dir_name": "common",
+    "partial_prefix": "_",
+    "resolve_relative": false,
+    "route_scan": {
+      "file_suffix": "_routes.txt",
+      "class": "group\\s+(\\w+)",
+      "action": "route\\s+(\\w+)",
+      "render_call": "\\brender\\(\\s*(\"([^\"]+)\")?"
+    }
+  }
+}

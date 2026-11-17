@@ -28,6 +28,8 @@
 | 文件 skill 繼承架構與類型路由 | accepted | 文件 skill | 父層路由，子 skill 繼承並以覆寫表宣告衝突 | decisions/doc-skill-family.md |
 | 規則正本歸屬 | accepted | 全部 skill | 一條規則一個正本，其他引用 | decisions/rule-ownership.md |
 | skill 檔頭的 extends 位置 | accepted | 全部 skill | extends 放 frontmatter 最外層 | decisions/skill-frontmatter-extends.md |
+| 設計提取為擴充 skill | accepted | 設計提取 | 由 factory 計劃路線載入、依指令選段；不另做 orchestrator | decisions/design-system-extraction-extension.md |
+| Tailwind 為通用樣式表達語言 | accepted | 設計提取與品牌 skill | 樣式一律 Tailwind 語法，含非 CSS 媒介；token 為數值唯一來源 | decisions/tailwind-style-notation.md |
 
 ## Skill element maps
 

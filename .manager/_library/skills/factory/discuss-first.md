@@ -1,7 +1,7 @@
 # discuss-first 元素對照
 
 - 分支：factory
-- 對照版本：`skills/discuss-first/SKILL.md` version 1.2，last_updated 2026-10-20T15:43:47
+- 對照版本：`skills/discuss-first/SKILL.md` version 1.3，last_updated 2026-11-17T14:19:52
 - 讀過的檔案：`skills/discuss-first/SKILL.md`、`skills/discuss-first/agents/openai.yaml`
 - 狀態：已檢查，2026-10-20 移入 manager 正式文件
 
@@ -45,6 +45,7 @@
 | E19 | 邊界條件 | 探索允許範圍 | 可蒐集脈絡，但限在唯讀、不侵入的範圍：允許唯讀檢查專案、透過 MCP 或網路查詢 | Exploration boundary |
 | E20 | 人閘 | 探索寫入先問 | 僅供探索、會寫入磁碟、安裝套件或改變環境的動作（暫存檔、解析腳本、額外相依，例如需要寫腳本解析複雜的 Excel／CSV）要先問使用者是否及如何進行，不得自行假設；判準不是用哪個工具，而是是否改變使用者的機器；有疑慮就先問 | Exploration boundary |
 | E21 | 邊界條件 | 專案檔不在探索層 | 專案檔的變更不屬探索層，歸討論鎖管，走「說明、詢問、明確授權」的路徑；在探索層問過一次也不等於許可修改專案檔 | Exploration boundary |
+| E22 | 判斷規則 | 舉例不是目標 | 使用者用來說明情境的例子（「例如 X」「像 X」）不是目標；只有使用者點名為目標者進已定區；分不清是例子還是目標時列入待議清單，不自行升格 | 1. Organize what is settled |
 
 ## 3. 其他
 
@@ -52,6 +53,8 @@
 - **「直接行動指示」解鎖的範圍不明**：E5 把「任何其他直接要求行動的指示」列為解鎖條件，E8 的口頭授權例外則規定「只解鎖使用者指名的範圍」。直接行動指示是否也只解鎖其所指範圍，或解除整個鎖，本文沒有明說。
 
 ## 4. 與前版差異
+
+- 1.3（2026-11-17）：新增 E22 舉例不是目標（來源：manager run 2026-11-17-design-extraction-skill `requirements-comparison.md` §9、`changes/06`–`09`；審查分類 `reviews/_triage.md`）。
 
 對照 run `2026-10-19-skill-improvement` 的 `staging/_baseline-2026-10-19/factory/discuss-first.md`（前版 version 1.1，元素 E1–E15）。
 

@@ -1,7 +1,7 @@
 # skill-feedback-notes 元素對照
 
 - 分支：factory
-- 對照版本：`skills/skill-feedback-notes/SKILL.md` version 1.0，last_updated 2026-11-11T10:02:59
+- 對照版本：`skills/skill-feedback-notes/SKILL.md` version 1.1，last_updated 2026-11-17T14:19:52
 - 讀過的檔案：`skills/skill-feedback-notes/SKILL.md`、`skills/skill-feedback-notes/agents/openai.yaml`
 - 狀態：已檢查，2026-11-11 移入 manager 正式文件
 
@@ -31,6 +31,7 @@
 | E14 | 流程步驟 | 高複雜度修訂 | 使用者指示時，持有完整脈絡的 session 可以 manager 模式進入 skill repo，自己走非產品路線 | Receiving a handoff |
 | E15 | 流程步驟 | 驗證 | 選用；只在 session 同時持有新舊兩版的記憶或脈絡且正在比較時：1 重讀新版，不依賴先前載入的版本；2 比較新舊版下的工作；3 結果（改善、未改善、副作用）記成一筆 | Verification |
 | E16 | 流程步驟 | 使用者回報 | 使用者在工作中回報修訂有無幫助，也記成一筆；驗證記錄走同一條收尾 | Verification |
+| E17 | 判斷規則 | 通用 skill 用筆記去識別化 | 筆記用途是製作或修改通用 skill 時，條目本身以佔位符去識別化，使用者原話中的識別名稱也替換、其餘照錄；專案資料留在 run 的研究或驗證資料 | What to record |
 
 ## 3. 其他
 
@@ -40,4 +41,5 @@
 
 ## 4. 與前版差異
 
+- 1.1（2026-11-17）：新增 E17 通用 skill 用筆記去識別化（來源：manager run 2026-11-17-design-extraction-skill `requirements-comparison.md` §9、`changes/06`–`09`；審查分類 `reviews/_triage.md`）。
 - 1.0（2026-11-11）：新增 skill，首次拆解（來源：manager run 2026-11-04-next-skill-evolution `requirements-comparison-skill-feedback-loop.md` §6、`changes/04`；審查分類 `reviews/_triage-skill-feedback-loop.md`）。

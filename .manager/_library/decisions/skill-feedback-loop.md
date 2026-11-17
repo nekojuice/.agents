@@ -13,6 +13,7 @@ skill 使用中得到的指正以一份參考用 skill 記成筆記，收尾時�
 
 - 觸發：工作涉及改 skill、製作 skill 或追蹤 skill 品質的語意。
 - 記錄：盡量記重點、壓制低品質內容，但不能什麼都不記；雜訊由修訂 skill 的 agent 過濾。
+- 去識別化：筆記用途是製作或修改通用 skill 時，條目本身（含使用者原話中的識別名稱）以佔位符去識別化；專案資料留在 run。
 - 範圍：factory、manager、helper；orchestrator 底下的 worker 需 orchestrator 授權。
 - 收尾：筆記是收尾待處理項目，與 opsx、issue backlog、review queue 同一階段處理。一般修訂比照 factory 交接 manager：交接 → skill repo 的 manager 走非產品路線 → 修改 skill；抽象化在 skill repo 進行。
 - 高複雜度修訂：產品 session 可在使用者指示下直接以 manager 模式修改 skill，不禁止。

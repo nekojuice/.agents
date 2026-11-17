@@ -24,6 +24,7 @@
 | factory | orchestrator-helper | factory/orchestrator-helper.md |
 | factory | peer-agent-coordination | factory/peer-agent-coordination.md |
 | factory | skill-feedback-notes | factory/skill-feedback-notes.md |
+| factory | design-system-extraction | factory/design-system-extraction.md |
 | pm | orchestrator-pm | pm/orchestrator-pm.md |
 | pm | pm-factory-handoff | pm/pm-factory-handoff.md |
 | pm | pm-intake-triage | pm/pm-intake-triage.md |

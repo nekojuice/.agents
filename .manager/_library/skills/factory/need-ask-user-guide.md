@@ -1,7 +1,7 @@
 # need-ask-user-guide 元素對照
 
 - 分支：factory
-- 對照版本：`skills/need-ask-user-guide/SKILL.md` version 1.2，last_updated 2026-11-03T17:13:07
+- 對照版本：`skills/need-ask-user-guide/SKILL.md` version 1.3，last_updated 2026-11-17T14:19:52
 - 讀過的檔案：`skills/need-ask-user-guide/SKILL.md`、`skills/need-ask-user-guide/agents/openai.yaml`；交叉引用核對（唯讀）：`orchestrator-factory` 的 § Cross-run review queue 與 §5b（agent E2E review 與 orchestrator 覆核）
 - 狀態：已檢查，2026-11-04 移入 manager 正式文件
 
@@ -49,7 +49,7 @@
 | E25 | 檢查點回報 | Reminders 區 | 放提醒、已知限制、非阻擋問題、範圍外發現、已記錄的待答問題；已記錄的問題引用其記錄位置，不重新當成新決策提出；此區不需回覆，已記錄但仍阻擋者除外 | Present pending decisions at checkpoints |
 | E26 | 檢查點回報 | 已記錄但仍阻擋 | 已記錄且仍阻擋流程的決策不降級為免回覆的提醒；附紀錄指標，以仍阻擋的方式呈現：流程定義了阻擋欄位（例如 `Blockers`）時放該欄，否則列在 Reminders 首項並標明仍阻擋；不重新當成新決策提出 | Present pending decisions at checkpoints |
 | E27 | 檢查點回報 | 人工驗證清單也是打斷 | 要求使用者手動驗證或審查的清單也是一種打斷；只列需要人判斷的項目，排除自動測試或硬檢查已涵蓋的項目、agent E2E review 已驗證且證據經協調者覆核的項目，以及簡單邏輯檢查 | Present pending decisions at checkpoints |
-| E28 | 範例 | 六則示範 | 套件管理工具（讀 lockfile、腳本與文件流程，自行判定）；兩種本地實作（依鄰近慣例、跑檢查、回報有意義的取捨）；相容性（問上游的相容需求，細節由答案推導）；資料刪除（備份不等於授權，先確定目標與權限）；必要審查（準備可審查結果並停在檢查點，檢查通過不取代使用者驗收）；檢查點回報（已列在 run 待決清單的問題：不阻擋則放 Reminders 並引用，仍阻擋則附指標呈現為阻擋；只有新出現且阻擋下一步的問題放 Decisions needed） | Examples |
+| E28 | 範例 | 七則示範 | 套件管理工具（讀 lockfile、腳本與文件流程，自行判定）；兩種本地實作（依鄰近慣例、跑檢查、回報有意義的取捨）；相容性（問上游的相容需求，細節由答案推導）；資料刪除（備份不等於授權，先確定目標與權限）；自擬查證途徑（agent 規劃的查證途徑取不到證據，且缺口不阻擋重大決策時，依現有證據判定，記成已知缺口或假設，不轉成使用者決定）；必要審查（準備可審查結果並停在檢查點，檢查通過不取代使用者驗收）；檢查點回報（已列在 run 待決清單的問題：不阻擋則放 Reminders 並引用，仍阻擋則附指標呈現為阻擋；只有新出現且阻擋下一步的問題放 Decisions needed） | Examples |
 | E29 | 送出前檢查 | 提問前自檢 | 確認答案尚未存在（含任務指定的持久紀錄，有紀錄就用它）；合理調查無法解決；會影響結果或必要授權；考慮有支持的便宜假設是否足夠；合併同一依賴的問題，同時保留獨立決策；確認 Decisions needed 每項真的阻擋進度，不阻擋的移到 Reminders | Before sending a question |
 | E30 | 成功標準 | 衡量方式 | 完成授權工作、可避免的打斷更少、重大假設可見、必要核准完整；問題少本身不是判斷較好的證據 | Before sending a question |
 
@@ -61,6 +61,8 @@
 - 其餘未發現衝突或自相矛盾。
 
 ## 4. 與前版差異
+
+- 1.3（2026-11-17）：E28 由六則改七則，新增自擬查證途徑範例（來源：manager run 2026-11-17-design-extraction-skill `requirements-comparison.md` §9、`changes/06`–`09`；審查分類 `reviews/_triage.md`）。
 
 對照前版對照稿（version 1.1，last_updated 2026-10-20T13:40:41）與 commit 6bccacb 的 diff（前版之後只有這個 commit 改動本 skill）。元素編號沿用。
 

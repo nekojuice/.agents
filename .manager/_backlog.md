@@ -14,6 +14,7 @@
 | SK-CR | initiative | code-review 規格軸加入成品設計檢查：apply 後依已定目標判斷做成的設計，與 apply 前的 change 文件審查分工 | 2026-11-05 使用者 | verifying | 已 commit（82af4c8）並沖入；試用 |
 | SK-DSE | initiative | 新增 `design-system-extraction` 擴充 skill（抽取 → 重建 → 框架遷移，Tailwind 為通用表達語言）；併入 research、discuss-first、create-skill-guide、skill-feedback-notes、need-ask-user-guide 的回饋 | 2026-11-17 使用者 | verifying | 已 commit（18a1670）並沖入；試用 |
 | SK-FN | initiative | skill 使用後改良的回饋迴圈：新增 skill-feedback-notes，factory、manager 引用；收尾交接給 skill repo 的 manager | 2026-11-11 使用者 | verifying | 已 commit（f46066e）並沖入；試用 |
+| SK-EF | initiative | 工作時長與工作強度評估：新增 work-effort-eval，orch 工作中記錄、收尾派 eval 評估與歸因；factory、manager 自動啟用；manager 新增跨 run 台帳 | 2026-11-18 使用者 | verifying | 已修改並審查；待 commit 與試用 |
 | SK-PR | initiative | factory 非實作工作的選用計畫路線：計畫 → 計畫審查（沿用 change review，可多輪）→ 執行；產物審查需使用者授權 | 2026-11-10 使用者 | verifying | 已 commit（e8232a9）並沖入；試用 |
 | SK-R2 | debt | 元素對照重拆時發現的殘留不一致：orchestrator-pm、pm-factory-handoff、pm-status-review、orchestrator-factory、commit-message-suggestion、peer-agent-coordination 與兩份 readme（正文在各對照 §3） | 2026-11-02 元素對照 | inbox | 下一輪修改 skill 時併入 |
 

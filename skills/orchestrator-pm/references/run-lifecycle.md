@@ -31,10 +31,11 @@ Do not rely on the previous chat transcript or on a persistent agent identity. I
 
 ## Conclude
 
-1. Write `outcome.md` with answers, case decisions, unresolved items, and human approvals.
-2. Promote only confirmed facts, decisions, backlog entries, or status changes, drafted in `staging/` and applied after the user checks them; status and milestone proposals come from `pm-status-review` into the same `staging/`. On the Non-product route, see that route's section 7. Record every cross-party handoff file processed in this run in `outcome.md`.
-3. Mark `_run.md` as concluded and point to `outcome.md`.
-4. Keep the run as audit history; do not treat its scratch notes as current truth.
+1. Run the closing evaluation per `work-effort-eval` and draft `staging/_effort-ledger.md` as the full ledger with this run's row added. Do it before the user checks the staging drafts, so the ledger joins the same check; on the Non-product route, before that route's section 7.
+2. Write `outcome.md` with answers, case decisions, unresolved items, and human approvals.
+3. Promote only confirmed facts, decisions, backlog entries, or status changes, drafted in `staging/` and applied after the user checks them; status and milestone proposals come from `pm-status-review` into the same `staging/`. On the Non-product route, see that route's section 7. Record every cross-party handoff file processed in this run in `outcome.md`.
+4. Mark `_run.md` as concluded and point to `outcome.md`.
+5. Keep the run as audit history; do not treat its scratch notes as current truth.
 
 ## Split off a topic
 

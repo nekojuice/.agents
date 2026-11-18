@@ -15,9 +15,9 @@
 
 `orchestrator-factory` 是工廠模式的「廠長」總指揮。它把 OpenSpec 的一整條開發流程串起來——討論、收斂、提案、實作、機器驗證、agent E2E 驗證、人工 E2E、同步歸檔、commit 建議、change log——並把每個階段派給具名的工作者去做，自己只負責排程、守人閘、彙整回報，然後為使用者停下。
 
-它只在使用者表明要用工廠模式，或被指派到等待工廠接手的既有 run 時進入；遇到不明確的指令會退回唯讀討論。三條核心紀律貫穿全程：**驗證分離**（實作者只做硬閘檢查，程式審查與 E2E 驗證一律另派工作者；實作者與總指揮都不操作受測系統）、**預設不代為 commit**（使用者明確要求，或使用者核可的自動化計畫指定時，才依 `commit-message-suggestion` 的做法代為 commit；工作者永不 commit，push 一律要使用者另外授權）、**不臆造需求**。資訊不足時依資訊來源優先序查閱：使用者提出或確認的資訊、`.manager` 正典檔與 opsx 主規格及專案 docs、run 內未確認的筆記、opsx change；`.manager` 只可唯讀查閱，不得寫入。流程中會依階段載入相依子技能：`discuss-first`、`openspec-propose`／`opsx-propose-guide`、`test-first`、`openspec-apply-change`／`opsx-apply-guide`、`hard-verify`、`code-review`、`e2e-review`、`openspec-sync-specs`／`openspec-archive-change`、`commit-message-suggestion`、`change-log`；提案審查（`change-review-request`／`change-review-response`）與多 agent 協作（`peer-agent-coordination`）為選配。
+它只在使用者表明要用工廠模式，或被指派到等待工廠接手的既有 run 時進入；遇到不明確的指令會退回唯讀討論。三條核心紀律貫穿全程：**驗證分離**（實作者只做硬閘檢查，程式審查與 E2E 驗證一律另派工作者；實作者與總指揮都不操作受測系統）、**預設不代為 commit**（使用者明確要求，或使用者核可的自動化計畫指定時，才依 `commit-message-suggestion` 的做法代為 commit；工作者永不 commit，push 一律要使用者另外授權）、**不臆造需求**。資訊不足時依資訊來源優先序查閱：使用者提出或確認的資訊、`.manager` 正典檔與 opsx 主規格及專案 docs、run 內未確認的筆記、opsx change；`.manager` 只可唯讀查閱，不得寫入。流程中會依階段載入相依子技能：`discuss-first`、`openspec-propose`／`opsx-propose-guide`、`test-first`、`openspec-apply-change`／`opsx-apply-guide`、`hard-verify`、`code-review`、`e2e-review`、`openspec-sync-specs`／`openspec-archive-change`、`commit-message-suggestion`、`change-log`、`work-effort-eval`（工作時長與負擔評估，總指揮工作中記錄、收尾派 eval 工作者評估）；提案審查（`change-review-request`／`change-review-response`）與多 agent 協作（`peer-agent-coordination`）為選配。
 
-工作區有 `.manager` 時，每個 run 走完實作、Check 與 agent E2E 驗證、到達等待使用者檢查時，總指揮寫一份給 manager 的交接檔；討論中出現與 `.manager` 衝突或值得記錄的事項時，在收斂或討論結束時另寫一份。manager 委派的 run 會附 peer 討論室；manager 與使用者核可自動化計畫時，同一個工廠 session 先把多個 run 的 change 開完並審查，使用者一次確認後才依序施工。
+工作區有 `.manager` 時，每個 run 走完實作、Check 與 agent E2E 驗證、到達等待使用者檢查時，總指揮寫一份給 manager 的交接檔；討論中出現與 `.manager` 衝突或值得記錄的事項時，在收斂或討論結束時另寫一份；收尾的工作評估也另寫一份帶評估摘要。manager 委派的 run 會附 peer 討論室；manager 與使用者核可自動化計畫時，同一個工廠 session 先把多個 run 的 change 開完並審查，使用者一次確認後才依序施工。
 
 ## 如何啟用
 
@@ -58,6 +58,7 @@
     ├── _plan.md                # 計畫路線的計畫（選用）
     ├── _notes.md               # 未經使用者確認的討論筆記與 .manager 訂正（選用）
     ├── _skill-notes.md         # skill 回饋筆記（選用）
+    ├── _effort.md              # 工作時長與負擔記錄，收尾後寫入最終分級（選用）
     ├── _review-checklist.md    # 本 run 的逐項清單：Check 後交 E2E 工作者，覆核後標出結果與剩給人的項目，打勾永久保留
     ├── _needs-input.md         # 遇 needs_input 時的原因與四選單（選用）
     ├── _handoff-<worker>.md    # 工廠內部給單一工作者的暫存交接（選用）
@@ -67,7 +68,8 @@
     ├── check-<change-id>-code-review.md   # Check 工作者的程式審查報告
     ├── e2e-review/                        # E2E 工作者每輪一個資料夾：報告、結果與證據，不進版控
     ├── change-review-request-NN.md        # 選配的提案或計畫審查邀請
-    └── change-review-response-NN.md       # 審查者的裁決，與邀請同一個 NN
+    ├── change-review-response-NN.md       # 審查者的裁決，與邀請同一個 NN
+    └── eval-effort.md                     # eval 工作者的收尾評估報告
 ```
 
 - `slug` 只用小寫英數與連字號；同一天不同主題須用不同 slug，路徑須唯一。
@@ -78,7 +80,7 @@
 - 給 manager 的交接檔一次完工寫一份，不再追加；之後的修正輪另寫新檔，檔名不沿用舊的。內容寬鬆，由 manager 篩選：影響方向或範圍的使用者決定、範圍變動、進度與證據指標、範圍外發現與新候選、阻擋事項、`.manager` 過時訂正。規格內容只寫 change id，實作與驗證細節留在 run。
 - `_review-queue.md` 保持簡潔：agent 驗證可信的項目打勾並附報告路徑，證據留在 run；未勾項目自帶原因與解除條件，不只指回 run 內檔案；最後只留人類才能處理的項目。
 - `_issue-backlog.md` 是跨 run 問題暫存區：範圍外發現（例如版面歪掉）、E2E 驗出的實作失敗、潛在錯誤都可放，每項寫狀態、現象與證據路徑。
-- 收尾（sync／archive）時，queue 中本次工作已完成的項目（已勾、使用者確認結案）與 backlog 中已結的條目（不修、已開 change）移入 `archive/<YYYY-MM-DD>-review-queue.md`、`archive/<YYYY-MM-DD>-issue-backlog.md`：同一天同類同一檔，每次收尾加一節 `## <HH:mm> <做收尾的 run slug>`，只追加；檔首一行說明日期、類別與條目格式；每筆保留原文並加一行收尾時間、該項目的來源 run 與結果；歸檔檔只新增節、不改既有節。未完成、未處理的留在根目錄兩份檔；長期未處理的由 manager 自行發動撿走並自根檔刪除，工廠不主動交出。沒有 sync／archive 的非專案路線在其最後一步歸檔。`archive/` 預設進版控，收尾後若有 commit 就一併納入；兩份根檔使用者要求才 commit。有 `_skill-notes.md` 時收尾一併處理，預設寫 `handoff-skill-<topic>.md` 交給 skill repo 的 manager。
+- 收尾（sync／archive）時，queue 中本次工作已完成的項目（已勾、使用者確認結案）與 backlog 中已結的條目（不修、已開 change）移入 `archive/<YYYY-MM-DD>-review-queue.md`、`archive/<YYYY-MM-DD>-issue-backlog.md`：同一天同類同一檔，每次收尾加一節 `## <HH:mm> <做收尾的 run slug>`，只追加；檔首一行說明日期、類別與條目格式；每筆保留原文並加一行收尾時間、該項目的來源 run 與結果；歸檔檔只新增節、不改既有節。未完成、未處理的留在根目錄兩份檔；長期未處理的由 manager 自行發動撿走並自根檔刪除，工廠不主動交出。沒有 sync／archive 的非專案路線在其最後一步歸檔。`archive/` 預設進版控，收尾後若有 commit 就一併納入；兩份根檔使用者要求才 commit。收尾時先依 `work-effort-eval` 派 eval 工作者評估，覆核後告知報告路徑；有 `.manager` 時另寫一份 `handoff-manager-<topic>-effort.md` 帶評估摘要；自動化時整批收尾為每個 run 各評估一次。之後處理 `_skill-notes.md`（含評估歸到 skill 的發現），預設寫 `handoff-skill-<topic>.md` 交給 skill repo 的 manager。
 - `_status.md`、`_memory.md`、`_dispatch-plan.md`、`_review-checklist.md` 與根目錄兩份檔以編輯工具原地更新；確實需要追加時先檢查有無重複內容。
 - 這裡放編排狀態與工作者產物，**不放**產品原始碼，也**不**取代 `openspec/**` 的規格與 change 套件。
 
@@ -132,7 +134,7 @@ flowchart LR
   end
   BP -->|整批完成| HU
 
-  SY --> FN[收尾<br/>archive、skill 筆記<br/>commit 建議、change log]
+  SY --> FN[收尾<br/>archive、工作評估、skill 筆記<br/>commit 建議、change log]
   TL --> FN
 ```
 

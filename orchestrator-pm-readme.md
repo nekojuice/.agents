@@ -17,7 +17,7 @@
 
 它只寫 `.manager/**`，例外有三種：人工核可的工廠交接、委派時交進工廠 run 的交接檔與 peer 協作檔，以及非產品路線下對受管對象的文字修改。peer 訊息是溝通管道，不算寫入文件。除此之外不碰產品原始碼、規格或部署狀態。受管對象不是程式（例如 skill 包、文件集）時走非產品路線，由 manager session 直接修改，步驟見下方「非產品路線」。路線由章程或 library 決策宣告，否則由使用者指示並記入 `_run.md`。
 
-PM 與工廠之間保留人工檢查點：PM 只提出候選並準備交接，預設由人另起工廠 session。工廠可選擇性唯讀查閱 `.manager`，但不寫入；回流只經工廠 run 根目錄的 `handoff-manager-<主題>.md`，PM 在人指示或收到 peer 通知時讀取，篩選後擬稿到 run 的 `staging/`，使用者檢查後才沖入正式文件。流程中依主題載入相依子技能：`pm-status-review`（狀態盤點）、`pm-intake-triage`（進件分流）、`pm-investigation-worker`（唯讀調查）、`pm-factory-handoff`（工廠交接）。工作涉及改 skill、製作 skill 或追蹤 skill 品質時依 `skill-feedback-notes` 記錄；本身在修訂 skill 的 run 直接把筆記併入需求對照，其他 run 在收尾時寫 `handoff-skill-<topic>.md`。
+PM 與工廠之間保留人工檢查點：PM 只提出候選並準備交接，預設由人另起工廠 session。工廠可選擇性唯讀查閱 `.manager`，但不寫入；回流只經工廠 run 根目錄的 `handoff-manager-<主題>.md`，PM 在人指示或收到 peer 通知時讀取，篩選後擬稿到 run 的 `staging/`，使用者檢查後才沖入正式文件。流程中依主題載入相依子技能：`pm-status-review`（狀態盤點）、`pm-intake-triage`（進件分流）、`pm-investigation-worker`（唯讀調查）、`pm-factory-handoff`（工廠交接）。工作涉及改 skill、製作 skill 或追蹤 skill 品質時依 `skill-feedback-notes` 記錄；本身在修訂 skill 的 run 直接把筆記併入需求對照，其他 run 在收尾時寫 `handoff-skill-<topic>.md`。每個 run 依 `work-effort-eval` 在工作中記錄時長與負擔，收尾派 eval 工作者評估，摘要擬稿進 `_effort-ledger.md` 累積跨 run 基準，收到工廠的評估交接時也一樣擬稿；評估在使用者檢查 staging 之前完成，台帳和其他草稿一起檢查。
 
 PM 發動的委派預設使用 `peer-agent-coordination`，使用者核可委派即視為啟用；討論室建在工廠 run，預設委派同平台 agent；工廠自行唯讀查閱 `.manager`，不發訊息向 PM 提問。PM 在討論室保持可被喚醒直到使用者結束討論室，是否需要背景接聽依 peer §5。補交事項給進行中的工廠 run 時，自動化時直接用討論室；非自動化時先與使用者討論，交接檔草稿放 manager run 根目錄，確認後才交付到工廠 run。其他情況不主動啟用，使用者提及或協作討論需要時才用。使用者核可自動化計畫時，PM 以一個 manager run 管理一整批工廠 run，同一個工廠 session 先把全部 change 開完並審查，使用者一次確認後才依序施工；人工 E2E、sync/archive 在整批結束後一起做，push 一律要使用者另外授權。
 
@@ -46,12 +46,13 @@ PM 發動的委派預設使用 `peer-agent-coordination`，使用者核可委派
 
 ```text
 .manager/
-├── _charter.md      # 專案憲章與控制邊界
-├── _status.md       # 專案狀態，狀態盤點或使用者要求時更新
-├── _milestones.md   # 里程碑與功能進度台帳，僅在狀態盤點時更新
-├── _backlog.md      # 待辦
-├── _library/        # 已確立的事實與決策，附來源、範圍、日期、信心
-├── _runs/           # 執行工作區與證據，非正典
+├── _charter.md          # 專案憲章與控制邊界
+├── _status.md           # 專案狀態，狀態盤點或使用者要求時更新
+├── _milestones.md       # 里程碑與功能進度台帳，僅在狀態盤點時更新
+├── _backlog.md          # 待辦
+├── _effort-ledger.md    # 跨 run 的工作評估台帳，收尾或收到工廠評估交接時經 staging/ 更新（選用）
+├── _library/            # 已確立的事實與決策，附來源、範圍、日期、信心
+├── _runs/               # 執行工作區與證據，非正典
 │   └── <YYYY-MM-DD>-<slug>/
 │       ├── _run.md                       # run 狀態，換手時第一個讀
 │       ├── inputs/                       # 原始需求或交接（選用）
@@ -64,8 +65,10 @@ PM 發動的委派預設使用 `peer-agent-coordination`，使用者核可委派
 │       ├── skill-notes.md                # skill 回饋筆記（選用）
 │       ├── handoff-skill-<topic>.md      # skill 回饋交接（選用）
 │       ├── _automation.md                # 自動化計畫（選用）
+│       ├── _effort.md                    # 工作時長與負擔記錄（選用）
+│       ├── eval-effort.md                # 收尾評估報告（選用）
 │       └── outcome.md                    # run 結論
-└── .gitignore       # 單行：_runs/
+└── .gitignore           # 單行：_runs/
 ```
 
 正典檔的更新一律先擬稿到 run 的 `staging/`，使用者主動要求的盤點與第一次盤點也一樣。
@@ -122,7 +125,7 @@ flowchart LR
   SKN([本 run<br/>skill 筆記]) -.-> N1
   N3 ==>|使用者<br/>git diff| SG
 
-  SR --> SG[擬稿<br/>staging]
+  SR --> SG[擬稿 staging<br/>含工作評估]
   TR --> SG
   SG ==>|使用者<br/>檢查| CF[沖入<br/>正式文件]
   CF --> CL[收尾<br/>commit、outcome<br/>skill 筆記]
@@ -169,7 +172,7 @@ PM 提候選、等人核可、建自足交接。PM 發動的委派會在工廠 r
 
 | 分類 | 檔案 | 性質 |
 | --- | --- | --- |
-| 正典狀態 | `_charter.md`、`_status.md`、`_milestones.md`、`_backlog.md`、`_library/**` | 專案的權威真相；更新一律先擬稿到 `staging/`。`_status.md` 在狀態盤點或使用者要求時更新，`_milestones.md` 只在狀態盤點時更新 |
+| 正典狀態 | `_charter.md`、`_status.md`、`_milestones.md`、`_backlog.md`、`_effort-ledger.md`、`_library/**` | 專案的權威真相；更新一律先擬稿到 `staging/`。`_status.md` 在狀態盤點或使用者要求時更新，`_milestones.md` 只在狀態盤點時更新 |
 | 執行記憶 | `.manager/_runs/<run>/**` | 工作記憶與證據，非專案真相 |
 
 工作者結論絕不直接更新正典狀態，須由 PM session 比對、綜合後才升級。遇到方向重大歧義、PM 判定與人工驗收衝突、候選可交接、自動化計畫待核可、需寫入 `.manager/**` 以外、或調查需變動產品倉庫時，一律停下等待人工。非產品路線對受管對象的修改不在此限，改為修改前需使用者指示，修改後由使用者以 git diff 或等效的前後對照審查。

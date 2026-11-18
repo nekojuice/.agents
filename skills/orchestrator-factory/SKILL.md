@@ -14,8 +14,8 @@ description: >-
 disable-model-invocation: false
 metadata:
   author: Cursor Grok 4.5, Codex GPT-5, Claude Code Opus 5.5
-  version: "1.15"
-  last_updated: "2026-11-11T10:02:59"
+  version: "1.16"
+  last_updated: "2026-11-18T15:40:43"
 ---
 
 # orchestrator-factory
@@ -73,7 +73,7 @@ When a lower source conflicts with a higher one, the higher one wins and the con
 
 Applies when the workspace has `.manager/`.
 
-- **When** — each time a run reaches await-e2e (after apply, Check, and agent E2E review), write one `handoff-manager-<topic>.md`; write another when blocked on a project-level decision, one when a discussion converges or ends with items that conflict with `.manager` or are worth recording (§ 1b), and one for stale `.manager` corrections in a run that will not reach await-e2e and wrote no discussion handoff (§ Information sources). Announce it over peer when the run has a discussion room.
+- **When** — each time a run reaches await-e2e (after apply, Check, and agent E2E review), write one `handoff-manager-<topic>.md`; write another when blocked on a project-level decision, one when a discussion converges or ends with items that conflict with `.manager` or are worth recording (§ 1b), one for stale `.manager` corrections in a run that will not reach await-e2e and wrote no discussion handoff (§ Information sources), and one at closing carrying the work-effort evaluation, `handoff-manager-<topic>-effort.md` (§ 7, `work-effort-eval`). Announce it over peer when the run has a discussion room.
 - **One per completion** — do not append to it later; a later amendment round writes a new file under a new name (e.g. a date or sequence suffix on the topic).
 - **Content** — write liberally; the manager filters. Include decisions the user confirmed that affect direction or scope, scope changes, progress with evidence pointers (change ids, commits), out-of-scope findings and new candidates, pointers to new `_issue-backlog.md` entries, blockers, and corrections to stale `.manager` content.
 - **Leave out** — spec content (opsx owns it; give change ids), implementation detail, and test or machine-verification detail; these stay in the run.
@@ -148,6 +148,10 @@ Do **not** paste full texts of those skills here — read and follow them when t
 ### Skill feedback notes
 
 When the work involves changing a skill, making a skill, or tracking a skill's quality, record per `skill-feedback-notes` in `_skill-notes.md`. Workers record only when their assignment authorizes it, returning the entries to the orchestrator.
+
+### Work effort
+
+When a run is created, start recording `_effort.md` per `work-effort-eval`, and evaluate at closing (§ 7). Stamp the discussion start when it is known; otherwise mark it `not recorded`. When the user says not to use it, record that in `_status.md` and stop.
 
 ## Repair policy (N = 3)
 
@@ -295,9 +299,10 @@ Handoff files between the manager and a factory always live at the factory run r
 | `_needs-input.md` | On `needs_input`: reason + recommended four-choice menu (and any situational extras); see Repair policy |
 | `_plan.md` | The plan on the plan route (§ Plan route) |
 | `_skill-notes.md` | Skill feedback notes (`skill-feedback-notes`) |
+| `_effort.md` | Work effort record and final grades (`work-effort-eval`) |
 | `_notes.md` | Discussion notes not yet confirmed by the user (converged items, findings worth keeping, items for the manager handoff), and corrections to stale `.manager` content (§ Information sources level 3) |
 
-**Control-file writes** — update `_status.md`, `_memory.md`, `_dispatch-plan.md`, `_review-checklist.md`, `_review-queue.md`, and `_issue-backlog.md` in place with an editing tool. When an append is genuinely needed, first check that the same content is not already there. Never blind-append with shell redirection. Files under `archive/` are the exception to in-place updates: only add a new section, never edit earlier ones.
+**Control-file writes** — update `_status.md`, `_memory.md`, `_dispatch-plan.md`, `_review-checklist.md`, `_effort.md`, `_review-queue.md`, and `_issue-backlog.md` in place with an editing tool. When an append is genuinely needed, first check that the same content is not already there. Never blind-append with shell redirection. Files under `archive/` are the exception to in-place updates: only add a new section, never edit earlier ones.
 
 **Worker artifact examples:**
 
@@ -309,6 +314,7 @@ Handoff files between the manager and a factory always live at the factory run r
 | `e2e-review/<yyyyMMdd-HHmmss>-r<NN>-<short>/` | One agent E2E round per folder (report, result, evidence), per `e2e-review` |
 | `change-review-request-NN.md` | Optional change-doc review brief |
 | `change-review-response-NN.md` | Optional change-doc review verdict (paired `NN`) |
+| `eval-effort.md` | Closing evaluation from the eval worker (`work-effort-eval`) |
 
 Every worker prompt includes `run_dir: .factory/_runs/<…>/` and must read `_memory.md` + `_status.md` when present. Workers judge by § Information sources and may read `.manager` read-only. By default a worker works only in its current run. A named worker may be reused across runs: the prompt restates the new run's `run_dir`, constraints, and control files to read, and declares that unrecorded context from the earlier run does not carry over. Chat stays a short rollup; durable detail lives under `run_dir`.
 
@@ -579,7 +585,7 @@ The manager moves this session between the batch's runs over peer. Check the man
 2. **Batch change review** (Stage `await-batch-review`) — once every run has its changes, present all changes and every run's pending decisions in one checkpoint, as one decision list per `need-ask-user-guide`, and wait. This is the Changes review gate for the whole batch. The user confirms all runs or a subset; amendments the user directs here need no further review.
 3. **Build pass** — dispatch each confirmed run in dependency order; the batch review stands in for its Dispatch confirm gate. After Check, fix the adopted findings and re-check, then run agent E2E review (§ 5b). On reaching await-e2e, with the revised `_review-checklist.md`, commit as the authorization says (default one commit), then write the manager handoff with the commit hash and report over peer.
 4. **Stop** a run in the build pass on `needs_input` or stop-for-human, self-fix exhausted, a Check finding that needs the user, or an out-of-scope finding that needs a new change. Report to the manager; only runs that depend on it wait.
-5. **End of batch** — when the manager reports the batch done, consolidate the runs' checklists into `_review-queue.md`; the Human E2E and Sync/archive gates then apply as usual. Never push without the user's separate explicit request.
+5. **End of batch** — when the manager reports the batch done, consolidate the runs' checklists into `_review-queue.md`; the Human E2E and Sync/archive gates then apply as usual. At the batch's closing, evaluate each run of the batch per `work-effort-eval` (§ 7 step 5). Never push without the user's separate explicit request.
 
 ## 7. Sync / archive
 
@@ -589,7 +595,8 @@ Only after human E2E (and any fixes the user directed) and **explicit** user app
 2. If branch is **not** `main` and **not** `master` → **block** sync/archive, warn that running them on a feature branch can damage main-spec files on `main`/`master`, and stop.
 3. If on `main`/`master` and user approved → follow `openspec-sync-specs` and `openspec-archive-change` as directed.
 4. Archive this work's finished queue items and closed backlog entries per § Archive of cross-run files.
-5. Handle `_skill-notes.md` per `skill-feedback-notes`. A run that does not reach § 7 (a non-project route, or a discussion that ends) handles it at its own final step or when the discussion ends.
+5. Run the closing evaluation per `work-effort-eval`: tell the user, dispatch the eval worker, review its report, and tell the user the path. With `.manager` present, write the evaluation handoff (§ Manager handoff). Under § Automation, evaluate each run of the batch. A run that does not reach § 7 evaluates at its own final step or when the discussion ends.
+6. Handle `_skill-notes.md` per `skill-feedback-notes`, including the method-layer findings the evaluation added. A run that does not reach § 7 (a non-project route, or a discussion that ends) handles it at its own final step or when the discussion ends.
 
 If manual verification items remain unchecked, the user's verbal confirmation is enough to archive; record the confirmation and its time in `_status.md`. Items the user confirms closed are archived with that result; the rest stay in the queue. Never tick an item as human-verified for the user or claim the user verified it; agent-verified ticks carry their report path.
 

@@ -9,6 +9,7 @@
 |- _status.md
 |- _milestones.md
 |- _backlog.md
+|- _effort-ledger.md                   (optional; work-effort ledger)
 |- _library/
 |  |- index.md
 |  |- facts/
@@ -27,12 +28,14 @@
       |- skill-notes.md                    (optional; skill feedback notes)
       |- handoff-skill-<topic>.md          (optional; skill feedback handoff)
       |- _automation.md                    (optional; automation plan)
+      |- _effort.md                        (optional; work-effort record)
+      |- eval-effort.md                    (optional; closing evaluation)
       `- outcome.md
 ```
 
 Use lowercase English letters, digits, and hyphens in run slugs. Keep each full run path unique. Reuse an existing run only when the user is explicitly resuming the same topic.
 
-Canonical files (`_charter`, `_status`, `_milestones`, `_backlog`, `_library/**`) are meant to be tracked by the workspace repository. Runs are working memory: keep them under `_runs/`, which is git-ignored through `.manager/.gitignore` (a single line, `_runs/`). This requires no parent directory to ignore `.manager/` itself; a nested ignore cannot re-include an already-ignored parent.
+Canonical files (`_charter`, `_status`, `_milestones`, `_backlog`, `_effort-ledger`, `_library/**`) are meant to be tracked by the workspace repository. Runs are working memory: keep them under `_runs/`, which is git-ignored through `.manager/.gitignore` (a single line, `_runs/`). This requires no parent directory to ignore `.manager/` itself; a nested ignore cannot re-include an already-ignored parent.
 
 ## Canonical files
 
@@ -53,6 +56,10 @@ Store the durable milestone and feature-progress ledger: the milestone ledger, a
 ### `_backlog.md`
 
 Store uncommitted questions, suspected bugs, ideas, risks, and candidate outcomes. A backlog entry is not approval to implement.
+
+### `_effort-ledger.md`
+
+Store one summary row per evaluated run from `assets/effort-ledger.template.md`: grades per axis, main attribution, task type, models, and the report path. It is the baseline for comparing runs. Create it from the template when the first evaluation summary is applied. Update it only through `staging/`, at a run's closing or when a factory's evaluation handoff arrives; the draft is the full ledger with the new row added, not the row alone.
 
 ### `_library/**`
 
@@ -92,6 +99,10 @@ Store drafts of canonical updates: an `_index.md` review index listing each chan
 
 Store an automation plan from `assets/automation.template.md`: scope, factory runs with order and dependencies, the two-pass flow, commit rule, stop conditions, report points, and the user's quoted approval.
 
+### `_effort.md`, `eval-effort.md`
+
+The work-effort record the PM keeps while working and the eval worker's closing report, per `work-effort-eval`.
+
 ### `outcome.md`
 
 Store the run conclusion, answered questions, proposed cases, human decisions, promoted facts or decisions, and any created factory handoff.
@@ -113,5 +124,7 @@ Store the run conclusion, answered questions, proposed cases, human decisions, p
 | Product repositories | Read only | Read only within assignment | Owned by factory workflow |
 | Non-product managed object | Write under the Non-product route | Read only within assignment | Not involved |
 | `.factory/**` | Read only for status review and handoff files; create approved handoff runs, plus `.factory/.gitignore` when absent; peer files of a delegation it started; delivered `handoff-factory-<topic>.md`; `_review-queue.md` and `_issue-backlog.md` when needed, including deleting entries it picks up; read `archive/`, never write it | No access | Owned after the factory session starts |
+
+An eval worker dispatched per `work-effort-eval` reads the run and git history and writes only its `eval-effort.md` in that run.
 
 The factory returns to the manager only through `handoff-manager-<topic>.md` at its run root, optionally announced over peer. The PM reads it on the human's instruction or a peer notice, and drafts canonical updates into `staging/`.

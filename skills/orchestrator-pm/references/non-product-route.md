@@ -39,6 +39,7 @@ The user reviews the edit through git diff, or an equivalent before/after diff w
 
 ## 7. Manager impact
 
+- First run the closing evaluation per run-lifecycle § Conclude step 1, so the effort-ledger draft joins this check.
 - Draft every canonical update into `staging/`: the change decisions' manager impact, and status and milestone proposals through `pm-status-review`. When the library keeps a decomposition of the managed object, re-decompose the edited parts from the new text and include it.
 - The user checks the draft once; then apply it.
 

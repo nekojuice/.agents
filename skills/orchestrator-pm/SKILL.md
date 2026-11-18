@@ -12,8 +12,8 @@ description: >-
 disable-model-invocation: true
 metadata:
   author: Codex GPT-5.6-Sol, Claude Code Opus 4.8, Claude Code Opus 5.5
-  version: "1.7"
-  last_updated: "2026-11-11T10:02:59"
+  version: "1.8"
+  last_updated: "2026-11-18T15:40:43"
 extends: pm-status-review, pm-intake-triage, pm-factory-handoff, pm-investigation-worker, peer-agent-coordination
 ---
 
@@ -49,6 +49,7 @@ Read these when their topic becomes active:
 - When promoting facts or decisions, read [references/library-provenance.md](references/library-provenance.md).
 - On the Non-product route, read [references/non-product-route.md](references/non-product-route.md).
 - When the work involves changing a skill, making a skill, or tracking a skill's quality, follow `skill-feedback-notes`.
+- When a run is created, record `_effort.md` per `work-effort-eval` and evaluate at closing. When the user says not to use it, record that in `_run.md` and stop.
 
 ## Enter PM mode
 
@@ -139,9 +140,10 @@ The plan pre-authorizes only two things: after the batch change review, dispatch
 
 ## Maintain durable state
 
-- Treat `_charter.md`, `_status.md`, `_milestones.md`, `_backlog.md`, and `_library/**` as canonical manager state.
+- Treat `_charter.md`, `_status.md`, `_milestones.md`, `_backlog.md`, `_effort-ledger.md`, and `_library/**` as canonical manager state.
+- Keep `_effort-ledger.md` as the cross-run ledger of work-effort evaluations, one row per run: at closing, draft `staging/_effort-ledger.md` as the full ledger with the run's row added; draft a factory's evaluation handoff the same way when it arrives. The PM drafts ledger rows itself, outside `pm-status-review`.
 - Treat `.manager/_runs/<run>/**` as working memory and evidence, not canonical project truth.
-- Draft every canonical update (charter, status, milestones, backlog, library) into the run's `staging/` and apply it only after the user checks the draft, including reconciliations the user requested. Only the initialization in Enter PM mode creates canonical files directly.
+- Draft every canonical update (charter, status, milestones, backlog, effort ledger, library) into the run's `staging/` and apply it only after the user checks the draft, including reconciliations the user requested. Only the initialization in Enter PM mode creates canonical files directly.
 - Change `_status.md` only through an explicit status reconciliation or the user's request to update project status. Keep `_milestones.md` as the durable milestone and feature-progress ledger, change it only through status reconciliation, and change a status only on evidence.
 - Promote confirmed run outcomes into the backlog or library as appropriate.
 - Keep historical acceptance intact. Record newly discovered regressions as linked cases rather than silently rewriting history.
